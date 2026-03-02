@@ -78,7 +78,7 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
 }
 
 const navLinks = [
-  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
   { href: '/collection', label: 'Collection' },
   { href: '/events', label: 'Events' },
   { href: '/series', label: 'Series' },
@@ -95,14 +95,14 @@ export function Navbar() {
   return (
     <nav className='fixed z-50 w-full border-b bg-background'>
       <div
-        className='mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6
+        className='mx-auto flex max-w-11/12 items-center justify-between px-4 py-4 sm:px-6
           lg:px-8'
       >
         {/* Logo */}
         <Logo className='text-xl' onClick={() => setOpen(false)} />
 
         {/* Desktop Navigation */}
-        <div className='hidden items-center gap-4 md:flex'>
+        <div className='hidden items-center gap-4 lg:flex'>
           {filteredNavLinks.map((link) => (
             <Button key={link.href} variant='ghost' asChild>
               <Link href={link.href}>{link.label}</Link>
@@ -113,7 +113,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile Navigation - Sheet */}
-        <div className='md:hidden'>
+        <div className='lg:hidden'>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant='outline' size='icon'>
