@@ -13,11 +13,11 @@ import {
 } from '@/components/ui/carousel';
 
 const images = [
-  '/landing/carousel/1.webp',
-  '/landing/carousel/2.webp',
-  '/landing/carousel/3.webp',
-  '/landing/carousel/4.webp',
-  '/landing/carousel/5.webp',
+  '/landing/carousel/carousel_1.jpg',
+  '/landing/carousel/carousel_2.jpg',
+  '/landing/carousel/carousel_3.jpg',
+  '/landing/carousel/carousel_4.jpg',
+  '/landing/carousel/carousel_5.jpg',
 ];
 
 export function Hero() {
@@ -30,7 +30,7 @@ export function Hero() {
         className='w-full'
         plugins={[
           Autoplay({
-            delay: 2000,
+            delay: 5000,
           }),
         ]}
       >
