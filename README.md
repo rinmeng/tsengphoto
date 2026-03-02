@@ -1,15 +1,34 @@
-# Next.js + Shadcn UI + Supabase Starter
+# Tseng Photography
 
-A modern, production-ready boilerplate for building full-stack applications with Next.js, Shadcn UI components, and Supabase backend.
+A modern, professional photography portfolio and event photography website built for showcasing photography work in Vancouver and Kelowna.
 
 ## ✨ Features
 
-- **[Next.js 15](https://nextjs.org/)** - React framework with App Router, Server Components, and Server Actions
+- **Portfolio Galleries** - Photo collections, event photography, series, and video galleries
+- **SEO Optimized** - Meta tags, Open Graph, and Twitter Card support for social sharing
+- **Responsive Design** - Optimized viewing experience across all devices
+- **Image Carousel** - Autoplay hero carousel on landing page
+- **Dark/Light Mode** - Theme toggle with system preference support
+- **Admin Panel** - Secure admin area for content management
+- **Authentication** - Supabase-powered user authentication
+
+## 📸 About
+
+Tseng Photography provides professional event photography services in Vancouver and Kelowna, British Columbia. This website showcases our portfolio across multiple categories:
+
+- **Collection** - Curated photo galleries
+- **Events** - Corporate events, weddings, and private celebrations
+- **Series** - Exclusive photography series and ongoing projects
+- **Videos** - Professional videography and cinematic event coverage
+
+## 🛠️ Tech Stack
+
+- **[Next.js 15](https://nextjs.org/)** - React framework with App Router and Server Components
 - **[Shadcn UI](https://ui.shadcn.com/)** - Beautifully designed, accessible components built with Radix UI and Tailwind CSS
-- **[Supabase](https://supabase.com/)** - Open source Firebase alternative with PostgreSQL database, authentication, and real-time subscriptions
+- **[Supabase](https://supabase.com/)** - Backend with PostgreSQL database, authentication, and real-time subscriptions
 - **[TypeScript](https://www.typescriptlang.org/)** - Type safety across the entire stack
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework for rapid UI development
-- **[Prettier](https://prettier.io/)** - Opinionated code formatter with custom plugins for import sorting and Tailwind class ordering
+- **[Embla Carousel](https://www.embla-carousel.com/)** - Carousel component with autoplay functionality
 
 ## 🚀 Getting Started
 
@@ -24,8 +43,8 @@ A modern, production-ready boilerplate for building full-stack applications with
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/rinmeng/next-shadcn-supabase-starter.git
-cd next-shadcn-supabase-starter
+git clone https://github.com/rinmeng/tsengphoto.git
+cd tsengphoto
 ```
 
 2. Install dependencies:
@@ -65,35 +84,23 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) to see your application.
 
-## 🎨 Code Formatting with Prettier
+## 🎨 Code Formatting
 
-This project uses Prettier with several plugins for consistent code formatting:
+This project uses Prettier with plugins for consistent code formatting:
 
-### Configured Plugins
-
-- **[@ianvs/prettier-plugin-sort-imports](https://github.com/IanVS/prettier-plugin-sort-imports)** - Automatically sorts imports in a specific order (React imports first, then third-party modules, then local imports)
-- **[prettier-plugin-packagejson](https://github.com/matzkoh/prettier-plugin-packagejson)** - Formats and sorts `package.json` files
-- **[prettier-plugin-classnames](https://github.com/fisker/prettier-plugin-classnames)** - Formats className attributes
-
-### Key Settings
-
-The `.prettierrc` configuration includes:
-
-- **Print Width**: 90 characters
-- **Single Quotes**: Enabled for JS/TS
-- **Import Order**: React → Third-party → Components → Hooks → Utils → Relative imports
+- **Import sorting** - Organized import statements
+- **Package.json formatting** - Sorted package.json files
+- **Tailwind class ordering** - Consistent className organization
 
 Format your code:
 
 ```bash
 pnpm format
-# or manually format files
-pnpm prettier --write .
 ```
 
-## 🛠️ Adding Shadcn UI Components
+## 🛠️ Adding UI Components
 
-All are added by default, but you may remove them from `app/components/ui`. You can add new components to your project:
+Add Shadcn UI components as needed:
 
 ```bash
 pnpm dlx shadcn@latest add button
@@ -103,72 +110,31 @@ pnpm dlx shadcn@latest add dialog
 
 See all [available components](https://ui.shadcn.com/docs/components).
 
-## 🎯 Code Patterns & Best Practices
+## 🎯 Architecture
 
 ### Context + Hooks Pattern
 
-This starter follows a clean architecture pattern for state management:
+State management follows a clean architecture:
 
-1. **Define Context**: Create a context in `contexts/` with a provider component
+1. **Contexts** (`contexts/`) - React Context providers for global state
+2. **Custom Hooks** (`hooks/`) - Hooks to consume contexts (e.g., `useAuth`, `useToast`)
+3. **Types** (`lib/types/`) - Centralized TypeScript type definitions
+4. **Barrel Exports** - Index files for easy imports
 
-   ```tsx
-   // contexts/AuthContext.tsx
-   export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-   
-   export function AuthProvider({ children }: { children: ReactNode }) {
-     // ... provider logic
-   }
-   ```
+Example:
+```tsx
+// Use authentication
+import { useAuth } from '@/hooks/use-auth';
 
-2. **Create Custom Hook**: Add a corresponding hook in `hooks/` to consume the context
-
-   ```tsx
-   // hooks/use-auth.ts
-   export function useAuth() {
-     const context = useContext(AuthContext);
-     if (context === undefined) {
-       throw new Error('useAuth must be used within an AuthProvider');
-     }
-     return context;
-   }
-   ```
-
-3. **Define Types**: Add TypeScript types in `lib/types/` for type safety
-
-   ```tsx
-   // lib/types/auth.ts
-   export interface AuthContextType {
-     // ... type definitions
-   }
-   ```
-
-4. **Barrel Exports**: Export all contexts and hooks from an index file for easy imports
-
-   ```tsx
-   // contexts/index.ts
-   export { AuthProvider } from './AuthContext';
-   // ... other exports
-   ```
-
-   ```tsx
-   // hooks/index.ts
-   export { useAuth } from './use-auth';
-   // ... other exports
-   ```
-
-### Type Centralization
-
-All TypeScript types are centralized in `lib/types/`:
-
-- Feature-specific type files (e.g., `auth.ts`, `toast.ts`)
-- Main `index.ts` exports all types for convenience
-- Import using: `import { AuthContextType, ToastContextType } from '@/lib/types'`
+// Import types
+import { AuthContextType } from '@/lib/types';
+```
 
 ## 🗃️ Database Setup
 
 > You must have the [Supabase CLI](https://supabase.com/docs/guides/cli) installed and configured to run migrations.
 
-Run the migrations located in the `migrations/` folder using the Supabase CLI:
+Run the migrations located in the `supabase/migrations/` folder using the Supabase CLI:
 
 ```bash
 npx supabase db push
@@ -180,11 +146,12 @@ npx supabase db push
 
 The easiest way to deploy is using [Vercel](https://vercel.com/new):
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rinmeng/next-shadcn-supabase-starter)
-
-1. Connect your GitHub repository
-2. Add environment variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`)
-3. Deploy
+1. Push your code to a GitHub repository
+2. Import the repository in Vercel
+3. Add environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+4. Deploy
 
 See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for other platforms.
 
@@ -192,17 +159,38 @@ See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your
 
 ```text
 ├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
+│   ├── layout.tsx         # Root layout with navigation and theme
+│   ├── page.tsx           # Landing page with hero carousel
+│   ├── collection/        # Photo collection gallery
+│   │   ├── layout.tsx    # SEO metadata for collections
+│   │   └── page.tsx      # Collection page
+│   ├── events/            # Event photography showcase
+│   │   ├── layout.tsx    # SEO metadata for events
+│   │   └── page.tsx      # Events page
+│   ├── series/            # Photography series & projects
+│   │   ├── layout.tsx    # SEO metadata for series
+│   │   └── page.tsx      # Series page
+│   ├── videos/            # Videography portfolio
+│   │   ├── layout.tsx    # SEO metadata for videos
+│   │   └── page.tsx      # Videos page
+│   ├── admin/             # Admin dashboard
+│   │   └── page.tsx      # Admin page
+│   ├── login/             # Authentication
+│   │   └── page.tsx      # Login page
 │   └── globals.css        # Global styles
 ├── components/            # React components
+│   ├── Hero.tsx          # Landing page carousel
+│   ├── Navbar.tsx        # Navigation bar
+│   ├── Logo.tsx          # Brand logo
+│   ├── ModeToggle.tsx    # Dark/Light theme toggle
 │   └── ui/               # Shadcn UI components
 ├── contexts/              # React Context providers
 │   ├── AuthContext.tsx   # Authentication context
 │   └── ToastContext.tsx  # Toast notifications context
 ├── hooks/                 # Custom React hooks
 │   ├── use-auth.ts       # Authentication hook
-│   └── use-toast.ts      # Toast notifications hook
+│   ├── use-toast.ts      # Toast notifications hook
+│   └── use-mobile.ts     # Mobile detection hook
 ├── lib/                   # Utility functions and shared types
 │   ├── supabase.ts       # Supabase client setup
 │   ├── utils.ts          # Utility functions (cn, etc.)
@@ -210,40 +198,43 @@ See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your
 │       ├── auth.ts       # Auth-related types
 │       ├── toast.ts      # Toast-related types
 │       └── index.ts      # Type exports
-├── utils/                 # Additional utilities
-│   └── supabase/         # Supabase-specific utilities
 ├── public/               # Static assets
+│   ├── landing/          # Landing page assets
+│   │   └── carousel/    # Carousel images (1-5.webp)
+│   └── icons/           # Icon assets
+├── supabase/             # Supabase configuration
+│   ├── config.toml      # Supabase local config
+│   └── migrations/      # Database migrations
 └── next.config.ts        # Next.js configuration
 ```
 
-## 🏗️ Architecture Conventions
+## 📸 Features Overview
 
-This project follows a clear separation of concerns with organized folder structures:
+### SEO Optimization
 
-### Context Pattern
+Each page section (Collection, Events, Series, Videos) includes comprehensive SEO metadata:
+- Custom titles and descriptions
+- Open Graph tags for social media previews
+- Twitter Card support
+- Relevant keywords for search engines
+- Canonical URLs
+- Placeholder images from carousel assets
 
-- **contexts/**: Contains React Context providers for global state management
-- Each context has its own file (e.g., `AuthContext.tsx`, `ToastContext.tsx`)
-- Contexts are wrapped in the root layout for application-wide access
+### Hero Carousel
 
-### Custom Hooks
+The landing page features an auto-playing carousel with:
+- 5 featured images from `/public/landing/carousel/`
+- Autoplay with 2-second delay
+- Navigation buttons and dots
+- Responsive design that maintains full viewport height
+- Object-cover for proper image scaling
 
-- **hooks/**: Custom React hooks that consume contexts or provide reusable logic
-- Hook naming convention: `use-{name}.ts` (e.g., `use-auth.ts`, `use-toast.ts`)
-- Each hook is paired with its corresponding context
+### Theme Support
 
-### Type Organization
-
-- **lib/types/**: Centralized TypeScript type definitions
-- Types are organized by feature (e.g., `auth.ts`, `toast.ts`)
-- Main export file (`index.ts`) re-exports all types for easy importing
-- Import types using: `import { AuthContextType } from '@/lib/types'`
-
-### Component Structure
-
-- **components/ui/**: Shadcn UI components with consistent patterns
-- Each component uses TypeScript for type safety
-- Components follow the compound component pattern where applicable
+- Light and dark mode toggle
+- System preference detection
+- Persistent theme selection
+- Smooth transitions between themes
 
 ## 🤝 Contributing
 
@@ -252,12 +243,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) by Vercel
-- [Shadcn UI](https://ui.shadcn.com/) by [@shadcn](https://twitter.com/shadcn)
-- [Supabase](https://supabase.com/) team
 
 ## 📚 Documentation & Resources
 
