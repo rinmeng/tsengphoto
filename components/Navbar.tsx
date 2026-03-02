@@ -79,8 +79,8 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/features', label: 'Features' },
-  { href: '/tech-stack', label: 'Tech Stack' },
+  { href: '/collection', label: 'Collection' },
+  { href: '/events', label: 'Events' },
   { href: '/admin', label: 'Admin' },
 ];
 
