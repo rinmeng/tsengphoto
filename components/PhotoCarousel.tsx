@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay';
 import { SendHorizonal } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   Button,
   Carousel,
@@ -21,6 +22,7 @@ interface PhotoCarouselProps {
   buttonText?: string;
   onButtonClick?: () => void;
   autoplayDelay?: number;
+  className?: string;
 }
 
 export function PhotoCarousel({
@@ -30,9 +32,10 @@ export function PhotoCarousel({
   buttonText,
   onButtonClick,
   autoplayDelay = 3000,
+  className,
 }: PhotoCarouselProps) {
   return (
-    <section className='container mx-auto'>
+    <section className={cn('container mx-auto', className)}>
       <div
         className='flex justify-center items-center flex-col gap-8 border-dashed
           border-x-2 py-8'
