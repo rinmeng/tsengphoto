@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/4.webp',
+        url: '/landing/carousel/carousel_4.jpg',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography Collection',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: 'Photo Collection Gallery | Tseng Photography',
     description:
       'Browse our curated collection of professional event photography from Vancouver and Kelowna.',
-    images: ['/landing/carousel/4.webp'],
+    images: ['/landing/carousel/carousel_4.jpg'],
   },
   alternates: {
     canonical: '/collection',

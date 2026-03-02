@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/1.webp',
+        url: '/landing/carousel/carousel_1.jpg',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography Events',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: 'Event Photography Services | Tseng Photography',
     description:
       'Professional event photography in Vancouver and Kelowna. Capturing your special moments with creativity and precision.',
-    images: ['/landing/carousel/1.webp'],
+    images: ['/landing/carousel/carousel_1.jpg'],
   },
   alternates: {
     canonical: '/events',

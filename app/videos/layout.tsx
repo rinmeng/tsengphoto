@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/3.webp',
+        url: '/landing/carousel/carousel_3.jpg',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography Video Production',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: 'Event Videography & Video Production | Tseng Photography',
     description:
       'Professional event videography services in Vancouver and Kelowna. Cinematic video production for all occasions.',
-    images: ['/landing/carousel/3.webp'],
+    images: ['/landing/carousel/carousel_3.jpg'],
   },
   alternates: {
     canonical: '/videos',
