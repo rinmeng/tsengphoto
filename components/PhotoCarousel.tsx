@@ -23,6 +23,7 @@ interface PhotoCarouselProps {
   onButtonClick?: () => void;
   autoplayDelay?: number;
   className?: string;
+  aspectRatio?: string;
 }
 
 export function PhotoCarousel({
@@ -33,6 +34,7 @@ export function PhotoCarousel({
   onButtonClick,
   autoplayDelay = 3000,
   className,
+  aspectRatio = '9/14',
 }: PhotoCarouselProps) {
   return (
     <section className={cn('container mx-auto', className)}>
@@ -40,7 +42,7 @@ export function PhotoCarousel({
         className='flex justify-center items-center flex-col gap-8 border-dashed
           border-x-2 py-8'
       >
-        <div className='text-xl md:text-4xl'>{title}</div>
+        <div className='text-2xl md:text-4xl'>{title}</div>
         <Carousel
           showDots={true}
           className='w-full'
@@ -56,8 +58,8 @@ export function PhotoCarousel({
                 <div>
                   <Card className='p-0'>
                     <CardContent
-                      className='flex items-center justify-center p-0 relative
-                        aspect-9/14'
+                      className={`flex items-center justify-center p-0 relative
+                      aspect-${aspectRatio}`}
                     >
                       <Image
                         src={src}

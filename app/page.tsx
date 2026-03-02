@@ -52,8 +52,8 @@ export default function Home() {
       <Hero />
       <section className='container mx-auto'>
         <div
-          className='flex justify-center items-center h-60 flex-col gap-4 border-dashed
-            border-x-2'
+          className='flex justify-center items-center h-30 md:h-60 flex-col gap-4
+            border-dashed border-x-2'
         >
           <div className='text-3xl md:text-7xl font-bold'>Event Photographer</div>
           <div className='text-xl md:text-2xl'>Kelowna & Vancouver</div>
@@ -111,8 +111,8 @@ export default function Home() {
       <Separator className='border-t-2' />
       <section className='container mx-auto'>
         <div
-          className='flex justify-center items-center h-60 flex-col gap-4 border-dashed
-            border-x-2'
+          className='flex justify-center items-center h-30 md:h-60 flex-col gap-4
+            border-dashed border-x-2'
         >
           <div className='text-3xl md:text-7xl font-bold'>Photography Services</div>
         </div>
@@ -120,6 +120,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted'
+        aspectRatio='video'
         title='Event Photography'
         description='Capturing key moments and details of a special occasion such as a wedding, corporate event, or party! Candid and posed shots are captured to create a lasting record.'
         images={eventPhotography}
@@ -129,6 +130,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted'
+        aspectRatio='9/14'
         title='Portrait Photography'
         description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
         images={portraitPhotography}
