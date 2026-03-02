@@ -81,6 +81,8 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/collection', label: 'Collection' },
   { href: '/events', label: 'Events' },
+  { href: '/series', label: 'Series' },
+  { href: '/videos', label: 'Videos' },
   { href: '/admin', label: 'Admin' },
 ];
 

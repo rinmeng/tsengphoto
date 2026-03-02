@@ -1,0 +1,46 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Photo Collection Gallery | Tseng Photography',
+  description:
+    'Browse our curated collection of professional event photography. Explore stunning images from weddings, corporate events, and special occasions captured in Vancouver and Kelowna by Tseng Photography.',
+  keywords: [
+    'photo collection',
+    'photography gallery',
+    'event photos',
+    'Vancouver photographer',
+    'Kelowna photographer',
+    'wedding photography',
+    'professional photography',
+    'photo portfolio',
+  ],
+  openGraph: {
+    title: 'Photo Collection Gallery | Tseng Photography',
+    description:
+      'Browse our curated collection of professional event photography from Vancouver and Kelowna.',
+    type: 'website',
+    locale: 'en_CA',
+    images: [
+      {
+        url: '/landing/carousel/4.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Tseng Photography Collection',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Photo Collection Gallery | Tseng Photography',
+    description:
+      'Browse our curated collection of professional event photography from Vancouver and Kelowna.',
+    images: ['/landing/carousel/4.webp'],
+  },
+  alternates: {
+    canonical: '/collection',
+  },
+};
+
+export default function CollectionLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
