@@ -130,7 +130,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted'
-        aspectRatio='9/14'
+        aspectRatio='9/16'
         title='Portrait Photography'
         description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
         images={portraitPhotography}
