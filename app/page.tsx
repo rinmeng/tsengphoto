@@ -42,6 +42,19 @@ const eventPhotography = [
   '/landing/sections/event_photography/event_photography_19.jpg',
 ];
 
+const portraitPhotography = [
+  '/landing/sections/portrait_photography/portrait_photography_1.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_2.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_3.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_4.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_5.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_6.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_7.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_8.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_9.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_10.jpg',
+];
+
 export default function Home() {
   return (
     <div className='mx-auto px-4fade-in-from-bottom overflow-x-hidden'>
@@ -132,7 +145,7 @@ export default function Home() {
             <CarouselContent>
               {eventPhotography.map((src, index) => (
                 <CarouselItem key={index} className='md:basis-1/2 lg:basis-1/3'>
-                  <div className='p-1'>
+                  <div>
                     <Card className='p-0'>
                       <CardContent
                         className='flex items-center justify-center p-0 relative
@@ -141,6 +154,49 @@ export default function Home() {
                         <Image
                           src={src}
                           alt={`Event photography ${index + 1}`}
+                          fill
+                          className='object-cover object-center'
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+            <CarouselDots />
+          </Carousel>
+        </div>
+      </section>
+      <Separator className='border-t-2' />
+      <section className='container mx-auto'>
+        <div
+          className='flex justify-center items-center flex-col gap-8 border-dashed
+            border-x-2 py-8'
+        >
+          <div className='text-xl md:text-4xl'>Portrait Photography</div>
+          <Carousel
+            showDots={true}
+            className='w-full'
+            plugins={[
+              Autoplay({
+                delay: 3000,
+              }),
+            ]}
+          >
+            <CarouselContent>
+              {portraitPhotography.map((src, index) => (
+                <CarouselItem key={index} className='md:basis-1/2 lg:basis-1/3'>
+                  <div>
+                    <Card className='p-0'>
+                      <CardContent
+                        className='flex items-center justify-center p-0 relative
+                          aspect-9/14'
+                      >
+                        <Image
+                          src={src}
+                          alt={`Portrait photography ${index + 1}`}
                           fill
                           className='object-cover object-center'
                         />
