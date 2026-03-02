@@ -23,10 +23,10 @@ export default function Home() {
       <Separator className='border-t-2' />
       <section className='container mx-auto'>
         <div
-          className='h-140 lg:h-screen bg-muted flex flex-col md:flex-row items-center
-            border-dashed border-x-2 justify-center gap-4 p-4'
+          className='h-140 bg-muted flex flex-col md:flex-row items-center border-dashed
+            border-x-2 justify-center gap-4 p-4'
         >
-          <div className='relative w-full h-1/2 md:w-1/2 md:h-1/2'>
+          <div className='relative w-full md:w-1/2 aspect-[4/3]'>
             <Image
               src={learnMore[0]}
               fill
@@ -47,10 +47,10 @@ export default function Home() {
       <Separator className='border-t-2' />
       <section className='container mx-auto'>
         <div
-          className='h-140 lg:h-screen bg-muted flex flex-col md:flex-row-reverse
-            border-dashed border-x-2 items-center justify-center gap-4 p-4'
+          className='h-140 bg-muted flex flex-col md:flex-row-reverse border-dashed
+            border-x-2 items-center justify-center gap-4 p-4'
         >
-          <div className='relative w-full h-1/2 md:w-1/2 md:h-1/2'>
+          <div className='relative w-full md:w-1/2 aspect-[4/3]'>
             <Image
               src={learnMore[1]}
               fill
