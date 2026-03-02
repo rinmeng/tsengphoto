@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui';
+} from '@/components/animate-ui/components/';
 import { ModeToggle } from './ModeToggle';
 import { Logo } from './Logo';
 import { signOut, useAuth } from '@/hooks/use-auth';

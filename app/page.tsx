@@ -3,6 +3,7 @@ import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Footer } from '@/components/Footer';
 import { Button, Separator } from '@/components/ui';
+
 import { Info } from 'lucide-react';
 import Image from 'next/image';
 

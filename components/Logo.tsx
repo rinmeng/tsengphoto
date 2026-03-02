@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { Infinity } from 'lucide-react';
 
 interface LogoProps {
   className?: string;
