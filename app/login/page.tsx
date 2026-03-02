@@ -120,9 +120,7 @@ export default function LoginPage() {
                   name='email'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='fade-in-from-top delay-[250ms]'>
-                        Email
-                      </FormLabel>
+                      <FormLabel className='fade-in-from-top delay-250'>Email</FormLabel>
                       <FormControl>
                         <Input
                           type='email'

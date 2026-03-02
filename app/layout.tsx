@@ -1,23 +1,29 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-
 import { Navbar } from '@/components/Navbar';
-
-import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { Toaster } from '@/components/ui/sonner';
+import { Libre_Baskerville, Lora, IBM_Plex_Mono } from 'next/font/google';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const fontSans = Libre_Baskerville({
   subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-sans',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const fontSerif = Lora({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-serif',
+});
+
+const fontMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -33,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
         <AuthProvider>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
             <ToastProvider>
