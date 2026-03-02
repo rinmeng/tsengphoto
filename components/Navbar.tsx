@@ -60,7 +60,7 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
           {user.email?.split('@')[0]} <LogOut />
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-106.25'>
         <DialogHeader>
           <DialogTitle>Logout?</DialogTitle>
         </DialogHeader>
@@ -119,7 +119,7 @@ export function Navbar() {
                 <span className='sr-only'>Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side='right' className='w-[300px] sm:w-[400px]'>
+            <SheetContent side='right' className='w-75 sm:w-100'>
               <SheetHeader>
                 <SheetTitle>
                   <Logo onClick={() => setOpen(false)} />

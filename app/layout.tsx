@@ -21,8 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Next.js Starter - Shadcn + Supabase',
-  description: 'A modern Next.js boilerplate with Shadcn UI and Supabase',
+  title: 'Event Photography in Vancouver and Kelowna | Tseng Photography',
+  description:
+    'Professional event photography services in Vancouver and Kelowna. Capturing your special moments with creativity and precision. Book now for unforgettable memories.',
 };
 
 export default function RootLayout({

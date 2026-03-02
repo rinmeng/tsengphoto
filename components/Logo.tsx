@@ -28,7 +28,7 @@ export function Logo({ className, iconSize = 20, showText = true, onClick }: Log
             className={cn('h-5 w-5')}
             style={{ width: iconSize, height: iconSize }}
           />
-          {showText && <span className={className}>Next Starter</span>}
+          {showText && <span className={className}>Tseng Photography</span>}
         </Link>
       </Button>
 
