@@ -121,7 +121,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted'
-        aspectRatio='video'
+        aspectRatio='aspect-video'
         title='Event Photography'
         description='Capturing key moments and details of a special occasion such as a wedding, corporate event, or party! Candid and posed shots are captured to create a lasting record.'
         images={eventPhotography}
@@ -131,7 +131,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted'
-        aspectRatio='9/16'
+        aspectRatio='aspect-9/14'
         title='Portrait Photography'
         description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
         images={portraitPhotography}

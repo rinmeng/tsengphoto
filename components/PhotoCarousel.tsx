@@ -34,7 +34,7 @@ export function PhotoCarousel({
   onButtonClick,
   autoplayDelay = 3000,
   className,
-  aspectRatio = '9/14',
+  aspectRatio = 'aspect-video4',
 }: PhotoCarouselProps) {
   return (
     <section className={cn('container mx-auto', className)}>
@@ -59,7 +59,7 @@ export function PhotoCarousel({
                   <Card className='p-0'>
                     <CardContent
                       className={`flex items-center justify-center p-0 relative
-                      aspect-${aspectRatio}`}
+                      ${aspectRatio}`}
                     >
                       <Image
                         src={src}
