@@ -13,6 +13,7 @@ import {
   CardContent,
 } from '@/components/ui';
 import Autoplay from 'embla-carousel-autoplay';
+import { Info, SendHorizonal } from 'lucide-react';
 import Image from 'next/image';
 
 const learnMore = [
@@ -87,7 +88,7 @@ export default function Home() {
               Check out photos taken at various events, capturing the best moments within.
             </div>
             <Button variant='default' size='lg' className='self-center md:self-start'>
-              Learn More
+              <Info /> Learn More
             </Button>
           </div>
         </div>
@@ -112,7 +113,7 @@ export default function Home() {
               fields.
             </div>
             <Button variant='default' size='lg' className='self-center md:self-end'>
-              Learn More
+              <Info /> Learn More
             </Button>
           </div>
         </div>
@@ -167,6 +168,15 @@ export default function Home() {
             <CarouselNext />
             <CarouselDots />
           </Carousel>
+          <div>
+            Capturing key moments and details of a special occasion such as a wedding,
+            corporate event, or party! Candid and posed shots are captured to create a
+            lasting record.
+          </div>
+          <Button variant='default' size='lg'>
+            Reserve Now
+            <SendHorizonal />
+          </Button>
         </div>
       </section>
       <Separator className='border-t-2' />

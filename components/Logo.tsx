@@ -11,7 +11,7 @@ interface LogoProps {
   onClick?: () => void;
 }
 
-export function Logo({ className, iconSize = 20, showText = true, onClick }: LogoProps) {
+export function Logo({ className, iconSize = 40, showText = true, onClick }: LogoProps) {
   return (
     <div className='flex items-center justify-center'>
       <Button variant='link' className='p-0 m-0'>
@@ -25,7 +25,6 @@ export function Logo({ className, iconSize = 20, showText = true, onClick }: Log
             alt='Logo'
             width={iconSize}
             height={iconSize}
-            className={cn('h-5 w-5')}
             style={{ width: iconSize, height: iconSize }}
           />
           {showText && <span className={className}>Tseng Photography</span>}

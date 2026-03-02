@@ -30,7 +30,7 @@ function LoginButton({ onClose }: { onClose?: () => void }) {
   return (
     <Button variant='outline' asChild>
       <Link href='/login' onClick={onClose}>
-        <LogIn /> Login
+        <LogIn />
       </Link>
     </Button>
   );
@@ -99,7 +99,7 @@ export function Navbar() {
           lg:px-8'
       >
         {/* Logo */}
-        <Logo onClick={() => setOpen(false)} />
+        <Logo className='text-xl' onClick={() => setOpen(false)} />
 
         {/* Desktop Navigation */}
         <div className='hidden items-center gap-4 md:flex'>
