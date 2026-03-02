@@ -13,7 +13,7 @@ interface LogoProps {
 
 export function Logo({ className, iconSize = 20, showText = true, onClick }: LogoProps) {
   return (
-    <div className='flex items-center gap-3'>
+    <div className='flex items-center justify-center'>
       <Button variant='link' className='p-0 m-0'>
         <Link
           href='/'
@@ -29,19 +29,6 @@ export function Logo({ className, iconSize = 20, showText = true, onClick }: Log
             style={{ width: iconSize, height: iconSize }}
           />
           {showText && <span className={className}>Tseng Photography</span>}
-        </Link>
-      </Button>
-
-      <Infinity size={iconSize} className={cn('text-muted-foreground', className)} />
-      <Button variant='link' className={cn('p-0 m-0', className)}>
-        <Link href='https://rinm.dev'>
-          <Image
-            src='/rmlogov2.png'
-            alt='Logo'
-            width={Math.round(iconSize * 1.5)}
-            height={Math.round(iconSize * 1.5 * (1079 / 1905))}
-            style={{ width: iconSize * 1.5, height: 'auto' }}
-          />
         </Link>
       </Button>
     </div>
