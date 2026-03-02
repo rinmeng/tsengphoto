@@ -75,7 +75,7 @@ export function PhotoCarousel({
                         src={src}
                         alt={`${title} ${index + 1}`}
                         fill
-                        className='object-cover object-top'
+                        className='object-contain'
                       />
                     </CardContent>
                   </Card>
