@@ -30,7 +30,7 @@ export function Hero() {
         className='w-full'
         plugins={[
           Autoplay({
-            delay: 5000,
+            delay: 3000,
           }),
         ]}
       >
