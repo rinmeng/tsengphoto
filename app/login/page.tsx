@@ -139,7 +139,7 @@ export default function LoginPage() {
                   name='password'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='fade-in-from-top delay-[350ms]'>
+                      <FormLabel className='fade-in-from-top delay-350'>
                         Password
                       </FormLabel>
                       <FormControl>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                           placeholder='Enter password'
                           autoComplete='current-password'
                           {...field}
-                          className='fade-in-from-top delay-[400ms]'
+                          className='fade-in-from-top delay-400'
                         />
                       </FormControl>
                       <FormMessage />
@@ -157,7 +157,7 @@ export default function LoginPage() {
                 />
                 <Button
                   type='submit'
-                  className='w-full fade-in-from-top delay-[450ms]'
+                  className='w-full fade-in-from-top delay-450'
                   disabled={loading}
                 >
                   {loading ? (

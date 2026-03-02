@@ -5,19 +5,13 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { Toaster } from '@/components/ui/sonner';
-import { Libre_Baskerville, Lora, IBM_Plex_Mono } from 'next/font/google';
+import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 
 const fontSans = Libre_Baskerville({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-sans',
-});
-
-const fontSerif = Lora({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-serif',
 });
 
 const fontMono = IBM_Plex_Mono({
