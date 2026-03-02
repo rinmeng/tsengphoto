@@ -168,15 +168,17 @@ export default function Home() {
             <CarouselNext />
             <CarouselDots />
           </Carousel>
-          <div>
-            Capturing key moments and details of a special occasion such as a wedding,
-            corporate event, or party! Candid and posed shots are captured to create a
-            lasting record.
+          <div className='flex justify-center flex-col gap-4 max-w-5/6'>
+            <div className='text-center'>
+              Capturing key moments and details of a special occasion such as a wedding,
+              corporate event, or party! Candid and posed shots are captured to create a
+              lasting record.
+            </div>
+            <Button variant='default' size='xl' className='self-center'>
+              Reserve Now
+              <SendHorizonal />
+            </Button>
           </div>
-          <Button variant='default' size='lg'>
-            Reserve Now
-            <SendHorizonal />
-          </Button>
         </div>
       </section>
       <Separator className='border-t-2' />
@@ -220,6 +222,17 @@ export default function Home() {
             <CarouselNext />
             <CarouselDots />
           </Carousel>
+          <div className='flex justify-center flex-col gap-4 max-w-5/6'>
+            <div className='text-center'>
+              Creating stunning images through a photoshoot, whether it is for personal
+              portrait, fasion, or graduation, I capture both artistic and traditional
+              shots to showcase every detail.
+            </div>
+            <Button variant='default' size='xl' className='self-center'>
+              Reserve Now
+              <SendHorizonal />
+            </Button>
+          </div>
         </div>
       </section>
     </div>
