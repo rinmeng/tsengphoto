@@ -24,6 +24,7 @@ interface PhotoCarouselProps {
   autoplayDelay?: number;
   className?: string;
   aspectRatio?: string;
+  itemsToShow?: 2 | 3;
 }
 
 export function PhotoCarousel({
@@ -35,7 +36,15 @@ export function PhotoCarousel({
   autoplayDelay = 3000,
   className,
   aspectRatio = 'aspect-video4',
+  itemsToShow = 3,
 }: PhotoCarouselProps) {
+  const itemBasisClass = itemsToShow === 2 ? 'md:basis-1/2' : 'md:basis-1/2 lg:basis-1/3';
+
+  const carouselOpts = {
+    align: 'start' as const,
+    containScroll: 'trimSnaps' as const,
+  };
+
   return (
     <section className={cn('container mx-auto', className)}>
       <div
@@ -46,15 +55,16 @@ export function PhotoCarousel({
         <Carousel
           showDots={true}
           className='w-full'
+          opts={carouselOpts}
           plugins={[
             Autoplay({
               delay: autoplayDelay,
             }),
           ]}
         >
-          <CarouselContent>
+          <CarouselContent className='-ml-2 md:-ml-4'>
             {images.map((src, index) => (
-              <CarouselItem key={index} className='md:basis-1/2 lg:basis-1/3'>
+              <CarouselItem key={index} className={cn('pl-2 md:pl-4', itemBasisClass)}>
                 <div>
                   <Card className='p-0'>
                     <CardContent
@@ -65,7 +75,7 @@ export function PhotoCarousel({
                         src={src}
                         alt={`${title} ${index + 1}`}
                         fill
-                        className='object-cover object-center'
+                        className='object-cover object-top'
                       />
                     </CardContent>
                   </Card>

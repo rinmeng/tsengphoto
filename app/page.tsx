@@ -122,6 +122,7 @@ export default function Home() {
       <PhotoCarousel
         className='bg-muted'
         aspectRatio='aspect-video'
+        itemsToShow={2}
         title='Event Photography'
         description='Capturing key moments and details of a special occasion such as a wedding, corporate event, or party! Candid and posed shots are captured to create a lasting record.'
         images={eventPhotography}
@@ -132,6 +133,7 @@ export default function Home() {
       <PhotoCarousel
         className='bg-muted'
         aspectRatio='aspect-9/14'
+        itemsToShow={3}
         title='Portrait Photography'
         description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
         images={portraitPhotography}
