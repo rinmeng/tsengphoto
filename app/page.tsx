@@ -1,19 +1,9 @@
 'use client';
 import { Hero } from '@/components/Hero';
-import {
-  Button,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  CarouselDots,
-  Separator,
-  Card,
-  CardContent,
-} from '@/components/ui';
-import Autoplay from 'embla-carousel-autoplay';
-import { Info, SendHorizonal } from 'lucide-react';
+import { PhotoCarousel } from '@/components/PhotoCarousel';
+import { Footer } from '@/components/Footer';
+import { Button, Separator } from '@/components/ui';
+import { Info } from 'lucide-react';
 import Image from 'next/image';
 
 const learnMore = [
@@ -128,113 +118,22 @@ export default function Home() {
         </div>
       </section>
       <Separator className='border-t-2' />
-      <section className='container mx-auto'>
-        <div
-          className='flex justify-center items-center flex-col gap-8 border-dashed
-            border-x-2 py-8'
-        >
-          <div className='text-xl md:text-4xl'>Event Photography</div>
-          <Carousel
-            showDots={true}
-            className='w-full'
-            plugins={[
-              Autoplay({
-                delay: 3000,
-              }),
-            ]}
-          >
-            <CarouselContent>
-              {eventPhotography.map((src, index) => (
-                <CarouselItem key={index} className='md:basis-1/2 lg:basis-1/3'>
-                  <div>
-                    <Card className='p-0'>
-                      <CardContent
-                        className='flex items-center justify-center p-0 relative
-                          aspect-9/14'
-                      >
-                        <Image
-                          src={src}
-                          alt={`Event photography ${index + 1}`}
-                          fill
-                          className='object-cover object-center'
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-            <CarouselDots />
-          </Carousel>
-          <div className='flex justify-center flex-col gap-4 max-w-5/6'>
-            <div className='text-center'>
-              Capturing key moments and details of a special occasion such as a wedding,
-              corporate event, or party! Candid and posed shots are captured to create a
-              lasting record.
-            </div>
-            <Button variant='default' size='xl' className='self-center'>
-              Reserve Now
-              <SendHorizonal />
-            </Button>
-          </div>
-        </div>
-      </section>
+      <PhotoCarousel
+        title='Event Photography'
+        description='Capturing key moments and details of a special occasion such as a wedding, corporate event, or party! Candid and posed shots are captured to create a lasting record.'
+        images={eventPhotography}
+        buttonText='Reserve Now'
+        onButtonClick={() => console.log('Navigate to event photography booking')}
+      />
       <Separator className='border-t-2' />
-      <section className='container mx-auto'>
-        <div
-          className='flex justify-center items-center flex-col gap-8 border-dashed
-            border-x-2 py-8'
-        >
-          <div className='text-xl md:text-4xl'>Portrait Photography</div>
-          <Carousel
-            showDots={true}
-            className='w-full'
-            plugins={[
-              Autoplay({
-                delay: 3000,
-              }),
-            ]}
-          >
-            <CarouselContent>
-              {portraitPhotography.map((src, index) => (
-                <CarouselItem key={index} className='md:basis-1/2 lg:basis-1/3'>
-                  <div>
-                    <Card className='p-0'>
-                      <CardContent
-                        className='flex items-center justify-center p-0 relative
-                          aspect-9/14'
-                      >
-                        <Image
-                          src={src}
-                          alt={`Portrait photography ${index + 1}`}
-                          fill
-                          className='object-cover object-center'
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-            <CarouselDots />
-          </Carousel>
-          <div className='flex justify-center flex-col gap-4 max-w-5/6'>
-            <div className='text-center'>
-              Creating stunning images through a photoshoot, whether it is for personal
-              portrait, fasion, or graduation, I capture both artistic and traditional
-              shots to showcase every detail.
-            </div>
-            <Button variant='default' size='xl' className='self-center'>
-              Reserve Now
-              <SendHorizonal />
-            </Button>
-          </div>
-        </div>
-      </section>
+      <PhotoCarousel
+        title='Portrait Photography'
+        description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
+        images={portraitPhotography}
+        buttonText='Reserve Now'
+        onButtonClick={() => console.log('Navigate to portrait photography booking')}
+      />
+      <Footer />
     </div>
   );
 }
