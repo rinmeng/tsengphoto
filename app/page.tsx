@@ -132,7 +132,7 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted py-8'
-        aspectRatio='aspect-9/14'
+        aspectRatio='aspect-1/1'
         itemsToShow={3}
         title='Portrait Photography'
         description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
