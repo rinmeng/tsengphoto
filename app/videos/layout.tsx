@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tsengphoto.vercel.app'),
   title: 'Event Videography & Video Production | Tseng Photography',
   description:
     'Professional event videography services in Vancouver and Kelowna. Cinematic video production for weddings, corporate events, and special occasions. Capture your memories in motion.',
@@ -18,6 +19,8 @@ export const metadata: Metadata = {
     title: 'Event Videography & Video Production | Tseng Photography',
     description:
       'Professional event videography services in Vancouver and Kelowna. Cinematic video production for all occasions.',
+    url: 'https://tsengphoto.vercel.app/videos',
+    siteName: 'Tseng Photography',
     type: 'website',
     locale: 'en_CA',
     images: [

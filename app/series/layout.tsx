@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tsengphoto.vercel.app'),
   title: 'Photography Series & Projects | Tseng Photography',
   description:
     'Explore our exclusive photography series and ongoing projects. Curated collections showcasing artistic vision and storytelling through professional photography in Vancouver and Kelowna.',
@@ -18,6 +19,8 @@ export const metadata: Metadata = {
     title: 'Photography Series & Projects | Tseng Photography',
     description:
       'Explore our exclusive photography series and ongoing projects showcasing artistic vision and storytelling.',
+    url: 'https://tsengphoto.vercel.app/series',
+    siteName: 'Tseng Photography',
     type: 'website',
     locale: 'en_CA',
     images: [
