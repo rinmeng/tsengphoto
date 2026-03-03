@@ -24,7 +24,11 @@ interface PhotoCarouselProps {
   autoplayDelay?: number;
   className?: string;
   aspectRatio?: string;
-  itemsToShow?: 2 | 3;
+  itemsToShow?: 1 | 2 | 3;
+  btnVariant?: 'default' | 'outline' | 'ghost';
+  btnLocation?: 'default' | 'mb';
+  showTitle?: boolean;
+  fullWidth?: boolean;
 }
 
 export function PhotoCarousel({
@@ -37,8 +41,17 @@ export function PhotoCarousel({
   className,
   aspectRatio = 'aspect-video4',
   itemsToShow = 3,
+  btnVariant = 'outline',
+  btnLocation = 'default',
+  showTitle = true,
+  fullWidth = false,
 }: PhotoCarouselProps) {
-  const itemBasisClass = itemsToShow === 2 ? 'md:basis-1/2' : 'md:basis-1/2 lg:basis-1/3';
+  const itemBasisClass =
+    itemsToShow === 1
+      ? 'basis-full'
+      : itemsToShow === 2
+        ? 'md:basis-1/2'
+        : 'md:basis-1/2 lg:basis-1/3';
 
   const carouselOpts = {
     align: 'start' as const,
@@ -47,13 +60,15 @@ export function PhotoCarousel({
   };
 
   return (
-    <section className={cn('container mx-auto', className)}>
+    <section className={cn(!fullWidth && 'container mx-auto', className)}>
       <div
         className='flex justify-center items-center flex-col gap-8 border-dashed
-          border-x-2 py-8'
+          border-x-2'
       >
-        <div className='text-2xl md:text-4xl'>{title}</div>
+        {showTitle && <div className='text-2xl md:text-4xl'>{title}</div>}
         <Carousel
+          btnVariant={btnVariant}
+          btnLocation={btnLocation}
           showDots={true}
           className='w-full'
           opts={carouselOpts}
@@ -84,8 +99,8 @@ export function PhotoCarousel({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <CarouselPrevious className='hidden sm:flex' />
+          <CarouselNext className='hidden sm:flex' />
           <CarouselDots />
         </Carousel>
         {(description || buttonText) && (

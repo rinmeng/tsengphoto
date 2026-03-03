@@ -120,7 +120,7 @@ export default function Home() {
       </section>
       <Separator className='border-t-2' />
       <PhotoCarousel
-        className='bg-muted'
+        className='bg-muted py-8'
         aspectRatio='aspect-video'
         itemsToShow={2}
         title='Event Photography'
@@ -131,7 +131,7 @@ export default function Home() {
       />
       <Separator className='border-t-2' />
       <PhotoCarousel
-        className='bg-muted'
+        className='bg-muted py-8'
         aspectRatio='aspect-9/14'
         itemsToShow={3}
         title='Portrait Photography'
