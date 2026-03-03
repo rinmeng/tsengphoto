@@ -198,17 +198,22 @@ export function Navbar() {
                   </Button>
 
                   <Accordion type='single' collapsible className='w-1/2'>
-                    <AccordionItem value='portfolio'>
-                      <AccordionTrigger className='justify-center'>
+                    <AccordionItem value='portfolio' className='border-0'>
+                      <AccordionTrigger
+                        className='justify-center hover:bg-accent
+                          hover:text-accent-foreground py-2 px-4 rounded-md
+                          hover:no-underline'
+                      >
                         Portfolio
                       </AccordionTrigger>
-                      <AccordionContent>
-                        <div className='flex flex-col gap-2'>
+                      <AccordionContent className='pb-2'>
+                        <div className='flex flex-col gap-2 pl-6 pr-2 mt-2'>
                           {portfolioLinks.map((link) => (
                             <Button
                               key={link.href}
                               variant='ghost'
-                              className='w-full'
+                              size='sm'
+                              className='w-full justify-end text-muted-foreground'
                               asChild
                             >
                               <Link href={link.href} onClick={() => setOpen(false)}>
