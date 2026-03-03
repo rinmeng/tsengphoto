@@ -300,7 +300,7 @@ function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
             'rounded-full transition-all',
             index === selectedIndex
               ? 'w-6 h-2 bg-primary'
-              : 'w-2 h-2 bg-primary/50 hover:bg-primary/70'
+              : 'w-2 h-2 bg-accent hover:bg-accent-foreground'
           )}
           onClick={() => api?.scrollTo(index)}
           aria-label={`Go to slide ${index + 1}`}
