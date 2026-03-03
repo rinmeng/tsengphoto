@@ -40,7 +40,6 @@ import { signOut, useAuth } from '@/hooks/use-auth';
 import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 function LoginButton({ onClose }: { onClose?: () => void }) {
   return (
@@ -94,10 +93,26 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
 }
 
 const portfolioLinks = [
-  { href: '/collection', label: 'Collection' },
-  { href: '/series', label: 'Series' },
-  { href: '/events', label: 'Events' },
-  { href: '/videos', label: 'Videos' },
+  {
+    href: '/collection',
+    label: 'Collection',
+    description: 'Browse through curated collections of my photography work',
+  },
+  {
+    href: '/series',
+    label: 'Series',
+    description: 'Explore themed photo series and ongoing projects.',
+  },
+  {
+    href: '/events',
+    label: 'Events',
+    description: 'View galleries from clubs, concerts, and special occasions.',
+  },
+  {
+    href: '/videos',
+    label: 'Videos',
+    description: 'Watch videos filmed and edited by me.',
+  },
 ];
 
 export function Navbar() {
@@ -128,12 +143,26 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid w-48 gap-3 p-4'>
+                  <ul className='grid w-150 gap-2 p-2 md:grid-cols-2'>
                     {portfolioLinks.map((link) => (
                       <li key={link.href}>
                         <NavigationMenuLink asChild>
-                          <Link href={link.href}>
-                            <div>{link.label}</div>
+                          <Link
+                            href={link.href}
+                            className='block select-none space-y-1 rounded-md p-3
+                              leading-none no-underline outline-none transition-colors
+                              hover:bg-accent hover:text-accent-foreground focus:bg-accent
+                              focus:text-accent-foreground'
+                          >
+                            <div className='text-sm font-medium leading-none'>
+                              {link.label}
+                            </div>
+                            <p
+                              className='line-clamp-2 text-sm leading-snug
+                                text-muted-foreground'
+                            >
+                              {link.description}
+                            </p>
                           </Link>
                         </NavigationMenuLink>
                       </li>
