@@ -19,12 +19,22 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/animate-ui/components/';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
 import { ModeToggle } from './ModeToggle';
 import { Logo } from './Logo';
 import { signOut, useAuth } from '@/hooks/use-auth';
 import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 function LoginButton({ onClose }: { onClose?: () => void }) {
   return (
@@ -77,20 +87,16 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
   );
 }
 
-const navLinks = [
-  { href: '/about', label: 'About' },
+const portfolioLinks = [
   { href: '/collection', label: 'Collection' },
-  { href: '/events', label: 'Events' },
   { href: '/series', label: 'Series' },
+  { href: '/events', label: 'Events' },
   { href: '/videos', label: 'Videos' },
-  { href: '/admin', label: 'Admin' },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
-
-  const filteredNavLinks = navLinks.filter((link) => link.href !== '/admin' || user);
 
   return (
     <nav className='fixed z-50 w-full border-b bg-background'>
@@ -103,11 +109,61 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className='hidden items-center gap-4 lg:flex'>
-          {filteredNavLinks.map((link) => (
-            <Button key={link.href} variant='ghost' asChild>
-              <Link href={link.href}>{link.label}</Link>
-            </Button>
-          ))}
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Link href='/' passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Home
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className='grid w-48 gap-3 p-4'>
+                    {portfolioLinks.map((link) => (
+                      <li key={link.href}>
+                        <NavigationMenuLink asChild>
+                          <Link href={link.href}>
+                            <div>{link.label}</div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link href='/about' legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    About
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link href='/contact' legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Contact
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              {user && (
+                <NavigationMenuItem>
+                  <Link href='/admin' legacyBehavior passHref>
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      Admin
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              )}
+            </NavigationMenuList>
+          </NavigationMenu>
+
           {user ? <LogoutButton user={user} /> : <LoginButton />}
           <ModeToggle />
         </div>
@@ -129,13 +185,53 @@ export function Navbar() {
               </SheetHeader>
               <div className='flex flex-col gap-6'>
                 <nav className='flex flex-col gap-4 justify-center items-center'>
-                  {filteredNavLinks.map((link) => (
-                    <Button key={link.href} variant='ghost' className='w-1/2' asChild>
-                      <Link href={link.href} onClick={() => setOpen(false)}>
-                        {link.label}
+                  <Button variant='ghost' className='w-1/2' asChild>
+                    <Link href='/' onClick={() => setOpen(false)}>
+                      Home
+                    </Link>
+                  </Button>
+
+                  <div className='w-full flex flex-col gap-2'>
+                    <div
+                      className='text-sm font-semibold text-center text-muted-foreground'
+                    >
+                      Portfolio
+                    </div>
+                    {portfolioLinks.map((link) => (
+                      <Button
+                        key={link.href}
+                        variant='ghost'
+                        className='w-1/2 mx-auto'
+                        size='sm'
+                        asChild
+                      >
+                        <Link href={link.href} onClick={() => setOpen(false)}>
+                          {link.label}
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
+
+                  <Button variant='ghost' className='w-1/2' asChild>
+                    <Link href='/about' onClick={() => setOpen(false)}>
+                      About
+                    </Link>
+                  </Button>
+
+                  <Button variant='ghost' className='w-1/2' asChild>
+                    <Link href='/contact' onClick={() => setOpen(false)}>
+                      Contact
+                    </Link>
+                  </Button>
+
+                  {user && (
+                    <Button variant='ghost' className='w-1/2' asChild>
+                      <Link href='/admin' onClick={() => setOpen(false)}>
+                        Admin
                       </Link>
                     </Button>
-                  ))}
+                  )}
+
                   {user ? (
                     <LogoutButton user={user} onClose={() => setOpen(false)} />
                   ) : (
