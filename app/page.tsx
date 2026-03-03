@@ -119,21 +119,24 @@ export default function Home() {
         </div>
       </section>
       <Separator className='border-t-2' />
-      <PhotoCarousel
-        className='bg-muted py-8'
-        itemClassName='aspect-video'
-        itemsToShow={2}
-        dotsLocation='below-carousel'
-        btnLocation='below-carousel'
-        images={eventPhotography}
-      >
-        <div className='flex justify-center items-center flex-col gap-8 mb-8'>
+      <section className='bg-muted py-8'>
+        <div className='container mx-auto flex justify-center items-center flex-col gap-8'>
           <div className='text-2xl md:text-4xl'>Event Photography</div>
           <div className='text-center max-w-3xl'>
             Capturing key moments and details of a special occasion such as a wedding,
             corporate event, or party! Candid and posed shots are captured to create a
             lasting record.
           </div>
+        </div>
+        <PhotoCarousel
+          className='mt-8'
+          itemClassName='aspect-video'
+          itemsToShow={2}
+          dotsLocation='below-carousel'
+          btnLocation='below-carousel'
+          images={eventPhotography}
+        />
+        <div className='container mx-auto flex justify-center mt-8'>
           <Button
             variant='default'
             size='xl'
@@ -143,23 +146,26 @@ export default function Home() {
             <SendHorizonal />
           </Button>
         </div>
-      </PhotoCarousel>
+      </section>
       <Separator className='border-t-2' />
-      <PhotoCarousel
-        className='bg-muted py-8'
-        itemClassName='aspect-square'
-        itemsToShow={3}
-        dotsLocation='below-carousel'
-        btnLocation='below-carousel'
-        images={portraitPhotography}
-      >
-        <div className='flex justify-center items-center flex-col gap-8 mb-8'>
+      <section className='bg-muted py-8'>
+        <div className='container mx-auto flex justify-center items-center flex-col gap-8'>
           <div className='text-2xl md:text-4xl'>Portrait Photography</div>
           <div className='text-center max-w-3xl'>
             Creating stunning images through a photoshoot, whether it is for personal
             portrait, fashion, or graduation, I capture both artistic and traditional
             shots to showcase every detail.
           </div>
+        </div>
+        <PhotoCarousel
+          className='mt-8'
+          itemClassName='aspect-square'
+          itemsToShow={3}
+          dotsLocation='below-carousel'
+          btnLocation='below-carousel'
+          images={portraitPhotography}
+        />
+        <div className='container mx-auto flex justify-center mt-8'>
           <Button
             variant='default'
             size='xl'
@@ -169,7 +175,7 @@ export default function Home() {
             <SendHorizonal />
           </Button>
         </div>
-      </PhotoCarousel>
+      </section>
       <Footer />
     </div>
   );

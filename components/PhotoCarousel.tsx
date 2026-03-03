@@ -23,7 +23,6 @@ interface PhotoCarouselProps {
   btnLocation?: 'default' | 'mb' | 'below-carousel';
   fullWidth?: boolean;
   dotsLocation?: 'absolute' | 'below-carousel';
-  children?: React.ReactNode;
 }
 
 export function PhotoCarousel({
@@ -36,7 +35,6 @@ export function PhotoCarousel({
   btnLocation = 'default',
   fullWidth = false,
   dotsLocation = 'absolute',
-  children,
 }: PhotoCarouselProps) {
   const itemBasisClass =
     itemsToShow === 1
@@ -53,7 +51,6 @@ export function PhotoCarousel({
 
   return (
     <section className={cn(!fullWidth && 'container mx-auto', className)}>
-      {children}
       <Carousel
         btnVariant={btnVariant}
         btnLocation={btnLocation}
