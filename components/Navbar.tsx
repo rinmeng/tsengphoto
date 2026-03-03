@@ -28,6 +28,12 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ModeToggle } from './ModeToggle';
 import { Logo } from './Logo';
 import { signOut, useAuth } from '@/hooks/use-auth';
@@ -191,26 +197,29 @@ export function Navbar() {
                     </Link>
                   </Button>
 
-                  <div className='w-full flex flex-col gap-2'>
-                    <div
-                      className='text-sm font-semibold text-center text-muted-foreground'
-                    >
-                      Portfolio
-                    </div>
-                    {portfolioLinks.map((link) => (
-                      <Button
-                        key={link.href}
-                        variant='ghost'
-                        className='w-1/2 mx-auto'
-                        size='sm'
-                        asChild
-                      >
-                        <Link href={link.href} onClick={() => setOpen(false)}>
-                          {link.label}
-                        </Link>
-                      </Button>
-                    ))}
-                  </div>
+                  <Accordion type='single' collapsible className='w-1/2'>
+                    <AccordionItem value='portfolio'>
+                      <AccordionTrigger className='justify-center'>
+                        Portfolio
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className='flex flex-col gap-2'>
+                          {portfolioLinks.map((link) => (
+                            <Button
+                              key={link.href}
+                              variant='ghost'
+                              className='w-full'
+                              asChild
+                            >
+                              <Link href={link.href} onClick={() => setOpen(false)}>
+                                {link.label}
+                              </Link>
+                            </Button>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
 
                   <Button variant='ghost' className='w-1/2' asChild>
                     <Link href='/about' onClick={() => setOpen(false)}>

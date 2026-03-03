@@ -49,7 +49,7 @@ const portraitPhotography = [
 
 export default function Home() {
   return (
-    <div className='mx-auto overflow-x-hidden fade-in-from-bottom'>
+    <div className='mx-auto overflow-x-hidden'>
       <Hero />
       <section className='container mx-auto'>
         <div
