@@ -3,6 +3,7 @@ import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Footer } from '@/components/Footer';
 import { Button, Separator } from '@/components/ui';
+import { SendHorizonal } from 'lucide-react';
 
 import Image from 'next/image';
 
@@ -120,29 +121,55 @@ export default function Home() {
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted py-8'
-        aspectRatio='aspect-video'
+        itemClassName='aspect-video'
         itemsToShow={2}
         dotsLocation='below-carousel'
         btnLocation='below-carousel'
-        title='Event Photography'
-        description='Capturing key moments and details of a special occasion such as a wedding, corporate event, or party! Candid and posed shots are captured to create a lasting record.'
         images={eventPhotography}
-        buttonText='Reserve Now'
-        onButtonClick={() => console.log('Navigate to event photography booking')}
-      />
+      >
+        <div className='flex justify-center items-center flex-col gap-8 mb-8'>
+          <div className='text-2xl md:text-4xl'>Event Photography</div>
+          <div className='text-center max-w-3xl'>
+            Capturing key moments and details of a special occasion such as a wedding,
+            corporate event, or party! Candid and posed shots are captured to create a
+            lasting record.
+          </div>
+          <Button
+            variant='default'
+            size='xl'
+            onClick={() => console.log('Navigate to event photography booking')}
+          >
+            Reserve Now
+            <SendHorizonal />
+          </Button>
+        </div>
+      </PhotoCarousel>
       <Separator className='border-t-2' />
       <PhotoCarousel
         className='bg-muted py-8'
-        aspectRatio='aspect-1/1'
+        itemClassName='aspect-square'
         itemsToShow={3}
         dotsLocation='below-carousel'
         btnLocation='below-carousel'
-        title='Portrait Photography'
-        description='Creating stunning images through a photoshoot, whether it is for personal portrait, fasion, or graduation, I capture both artistic and traditional shots to showcase every detail.'
         images={portraitPhotography}
-        buttonText='Reserve Now'
-        onButtonClick={() => console.log('Navigate to portrait photography booking')}
-      />
+      >
+        <div className='flex justify-center items-center flex-col gap-8 mb-8'>
+          <div className='text-2xl md:text-4xl'>Portrait Photography</div>
+          <div className='text-center max-w-3xl'>
+            Creating stunning images through a photoshoot, whether it is for personal
+            portrait, fashion, or graduation, I capture both artistic and traditional
+            shots to showcase every detail.
+          </div>
+          <Button
+            variant='default'
+            size='xl'
+            onClick={() => console.log('Navigate to portrait photography booking')}
+          >
+            Reserve Now
+            <SendHorizonal />
+          </Button>
+        </div>
+      </PhotoCarousel>
       <Footer />
     </div>
   );

@@ -12,15 +12,13 @@ const images = [
 export function Hero() {
   return (
     <PhotoCarousel
-      title='Hero Carousel'
       images={images}
       autoplayDelay={3000}
       className='w-screen'
-      aspectRatio='h-screen'
+      itemClassName='h-screen'
       itemsToShow={1}
       btnVariant='ghost'
       btnLocation='mb'
-      showTitle={false}
       fullWidth={true}
     />
   );
