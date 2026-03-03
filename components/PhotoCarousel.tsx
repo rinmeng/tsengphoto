@@ -43,6 +43,7 @@ export function PhotoCarousel({
   const carouselOpts = {
     align: 'start' as const,
     containScroll: 'trimSnaps' as const,
+    loop: true,
   };
 
   return (
