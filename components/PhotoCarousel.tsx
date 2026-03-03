@@ -26,9 +26,10 @@ interface PhotoCarouselProps {
   aspectRatio?: string;
   itemsToShow?: 1 | 2 | 3;
   btnVariant?: 'default' | 'outline' | 'ghost';
-  btnLocation?: 'default' | 'mb';
+  btnLocation?: 'default' | 'mb' | 'below-carousel';
   showTitle?: boolean;
   fullWidth?: boolean;
+  dotsLocation?: 'absolute' | 'below-carousel';
 }
 
 export function PhotoCarousel({
@@ -45,6 +46,7 @@ export function PhotoCarousel({
   btnLocation = 'default',
   showTitle = true,
   fullWidth = false,
+  dotsLocation = 'absolute',
 }: PhotoCarouselProps) {
   const itemBasisClass =
     itemsToShow === 1
@@ -70,6 +72,7 @@ export function PhotoCarousel({
           btnVariant={btnVariant}
           btnLocation={btnLocation}
           showDots={true}
+          dotsLocation={dotsLocation}
           className='w-full'
           opts={carouselOpts}
           plugins={[
@@ -99,9 +102,24 @@ export function PhotoCarousel({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className='hidden sm:flex' />
-          <CarouselNext className='hidden sm:flex' />
-          <CarouselDots />
+          {btnLocation !== 'below-carousel' && (
+            <>
+              <CarouselPrevious className='hidden sm:flex' />
+              <CarouselNext className='hidden sm:flex' />
+            </>
+          )}
+          {dotsLocation !== 'below-carousel' && <CarouselDots />}
+          {(btnLocation === 'below-carousel' || dotsLocation === 'below-carousel') && (
+            <div className='flex items-center justify-center gap-4 mt-4'>
+              {btnLocation === 'below-carousel' && (
+                <CarouselPrevious className='hidden sm:flex' />
+              )}
+              {dotsLocation === 'below-carousel' && <CarouselDots />}
+              {btnLocation === 'below-carousel' && (
+                <CarouselNext className='hidden sm:flex' />
+              )}
+            </div>
+          )}
         </Carousel>
         {(description || buttonText) && (
           <div className='flex justify-center flex-col gap-4 max-w-5/6'>

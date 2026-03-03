@@ -16,8 +16,9 @@ type CarouselProps = {
   opts?: CarouselOptions;
   plugins?: CarouselPlugin;
   btnVariant?: React.ComponentProps<typeof Button>['variant'];
-  btnLocation?: 'default' | 'mb';
+  btnLocation?: 'default' | 'mb' | 'below-carousel';
   showDots?: boolean;
+  dotsLocation?: 'absolute' | 'below-carousel';
   orientation?: 'horizontal' | 'vertical';
   setApi?: (api: CarouselApi) => void;
 };
@@ -30,8 +31,9 @@ type CarouselContextProps = {
   canScrollPrev: boolean;
   canScrollNext: boolean;
   btnVariant?: React.ComponentProps<typeof Button>['variant'];
-  btnLocation?: 'default' | 'mb';
+  btnLocation?: 'default' | 'mb' | 'below-carousel';
   showDots?: boolean;
+  dotsLocation?: 'absolute' | 'below-carousel';
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -56,6 +58,7 @@ function Carousel({
   btnVariant = 'outline',
   btnLocation = 'default',
   showDots = false,
+  dotsLocation = 'absolute',
   ...props
 }: React.ComponentProps<'div'> & CarouselProps) {
   const [carouselRef, api] = useEmblaCarousel(
@@ -125,6 +128,7 @@ function Carousel({
         btnVariant,
         btnLocation,
         showDots,
+        dotsLocation,
       }}
     >
       <div
@@ -191,12 +195,14 @@ function CarouselPrevious({
       variant={variant || btnVariant || 'outline'}
       size={size}
       className={cn(
-        'absolute size-8 rounded-full',
+        'size-8 rounded-full',
         btnLocation === 'mb'
-          ? 'bottom-4 left-1/2 -translate-x-24'
-          : orientation === 'horizontal'
-            ? 'top-1/2 -left-12 -translate-y-1/2'
-            : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
+          ? 'absolute bottom-4 left-1/2 -translate-x-24'
+          : btnLocation === 'below-carousel'
+            ? 'relative'
+            : orientation === 'horizontal'
+              ? 'absolute top-1/2 -left-12 -translate-y-1/2'
+              : 'absolute -top-12 left-1/2 -translate-x-1/2 rotate-90',
         className
       )}
       disabled={!canScrollPrev}
@@ -226,12 +232,14 @@ function CarouselNext({
       variant={variant || btnVariant || 'outline'}
       size={size}
       className={cn(
-        'absolute size-8 rounded-full',
+        'size-8 rounded-full',
         btnLocation === 'mb'
-          ? 'bottom-4 left-1/2 translate-x-16'
-          : orientation === 'horizontal'
-            ? 'top-1/2 -right-12 -translate-y-1/2'
-            : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
+          ? 'absolute bottom-4 left-1/2 translate-x-16'
+          : btnLocation === 'below-carousel'
+            ? 'relative'
+            : orientation === 'horizontal'
+              ? 'absolute top-1/2 -right-12 -translate-y-1/2'
+              : 'absolute -bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className
       )}
       disabled={!canScrollNext}
@@ -247,7 +255,7 @@ function CarouselNext({
 }
 
 function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
-  const { api } = useCarousel();
+  const { api, dotsLocation } = useCarousel();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
 
@@ -277,7 +285,10 @@ function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'absolute bottom-7 left-1/2 -translate-x-1/2 flex gap-2 z-10',
+        'flex gap-2 justify-center',
+        dotsLocation === 'absolute'
+          ? 'absolute bottom-7 left-1/2 -translate-x-1/2 z-10'
+          : '',
         className
       )}
       {...props}
@@ -286,10 +297,10 @@ function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
         <button
           key={index}
           className={cn(
-            'w-2 h-2 rounded-full transition-all',
+            'rounded-full transition-all',
             index === selectedIndex
-              ? 'bg-primary w-6'
-              : 'bg-primary/30 hover:bg-primary/50'
+              ? 'w-6 h-2 bg-primary'
+              : 'w-2 h-2 bg-primary/50 hover:bg-primary/70'
           )}
           onClick={() => api?.scrollTo(index)}
           aria-label={`Go to slide ${index + 1}`}
