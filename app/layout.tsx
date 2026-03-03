@@ -35,7 +35,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
         <AuthProvider>
-          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+          <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
             <ToastProvider>
               <Navbar />
               <main>{children}</main>
