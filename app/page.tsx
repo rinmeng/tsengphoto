@@ -79,7 +79,7 @@ export default function Home() {
               Check out photos taken at various events, capturing the best moments within.
             </div>
             <Button variant='default' size='lg' className='self-center md:self-start'>
-              <Info /> Learn More
+              Learn More
             </Button>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function Home() {
               fields.
             </div>
             <Button variant='default' size='lg' className='self-center md:self-end'>
-              <Info /> Learn More
+              Learn More
             </Button>
           </div>
         </div>
