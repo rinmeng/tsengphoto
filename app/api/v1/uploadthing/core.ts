@@ -14,12 +14,12 @@ export const ourFileRouter = {
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: '4MB',
-      maxFileCount: 1,
+      maxFileSize: '16MB',
+      maxFileCount: 10,
     },
   })
     // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       // This code runs on your server before upload
       const supabase = await createClient();
       const {
@@ -33,35 +33,31 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log('Upload complete for userId:', metadata.userId);
-      console.log('file url', file.ufsUrl);
+      try {
+        // Save to Supabase database using admin client to bypass RLS
+        const supabase = createAdminClient();
+        const { data, error } = await supabase
+          .from('uploads')
+          .insert({
+            user_id: metadata.userId,
+            file_url: file.ufsUrl,
+            file_name: file.name,
+            file_size: file.size,
+            file_type: file.type,
+          })
+          .select()
+          .single();
 
-      // Save to Supabase database using admin client to bypass RLS
-      // (user was already authenticated in middleware)
-      const supabase = createAdminClient();
-      const { data, error } = await supabase
-        .from('uploads')
-        .insert({
-          user_id: metadata.userId,
-          file_url: file.ufsUrl,
-          file_name: file.name,
-          file_size: file.size,
-          file_type: file.type,
-          // entity_type and entity_id can be passed from client via input
-          // e.g., { entity_type: 'event', entity_id: 'uuid' }
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error saving upload to database:', error);
-      } else {
-        console.log('Upload saved to database:', data);
+        if (error) {
+          console.error('[UploadThing] Error saving upload to database:', error);
+          throw error;
+        }
+        console.log('[UploadThing] Upload saved to database:', data);
+        return { uploadedBy: metadata.userId, url: file.ufsUrl };
+      } catch (error) {
+        console.error('[UploadThing] Failed to save upload:', error);
+        throw new UploadThingError('Failed to save upload to database');
       }
-
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
 } satisfies FileRouter;
 

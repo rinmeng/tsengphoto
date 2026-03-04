@@ -10,7 +10,7 @@ import {
   Spinner,
 } from '@/components/ui';
 import { EmptyState } from '@/components/EmptyState';
-import { UploadButton } from '@/utils/uploadthing/uploadthing';
+import { ImageUploader } from '@/components/ImageUploader';
 import { ImageOff, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -21,6 +21,7 @@ import * as UploadService from '@/services/uploads.service';
 export default function Admin() {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchUploads = async () => {
@@ -35,6 +36,7 @@ export default function Admin() {
   };
 
   const handleDeleteUpload = async (id: string, fileUrl: string) => {
+    setDeletingId(id);
     const result = await UploadService.deleteUpload(id, fileUrl);
 
     if (result.success) {
@@ -43,6 +45,7 @@ export default function Admin() {
     } else {
       toast.error(result.error || 'Something went wrong');
     }
+    setDeletingId(null);
   };
 
   useEffect(() => {
@@ -59,9 +62,8 @@ export default function Admin() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <UploadButton
-            endpoint='imageUploader'
-            onClientUploadComplete={() => {
+          <ImageUploader
+            onUploadComplete={() => {
               toast.success('Upload completed successfully!');
               fetchUploads();
             }}
@@ -127,9 +129,17 @@ export default function Admin() {
                       size='sm'
                       className='w-full'
                       onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
+                      disabled={deletingId === upload.id}
                     >
-                      <Trash2 />
-                      Delete
+                      {deletingId === upload.id ? (
+                        <>
+                          <Spinner /> Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 /> Delete
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

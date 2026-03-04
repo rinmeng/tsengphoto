@@ -314,6 +314,46 @@ import { ImageOff } from 'lucide-react';
 - Provide helpful, actionable empty state messages
 - Never use plain divs for empty states
 
+### File Uploads
+
+Use the `ImageUploader` component for file uploads with drag-and-drop:
+
+```tsx
+import { ImageUploader } from '@/components/ImageUploader';
+
+<ImageUploader
+  onUploadComplete={() => {
+    toast.success('Upload completed successfully!');
+    // Refresh data
+  }}
+  onUploadError={(error) => {
+    toast.error(`Upload failed: ${error.message}`);
+  }}
+/>
+```
+
+**Features:**
+- Sequential upload (files uploaded one at a time for better error handling)
+- Bulk upload support (up to 10 files)
+- Drag and drop support with visual feedback
+- Click to choose files
+- Individual file preview with real-time status
+- Per-file progress bars during upload
+- Success/Error indicators for each file
+- File size and type validation
+- Automatic duplicate filename handling
+- Remove individual files or clear all
+- Scrollable file list for multiple selections
+- Continues uploading even if one file fails
+
+**Rules:**
+- Use `ImageUploader` for image uploads instead of UploadThing's default components
+- Always provide `onUploadComplete` and `onUploadError` callbacks
+- Show toast notifications for upload success/failure
+- Refresh data after successful upload
+- File size limit is 16MB per file, max 10 files (configurable in component)
+- Sequential uploads allow better error tracking and per-file progress
+
 ### Loading States
 
 **Use Skeleton for data-dependent content** (text, images, cards):
