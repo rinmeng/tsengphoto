@@ -259,7 +259,15 @@ export default function Admin() {
                     />
                   </div>
                   <div className='p-3 space-y-2'>
-                    <p className='text-sm font-medium truncate'>{upload.file_name}</p>
+                    <a
+                      href={upload.file_url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-sm font-medium truncate hover:underline
+                        hover:text-primary transition-colors block'
+                    >
+                      {upload.file_name}
+                    </a>
                     <div
                       className='flex items-center justify-between text-xs
                         text-muted-foreground'
