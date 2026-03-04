@@ -1,7 +1,9 @@
+import { Text } from '@/components/Text';
+
 export default function SeriesPage() {
   return (
     <div className='flex items-center justify-center h-screen fade-in-from-bottom'>
-      <h1 className='text-4xl font-bold'>Series Page</h1>
+      <Text variant='hd-xxl'>Series Page</Text>
     </div>
   );
 }

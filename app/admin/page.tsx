@@ -15,6 +15,7 @@ import {
 } from '@/components/animate-ui/primitives/radix/checkbox';
 import { EmptyState } from '@/components/EmptyState';
 import { ImageUploader } from '@/components/ImageUploader';
+import { Text } from '@/components/Text';
 import { ImageOff, Info, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -127,10 +128,10 @@ export default function Admin() {
             className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'
           >
             <Info className='size-4' />
-            <p className='text-xs text-muted-foreground'>
-              Tip: Try to keep the files under 16MB for faster uploads and
-              betterperformance.
-            </p>
+            <Text variant='muted-sm'>
+              Tip: Try to keep the files under 16MB for faster uploads and better
+              performance.
+            </Text>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -268,12 +269,13 @@ export default function Admin() {
                     >
                       {upload.file_name}
                     </a>
-                    <div
-                      className='flex items-center justify-between text-xs
-                        text-muted-foreground'
-                    >
-                      <span>{(upload.file_size / 1024).toFixed(1)} KB</span>
-                      <span>{new Date(upload.created_at).toLocaleDateString()}</span>
+                    <div className='flex items-center justify-between'>
+                      <Text variant='caption'>
+                        {(upload.file_size / 1024).toFixed(1)} KB
+                      </Text>
+                      <Text variant='caption'>
+                        {new Date(upload.created_at).toLocaleDateString()}
+                      </Text>
                     </div>
                   </div>
                 </div>

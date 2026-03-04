@@ -290,6 +290,91 @@ import { Card, Input, Spinner } from '@/components/ui';
 
 Check `/components/animate-ui/components/` first, then `/components/ui/` before creating custom components.
 
+### Typography - Text Component
+
+Use the `Text` component for all text throughout the application - it provides consistent, responsive typography:
+
+```tsx
+import { Text } from '@/components/Text';
+
+// Headings (hd-xxl = largest, hd-xs = smallest)
+<Text variant='hd-xxl'>Main Page Title</Text>          // 3xl → 5xl → 6xl
+<Text variant='hd-xl'>Section Heading</Text>           // 2xl → 4xl → 5xl
+<Text variant='hd-lg'>Card/Component Title</Text>      // xl → 2xl → 3xl
+<Text variant='hd-md'>Subsection</Text>                // lg → xl → 2xl
+<Text variant='hd-sm'>Small Heading</Text>             // base → lg → xl
+<Text variant='hd-xs'>Tiny Heading</Text>              // sm → base → lg
+
+// Body text (bd-xxl = largest, bd-xs = smallest)
+<Text variant='bd-xxl'>Extra large body</Text>         // xl → 2xl → 3xl
+<Text variant='bd-xl'>Large body</Text>                // lg → xl → 2xl
+<Text variant='bd-lg'>Emphasized body</Text>           // base → lg → xl
+<Text variant='bd-md'>Regular body (default)</Text>    // sm → base → lg
+<Text variant='bd-sm'>Small body</Text>                // sm → base
+<Text variant='bd-xs'>Tiny body</Text>                 // xs → sm
+
+// Special variants
+<Text variant='caption'>Image caption or footnote</Text>
+<Text variant='label'>Form label text</Text>
+<Text variant='muted'>De-emphasized text</Text>
+<Text variant='muted-sm'>Small muted text</Text>
+
+// Combining with className
+<Text variant='hd-xl' className='text-center text-primary'>
+  Centered Primary Title
+</Text>
+```
+
+**Available Variants:**
+
+*Headings (all responsive & bold):*
+- `hd-xxl` - Largest headings (3xl → 5xl → 6xl) → renders `<h1>`
+- `hd-xl` - Section headings (2xl → 4xl → 5xl) → renders `<h2>`
+- `hd-lg` - Card titles (xl → 2xl → 3xl) → renders `<h3>`
+- `hd-md` - Subsections (lg → xl → 2xl) → renders `<h4>`
+- `hd-sm` - Small headings (base → lg → xl) → renders `<h5>`
+- `hd-xs` - Tiny headings (sm → base → lg) → renders `<h6>`
+
+*Body text (all responsive):*
+- `bd-xxl` - Extra large (xl → 2xl → 3xl)
+- `bd-xl` - Large (lg → xl → 2xl)
+- `bd-lg` - Emphasized (base → lg → xl)
+- `bd-md` - Regular **(default)** (sm → base → lg)
+- `bd-sm` - Small (sm → base)
+- `bd-xs` - Tiny (xs → sm)
+
+*Special variants:*
+- `caption` - Muted small text (xs → sm)
+- `label` - Form labels (sm → base, medium weight)
+- `muted` - Muted regular text (sm → base)
+- `muted-sm` - Muted small text (xs → sm)
+
+**Props:**
+- `variant` - Size/style variant (default: 'bd-md')
+- `className` - Additional Tailwind classes
+- `children` - Text content
+
+**Auto-Semantic HTML:**
+The component automatically selects the correct HTML element:
+- `hd-xxl` → `<h1>`
+- `hd-xl` → `<h2>`
+- `hd-lg` → `<h3>`
+- `hd-md` → `<h4>`
+- `hd-sm` → `<h5>`
+- `hd-xs` → `<h6>`
+- `caption`/`muted` → `<span>`
+- `label` → `<label>`
+- Body variants → `<p>`
+
+**Rules:**
+- **Always use `Text` component** instead of raw h1/h2/h3/p/span with manual classes
+- All text is automatically responsive (mobile → tablet → desktop)
+- Use heading variants (hd-*) for titles and headings
+- Use body variants (bd-*) for paragraphs and regular text
+- The correct HTML element is automatically chosen based on variant
+- Combine with `className` for additional styling (colors, alignment, etc.)
+- The component works anywhere, not just page headers
+
 ### Empty States
 
 Use the `EmptyState` component for empty/no-data states:

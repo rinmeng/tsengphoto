@@ -25,6 +25,7 @@ import {
 import { signInWithEmail } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { Text } from '@/components/Text';
 import { LogIn } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -84,14 +85,14 @@ export default function LoginPage() {
       >
         <div className='text-center space-y-6 max-w-md'>
           <Logo iconSize={40} className='text-4xl fade-in-from-left delay-[300ms]' />
-          <div
-            className='text-muted-foreground text-lg fade-in-from-left w-full text-center
-              delay-400'
+          <Text
+            variant='muted'
+            className='fade-in-from-left w-full text-center delay-400'
           >
             Professional event photography services in Vancouver and Kelowna. Capturing
             your special moments with creativity and precision. Book now for unforgettable
             memories.
-          </div>
+          </Text>
         </div>
       </div>
 
