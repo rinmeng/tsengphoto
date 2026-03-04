@@ -120,7 +120,7 @@ export default function Admin() {
   }, [toast]);
 
   return (
-    <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-right'>
+    <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-bottom'>
       <Card>
         <CardHeader>
           <CardTitle>Upload Image</CardTitle>
