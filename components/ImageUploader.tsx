@@ -35,6 +35,12 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
         );
       }
     },
+    onClientUploadComplete: (files) => {
+      console.log('[ImageUploader] Upload complete:', files);
+    },
+    onUploadError: (error) => {
+      console.error('[ImageUploader] Upload error:', error);
+    },
   });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {

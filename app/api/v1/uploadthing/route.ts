@@ -6,13 +6,10 @@ import { ourFileRouter } from './core';
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
-    logLevel: 'Error',
+    logLevel: 'Info',
+    callbackUrl:
+      process.env.NODE_ENV === 'production'
+        ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/uploadthing`
+        : undefined,
   },
 });
-
-// Disable body parsing for file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
