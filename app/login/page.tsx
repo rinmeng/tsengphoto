@@ -64,7 +64,7 @@ export default function LoginPage() {
         });
       } else {
         toast.success('Login successful', { description: 'You are now signed in.' });
-        router.push('/');
+        router.push('/admin');
       }
     } catch (err) {
       toast.error('Login failed', {

@@ -6,10 +6,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Skeleton,
   Spinner,
 } from '@/components/ui';
+import { EmptyState } from '@/components/EmptyState';
 import { UploadButton } from '@/utils/uploadthing/uploadthing';
-import { Trash2 } from 'lucide-react';
+import { ImageOff, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -77,7 +79,7 @@ export default function Admin() {
           <CardTitle>Your Uploads</CardTitle>
           <CardDescription>
             {loading ? (
-              <Spinner />
+              <Skeleton className='h-4 w-32' />
             ) : (
               `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
             )}
@@ -89,9 +91,12 @@ export default function Admin() {
               <Spinner className='size-8 mx-auto' />
             </div>
           ) : uploads.length === 0 ? (
-            <div className='text-center text-muted-foreground py-8'>
-              No uploads yet. Upload your first image above!
-            </div>
+            <EmptyState
+              icon={ImageOff}
+              title='No uploads yet'
+              description='Upload your first image using the upload button above!'
+              className='border-dashed border-2'
+            />
           ) : (
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
               {uploads.map((upload) => (

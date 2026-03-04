@@ -159,6 +159,56 @@ Examples of safe user-facing errors:
 
 ---
 
+## Authentication & Authorization
+
+### Available Auth Functions
+
+```typescript
+// hooks/use-auth.ts
+import { getCurrentUser, signInWithEmail, signUpWithEmail, signOut, useAuth } from '@/hooks/use-auth';
+
+// Get current session user
+const { user, error } = await getCurrentUser();
+
+// Sign in
+const { data, error } = await signInWithEmail(email, password);
+
+// Sign up
+const { data, error } = await signUpWithEmail(email, password);
+
+// Sign out
+const { error } = await signOut();
+
+// Use auth context in components
+const { user, loading } = useAuth();
+```
+
+### Protected Routes
+
+For pages that should redirect unauthenticated users:
+- Check auth status in `useEffect`
+- Redirect to `/login` if no user
+- Show loading state while checking
+
+For login pages:
+- Redirect authenticated users to `/admin` or appropriate page
+- Prevent logged-in users from accessing login page
+
+```typescript
+// Example: Redirect if already logged in
+useEffect(() => {
+  const checkAuth = async () => {
+    const { user } = await getCurrentUser();
+    if (user) {
+      router.push('/admin');
+    }
+  };
+  checkAuth();
+}, []);
+```
+
+---
+
 ## Authentication Rules
 
 For login or protected routes:
@@ -194,9 +244,105 @@ When upload fails:
 
 ## UI/UX Guidelines
 
+### Component Preferences
+
+**Always use Shadcn UI components** when available:
+
+```tsx
+// ✅ Good - Use shadcn components
+import { Button, Card, Empty, EmptyHeader, EmptyTitle } from '@/components/ui';
+
+// ❌ Bad - Custom divs when shadcn component exists
+<div className='text-center text-muted-foreground py-8'>
+  No items
+</div>
+```
+
+**Available Shadcn components:**
+- Layout: Card, CardHeader, CardTitle, CardDescription, CardContent
+- Forms: Button, Input, Form, FormField, Select, Checkbox, etc.
+- Feedback: Toast, Spinner, Skeleton, Empty, Alert
+- Navigation: Dialog, Sheet, Tabs, Dropdown, etc.
+
+Check `/components/ui/` for available components before creating custom ones.
+
+### Empty States
+
+Use the `EmptyState` component for empty/no-data states:
+
+```tsx
+import { EmptyState } from '@/components/EmptyState';
+import { ImageOff } from 'lucide-react';
+
+<EmptyState
+  icon={ImageOff}
+  title='No items found'
+  description='Get started by uploading your first item.'
+  className='border-dashed border-2'
+/>
+```
+
+For more complex empty states, use the underlying shadcn `Empty` components:
+
+```tsx
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui';
+import { ImageOff } from 'lucide-react';
+
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia variant='icon'>
+      <ImageOff />
+    </EmptyMedia>
+    <EmptyTitle>No items found</EmptyTitle>
+    <EmptyDescription>
+      Get started by uploading your first item.
+    </EmptyDescription>
+  </EmptyHeader>
+</Empty>
+```
+
+**Rules:**
+- Prefer `EmptyState` component for simple empty states
+- Use `Empty` for all no-data/empty states
+- Use `EmptyMedia variant='icon'` with a relevant Lucide icon
+- Provide helpful, actionable empty state messages
+- Never use plain divs for empty states
+
 ### Loading States
 
-Always use the `Spinner` component from Shadcn UI for loading indicators:
+**Use Skeleton for data-dependent content** (text, images, cards):
+
+```tsx
+import { Skeleton } from '@/components/ui';
+
+// Loading text that depends on fetched data
+<CardDescription>
+  {loading ? (
+    <Skeleton className='h-4 w-32' />
+  ) : (
+    `${count} items loaded`
+  )}
+</CardDescription>
+
+// Loading card/content area
+<div className='grid grid-cols-2 gap-4'>
+  {loading ? (
+    Array.from({ length: 4 }).map((_, i) => (
+      <Skeleton key={i} className='h-48 w-full' />
+    ))
+  ) : (
+    data.map(item => <Card key={item.id}>...</Card>)
+  )}
+</div>
+```
+
+**Use Spinner for action-based loading** (button clicks, form submissions, processes):
 
 ```tsx
 import { Spinner } from '@/components/ui';
@@ -212,20 +358,21 @@ import { Spinner } from '@/components/ui';
   )}
 </Button>
 
-// Centered loading state
+// Centered loading for actions/operations
 <div className='text-center py-8'>
   <Spinner className='size-8 mx-auto' />
 </div>
-
-// Loading in descriptions or small areas
-{loading ? <Spinner /> : 'Content'}
 ```
 
 **Rules:**
-- Never use plain text like "Loading..." without the Spinner component
+- Use **Skeleton** for content/data that's being fetched (text, images, cards)
+- Use **Spinner** for active operations (submitting, processing, actions)
+- Use **Empty** from shadcn for empty/no-data states
+- Never use plain text like "Loading..." without a loading component
+- Match Skeleton dimensions to the content it's replacing (`h-4 w-32` for text, `h-48` for cards)
 - Use `className='size-8 mx-auto'` for centered large spinners
-- Use default size (size-4) for inline loading states
 - Disable interactive elements during loading states
+- Always prefer shadcn components over custom implementations
 
 ---
 
