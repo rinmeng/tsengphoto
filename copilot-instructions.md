@@ -375,7 +375,7 @@ import { ImageUploader } from '@/components/ImageUploader';
 - Always provide `onUploadComplete` and `onUploadError` callbacks
 - Show toast notifications for upload success/failure
 - Refresh data after successful upload
-- File size limit is 16MB per file, max 10 files (configurable in component)
+- File size limit is 16MB per file
 - Sequential uploads allow better error tracking and per-file progress
 
 ### Loading States

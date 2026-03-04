@@ -161,7 +161,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
                 Drag & drop images here, or click to select
               </p>
               <p className='text-xs text-muted-foreground'>
-                PNG, JPG, GIF, WEBP up to 16MB per file (max 10 files)
+                PNG, JPG, JPEG, GIF, WEBP up to 16MB per file
               </p>
             </>
           )}

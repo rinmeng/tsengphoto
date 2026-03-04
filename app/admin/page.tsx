@@ -15,7 +15,7 @@ import {
 } from '@/components/animate-ui/primitives/radix/checkbox';
 import { EmptyState } from '@/components/EmptyState';
 import { ImageUploader } from '@/components/ImageUploader';
-import { ImageOff, Trash2 } from 'lucide-react';
+import { ImageOff, Info, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -123,8 +123,14 @@ export default function Admin() {
       <Card>
         <CardHeader>
           <CardTitle>Upload Image</CardTitle>
-          <CardDescription>
-            Upload images to UploadThing and store metadata in Supabase
+          <CardDescription
+            className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'
+          >
+            <Info className='size-4' />
+            <p className='text-xs text-muted-foreground'>
+              Tip: Try to keep the files under 16MB for faster uploads and
+              betterperformance.
+            </p>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -225,7 +231,26 @@ export default function Admin() {
                         backdrop-blur-sm transition-colors'
                     >
                       <CheckboxIndicator className='size-3.5' />
-                    </Checkbox>
+                    </Checkbox>{' '}
+                  </div>
+                  <div className='absolute top-2 right-2 z-10'>
+                    <Button
+                      variant='destructive'
+                      size='sm'
+                      className='w-full'
+                      onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
+                      disabled={deletingId === upload.id || bulkDeleting}
+                    >
+                      {deletingId === upload.id ? (
+                        <>
+                          <Spinner />
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 />
+                        </>
+                      )}
+                    </Button>
                   </div>
                   <div className='relative aspect-video bg-muted'>
                     <Image
@@ -244,23 +269,6 @@ export default function Admin() {
                       <span>{(upload.file_size / 1024).toFixed(1)} KB</span>
                       <span>{new Date(upload.created_at).toLocaleDateString()}</span>
                     </div>
-                    <Button
-                      variant='destructive'
-                      size='sm'
-                      className='w-full'
-                      onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
-                      disabled={deletingId === upload.id || bulkDeleting}
-                    >
-                      {deletingId === upload.id ? (
-                        <>
-                          <Spinner /> Deleting...
-                        </>
-                      ) : (
-                        <>
-                          <Trash2 /> Delete
-                        </>
-                      )}
-                    </Button>
                   </div>
                 </div>
               ))}
