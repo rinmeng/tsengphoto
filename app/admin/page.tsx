@@ -148,19 +148,17 @@ export default function Admin() {
       </Card>
 
       {/* Uploads Gallery */}
-      <Card className='mt-4 gap-0'>
+      <Card className='mt-4'>
         <CardHeader>
-          <div className='flex items-center justify-between'>
-            <div>
-              <CardTitle>Your Uploads</CardTitle>
-              <CardDescription>
-                {loading ? (
-                  <Skeleton className='h-4 w-32' />
-                ) : (
-                  `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
-                )}
-              </CardDescription>
-            </div>
+          <div className='flex flex-col gap-2'>
+            <CardTitle>Your Uploads</CardTitle>
+            <CardDescription>
+              {loading ? (
+                <Skeleton className='h-4 w-32' />
+              ) : (
+                `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
+              )}
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
