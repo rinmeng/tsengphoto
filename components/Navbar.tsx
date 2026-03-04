@@ -172,7 +172,7 @@ export function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href='/about' legacyBehavior passHref>
+                <Link href='/about' passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     About
                   </NavigationMenuLink>
@@ -180,7 +180,7 @@ export function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href='/contact' legacyBehavior passHref>
+                <Link href='/contact' passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Contact
                   </NavigationMenuLink>
@@ -189,7 +189,7 @@ export function Navbar() {
 
               {user && (
                 <NavigationMenuItem>
-                  <Link href='/admin' legacyBehavior passHref>
+                  <Link href='/admin' passHref>
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                       Admin
                     </NavigationMenuLink>
