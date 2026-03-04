@@ -1,3 +1,4 @@
+'use client';
 import {
   Button,
   Card,
@@ -5,50 +6,131 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Spinner,
 } from '@/components/ui';
-import { Shield, Lock, SquareArrowOutUpRight } from 'lucide-react';
+import { UploadButton } from '@/utils/uploadthing/uploadthing';
+import { Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
+import type { Upload } from '@/lib/types';
+import * as UploadService from '@/services/uploads.service';
 
 export default function Admin() {
+  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchUploads = async () => {
+    const data = await UploadService.fetchUploads();
+
+    if (!data) {
+      toast.error('Failed to load uploads');
+    } else {
+      setUploads(data);
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteUpload = async (id: string, fileUrl: string) => {
+    const result = await UploadService.deleteUpload(id, fileUrl);
+
+    if (result.success) {
+      toast.success('Upload deleted successfully');
+      setUploads(uploads.filter((upload) => upload.id !== id));
+    } else {
+      toast.error(result.error || 'Something went wrong');
+    }
+  };
+
+  useEffect(() => {
+    fetchUploads();
+  }, []);
+
   return (
     <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-right'>
       <Card>
-        <CardHeader className='text-center'>
-          <div className='flex justify-center mb-4'>
-            <div className='p-3 rounded-full bg-primary/10'>
-              <Shield className='h-8 w-8 text-primary' />
-            </div>
-          </div>
-          <CardTitle className='text-2xl sm:text-3xl'>
-            Admin Page - Protected Route
-          </CardTitle>
-          <CardDescription className='text-sm sm:text-base'>
-            This page is a protected route that only authenticated users can see.
+        <CardHeader>
+          <CardTitle>Upload Image</CardTitle>
+          <CardDescription>
+            Upload images to UploadThing and store metadata in Supabase
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4 justify-center flex flex-col'>
-          <div className='flex items-start gap-3 p-3 sm:p-4 rounded-lg border bg-muted/50'>
-            <Lock className='h-5 w-5 text-muted-foreground mt-0.5 shrink-0' />
-            <div>
-              <p className='font-medium mb-1 text-sm sm:text-base'>Route Protection</p>
-              <p className='text-xs sm:text-sm text-muted-foreground'>
-                This is an example usage of proxy/middleware to restrict access to
-                authenticated users only.
-              </p>
-            </div>
-          </div>
+        <CardContent>
+          <UploadButton
+            endpoint='imageUploader'
+            onClientUploadComplete={() => {
+              toast.success('Upload completed successfully!');
+              fetchUploads();
+            }}
+            onUploadError={(error: Error) => {
+              console.error('Upload error:', error);
+              toast.error(`Upload failed: ${error.message}`);
+            }}
+          />
+        </CardContent>
+      </Card>
 
-          <Button variant='default' className='w-full sm:w-auto mx-auto' asChild>
-            <a
-              href='https://github.com/rinmeng/next-shadcn-supabase-starter/blob/main/proxy.ts'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='inline-flex items-center gap-2'
-            >
-              <span className='hidden sm:inline'>View proxy.ts</span>
-              <span className='sm:hidden'>View Source Code</span>
-              <SquareArrowOutUpRight className='h-3 w-3' />
-            </a>
-          </Button>
+      {/* Uploads Gallery */}
+      <Card className='mt-4'>
+        <CardHeader>
+          <CardTitle>Your Uploads</CardTitle>
+          <CardDescription>
+            {loading ? (
+              <Spinner />
+            ) : (
+              `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
+            )}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className='text-center py-8'>
+              <Spinner className='size-8 mx-auto' />
+            </div>
+          ) : uploads.length === 0 ? (
+            <div className='text-center text-muted-foreground py-8'>
+              No uploads yet. Upload your first image above!
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              {uploads.map((upload) => (
+                <div
+                  key={upload.id}
+                  className='border rounded-lg overflow-hidden hover:shadow-lg
+                    transition-shadow'
+                >
+                  <div className='relative aspect-video bg-muted'>
+                    <Image
+                      src={upload.file_url}
+                      alt={upload.file_name}
+                      fill
+                      className='object-cover'
+                    />
+                  </div>
+                  <div className='p-3 space-y-2'>
+                    <p className='text-sm font-medium truncate'>{upload.file_name}</p>
+                    <div
+                      className='flex items-center justify-between text-xs
+                        text-muted-foreground'
+                    >
+                      <span>{(upload.file_size / 1024).toFixed(1)} KB</span>
+                      <span>{new Date(upload.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <Button
+                      variant='destructive'
+                      size='sm'
+                      className='w-full'
+                      onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
+                    >
+                      <Trash2 />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

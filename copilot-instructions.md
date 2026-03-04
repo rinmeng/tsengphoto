@@ -192,6 +192,43 @@ When upload fails:
 
 ---
 
+## UI/UX Guidelines
+
+### Loading States
+
+Always use the `Spinner` component from Shadcn UI for loading indicators:
+
+```tsx
+import { Spinner } from '@/components/ui';
+
+// Inline loading (e.g., in buttons)
+<Button disabled={loading}>
+  {loading ? (
+    <>
+      <Spinner /> Loading...
+    </>
+  ) : (
+    'Submit'
+  )}
+</Button>
+
+// Centered loading state
+<div className='text-center py-8'>
+  <Spinner className='size-8 mx-auto' />
+</div>
+
+// Loading in descriptions or small areas
+{loading ? <Spinner /> : 'Content'}
+```
+
+**Rules:**
+- Never use plain text like "Loading..." without the Spinner component
+- Use `className='size-8 mx-auto'` for centered large spinners
+- Use default size (size-4) for inline loading states
+- Disable interactive elements during loading states
+
+---
+
 ## Environment Variables
 
 Required environment variables for the project:
