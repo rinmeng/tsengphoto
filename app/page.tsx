@@ -5,6 +5,7 @@ import { Footer } from '@/components/Footer';
 import { Text } from '@/components/Text';
 import { Button, Separator } from '@/components/ui';
 import { SendHorizonal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 
@@ -49,6 +50,8 @@ const portraitPhotography = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className='mx-auto overflow-x-hidden'>
       <Hero />
@@ -83,7 +86,12 @@ export default function Home() {
             <Text variant='bd-lg' className='text-center md:text-left'>
               Check out photos taken at various events, capturing the best moments within.
             </Text>
-            <Button variant='default' size='lg' className='self-center md:self-start'>
+            <Button
+              variant='default'
+              size='lg'
+              className='self-center md:self-start'
+              onClick={() => router.push('/events')}
+            >
               Learn More
             </Button>
           </div>
@@ -108,7 +116,12 @@ export default function Home() {
               A collection of photos featuring my best work within different photography
               fields.
             </Text>
-            <Button variant='default' size='lg' className='self-center md:self-end'>
+            <Button
+              variant='default'
+              size='lg'
+              className='self-center md:self-end'
+              onClick={() => router.push('/collection')}
+            >
               Learn More
             </Button>
           </div>
@@ -145,11 +158,7 @@ export default function Home() {
           images={eventPhotography}
         />
         <div className='container mx-auto flex justify-center mt-8'>
-          <Button
-            variant='default'
-            size='xl'
-            onClick={() => console.log('Navigate to event photography booking')}
-          >
+          <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />
           </Button>
@@ -177,11 +186,7 @@ export default function Home() {
           images={portraitPhotography}
         />
         <div className='container mx-auto flex justify-center mt-8'>
-          <Button
-            variant='default'
-            size='xl'
-            onClick={() => console.log('Navigate to portrait photography booking')}
-          >
+          <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />
           </Button>
