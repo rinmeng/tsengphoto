@@ -129,8 +129,7 @@ export default function Admin() {
           >
             <Info className='size-4' />
             <Text variant='muted-sm'>
-              Tip: Try to keep the files under 16MB for faster uploads and better
-              performance.
+              Tip: Keep files under 16MB for faster uploads and storage efficiency.
             </Text>
           </CardDescription>
         </CardHeader>
