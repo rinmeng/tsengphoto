@@ -9,6 +9,10 @@ import {
   Skeleton,
   Spinner,
 } from '@/components/ui';
+import {
+  Checkbox,
+  CheckboxIndicator,
+} from '@/components/animate-ui/primitives/radix/checkbox';
 import { EmptyState } from '@/components/EmptyState';
 import { ImageUploader } from '@/components/ImageUploader';
 import { ImageOff, Trash2 } from 'lucide-react';
@@ -22,6 +26,8 @@ export default function Admin() {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const { toast } = useToast();
 
   const fetchUploads = async () => {
@@ -48,9 +54,69 @@ export default function Admin() {
     setDeletingId(null);
   };
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(uploads.map((upload) => upload.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+
+    setBulkDeleting(true);
+    const selectedUploads = uploads.filter((upload) => selectedIds.has(upload.id));
+    let deletedCount = 0;
+
+    // Sequential deletion
+    for (const upload of selectedUploads) {
+      setDeletingId(upload.id);
+      const result = await UploadService.deleteUpload(upload.id, upload.file_url);
+
+      if (result.success) {
+        deletedCount++;
+        setUploads((prev) => prev.filter((u) => u.id !== upload.id));
+      } else {
+        toast.error(`Failed to delete ${upload.file_name}: ${result.error}`);
+      }
+    }
+
+    setDeletingId(null);
+    setBulkDeleting(false);
+    setSelectedIds(new Set());
+
+    if (deletedCount > 0) {
+      toast.success(
+        `Successfully deleted ${deletedCount} image${deletedCount !== 1 ? 's' : ''}`
+      );
+    }
+  };
+
   useEffect(() => {
+    const fetchUploads = async () => {
+      const data = await UploadService.fetchUploads();
+
+      if (!data) {
+        toast.error('Failed to load uploads');
+      } else {
+        setUploads(data);
+      }
+      setLoading(false);
+    };
+
     fetchUploads();
-  }, []);
+  }, [toast]);
 
   return (
     <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-right'>
@@ -76,18 +142,57 @@ export default function Admin() {
       </Card>
 
       {/* Uploads Gallery */}
-      <Card className='mt-4'>
+      <Card className='mt-4 gap-0'>
         <CardHeader>
-          <CardTitle>Your Uploads</CardTitle>
-          <CardDescription>
-            {loading ? (
-              <Skeleton className='h-4 w-32' />
-            ) : (
-              `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
-            )}
-          </CardDescription>
+          <div className='flex items-center justify-between'>
+            <div>
+              <CardTitle>Your Uploads</CardTitle>
+              <CardDescription>
+                {loading ? (
+                  <Skeleton className='h-4 w-32' />
+                ) : (
+                  `${uploads.length} image${uploads.length !== 1 ? 's' : ''} uploaded`
+                )}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
+          {uploads.length > 0 && !loading && (
+            <div className='flex items-center justify-between w-full gap-2 mb-2'>
+              <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                <Checkbox
+                  checked={selectedIds.size === uploads.length && uploads.length > 0}
+                  onCheckedChange={handleSelectAll}
+                  disabled={bulkDeleting}
+                  className='size-5 flex justify-center items-center border
+                    data-[state=checked]:bg-primary
+                    data-[state=checked]:text-primary-foreground transition-colors'
+                >
+                  <CheckboxIndicator className='size-3.5' />
+                </Checkbox>
+                Select All
+              </label>
+              {selectedIds.size > 0 && (
+                <Button
+                  variant='destructive'
+                  size='sm'
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleting}
+                >
+                  {bulkDeleting ? (
+                    <>
+                      <Spinner /> Deleting {selectedIds.size}...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 /> Delete Selected ({selectedIds.size})
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
           {loading ? (
             <div className='text-center py-8'>
               <Spinner className='size-8 mx-auto' />
@@ -105,8 +210,23 @@ export default function Admin() {
                 <div
                   key={upload.id}
                   className='border rounded-lg overflow-hidden hover:shadow-lg
-                    transition-shadow'
+                    transition-shadow relative'
                 >
+                  <div className='absolute top-2 left-2 z-10'>
+                    <Checkbox
+                      checked={selectedIds.has(upload.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectOne(upload.id, checked as boolean)
+                      }
+                      disabled={bulkDeleting}
+                      className='size-5 flex justify-center items-center border
+                        data-[state=checked]:bg-primary
+                        data-[state=checked]:text-primary-foreground bg-background/80
+                        backdrop-blur-sm transition-colors'
+                    >
+                      <CheckboxIndicator className='size-3.5' />
+                    </Checkbox>
+                  </div>
                   <div className='relative aspect-video bg-muted'>
                     <Image
                       src={upload.file_url}
@@ -129,7 +249,7 @@ export default function Admin() {
                       size='sm'
                       className='w-full'
                       onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
-                      disabled={deletingId === upload.id}
+                      disabled={deletingId === upload.id || bulkDeleting}
                     >
                       {deletingId === upload.id ? (
                         <>

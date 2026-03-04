@@ -246,25 +246,49 @@ When upload fails:
 
 ### Component Preferences
 
-**Always use Shadcn UI components** when available:
+**Component Selection Priority:**
 
+1. **Prefer Animate-UI** (when component exists) - Animated version of Shadcn
+2. **Use Shadcn UI** (fallback) - Base component library
+3. **Custom components** (only when necessary) - Last resort
+
+**Animate-UI:**
+
+Animate-UI is an animated variant of Shadcn UI with Framer Motion enhancements. Components are located in `/components/animate-ui/`.
+
+Available Animate-UI components:
+- `components/animate-ui/components/` - Exported animated components (Button, Dialog, Sheet, AlertDialog, Checkbox)
+- `components/animate-ui/primitives/` - Base primitives with motion support
+
+**Import pattern:**
 ```tsx
-// ✅ Good - Use shadcn components
-import { Button, Card, Empty, EmptyHeader, EmptyTitle } from '@/components/ui';
+// ✅ Prefer animate-ui when available
+import { Button, Dialog, Checkbox } from '@/components/animate-ui/components';
 
-// ❌ Bad - Custom divs when shadcn component exists
-<div className='text-center text-muted-foreground py-8'>
-  No items
-</div>
+// ✅ Use shadcn for components not in animate-ui
+import { Card, Input, Spinner } from '@/components/ui';
+
+// ❌ Don't create custom components when shadcn/animate-ui exists
+<div className='...custom button'> // Bad
 ```
+
+**When to use Animate-UI:**
+- Forms and interactive elements (Button, Checkbox, Dialog)
+- User feedback components (AlertDialog, Sheet)
+- Any component that benefits from smooth animations
+
+**When to use Shadcn UI:**
+- Layout components (Card, Separator, Tabs)
+- Data display (Table, Badge, Skeleton)
+- Components not yet available in animate-ui
 
 **Available Shadcn components:**
 - Layout: Card, CardHeader, CardTitle, CardDescription, CardContent
-- Forms: Button, Input, Form, FormField, Select, Checkbox, etc.
+- Forms: Input, Form, FormField, Select, Textarea, etc.
 - Feedback: Toast, Spinner, Skeleton, Empty, Alert
-- Navigation: Dialog, Sheet, Tabs, Dropdown, etc.
+- Navigation: Tabs, Dropdown, etc.
 
-Check `/components/ui/` for available components before creating custom ones.
+Check `/components/animate-ui/components/` first, then `/components/ui/` before creating custom components.
 
 ### Empty States
 
