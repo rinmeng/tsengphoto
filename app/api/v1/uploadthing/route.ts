@@ -5,7 +5,14 @@ import { ourFileRouter } from './core';
 // Export routes for Next App Router
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
-
-  // Apply an (optional) custom config:
-  // config: { ... },
+  config: {
+    logLevel: 'Error',
+  },
 });
+
+// Disable body parsing for file uploads
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

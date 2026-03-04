@@ -33,6 +33,10 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log('[UploadThing] Upload complete for userId:', metadata.userId);
+      console.log('[UploadThing] File URL:', file.ufsUrl);
+
       try {
         // Save to Supabase database using admin client to bypass RLS
         const supabase = createAdminClient();
@@ -50,13 +54,17 @@ export const ourFileRouter = {
 
         if (error) {
           console.error('[UploadThing] Error saving upload to database:', error);
-          throw error;
+          // Log error but don't throw - allow upload to succeed even if DB insert fails
+          return { uploadedBy: metadata.userId, url: file.ufsUrl, dbError: true };
         }
+
         console.log('[UploadThing] Upload saved to database:', data);
         return { uploadedBy: metadata.userId, url: file.ufsUrl };
       } catch (error) {
         console.error('[UploadThing] Failed to save upload:', error);
-        throw new UploadThingError('Failed to save upload to database');
+        // Return success to UploadThing even if DB insert fails
+        // This prevents the callback from failing
+        return { uploadedBy: metadata.userId, url: file.ufsUrl, dbError: true };
       }
     }),
 } satisfies FileRouter;
