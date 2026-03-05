@@ -575,6 +575,40 @@ import { ImageUploader } from '@/components/ImageUploader';
 - File size limit is 16MB per file
 - Sequential uploads allow better error tracking and per-file progress
 
+## Global Loading State Pattern
+
+This project uses a centralized `GlobalLoadingStates` context instead of local `useState(false)` loading booleans.
+
+**Never suggest:**
+```ts
+const [loading, setLoading] = useState(false);
+```
+
+**Always suggest the global pattern:**
+```ts
+const { setLoading, isLoading } = useLoading();
+```
+
+Loading keys should be namespaced strings e.g. `'user:save'`, `'dashboard:fetch'`, `'products:delete'`.
+
+Always wrap async operations in try/finally to guarantee cleanup:
+```ts
+setLoading('user:save', true);
+try {
+  await saveUser();
+} finally {
+  setLoading('user:save', false);
+}
+```
+
+The context lives in `@/context/LoadingContext.tsx` and provides:
+- `setLoading(key, value)` — register a loading state
+- `isLoading(key)` — check a specific key
+- `isAnyLoading()` — for global spinners or blocking UI
+- `loadingStates` — the full map if needed
+
+This applies to all Supabase calls, Next.js server actions, and any async UI interactions. Shadcn button/skeleton loading states should read from this context, not local state.
+
 ### Loading States
 
 **Use Skeleton for data-dependent content** (text, images, cards):

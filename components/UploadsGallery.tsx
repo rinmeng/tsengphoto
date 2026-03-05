@@ -21,6 +21,7 @@ import { ImageOff, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { useLoading } from '@/hooks/use-loading';
 import type { Upload } from '@/lib/types';
 import * as UploadService from '@/services/uploads.service';
 
@@ -36,37 +37,41 @@ export function UploadsGallery({
   onUploadDeleted,
 }: UploadsGalleryProps) {
   const [uploads, setUploads] = useState<Upload[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
+  const { setLoading, isLoading } = useLoading();
 
   const fetchUploads = async () => {
-    setLoading(true);
-    const data = await UploadService.fetchUploads();
+    setLoading('uploads:fetch', true);
+    try {
+      const data = await UploadService.fetchUploads();
 
-    if (!data) {
-      toast.error('Failed to load uploads');
-    } else {
-      setUploads(data);
+      if (!data) {
+        toast.error('Failed to load uploads');
+      } else {
+        setUploads(data);
+      }
+    } finally {
+      setLoading('uploads:fetch', false);
     }
-    setLoading(false);
   };
 
   const handleDeleteUpload = async (id: string, fileUrl: string) => {
-    setDeletingId(id);
-    const result = await UploadService.deleteUpload(id, fileUrl);
+    setLoading(`uploads:delete:${id}`, true);
+    try {
+      const result = await UploadService.deleteUpload(id, fileUrl);
 
-    if (result.success) {
-      toast.success('Upload deleted successfully');
-      setUploads(uploads.filter((upload) => upload.id !== id));
-      onUploadDeleted?.();
-    } else {
-      toast.error(result.error || 'Something went wrong');
+      if (result.success) {
+        toast.success('Upload deleted successfully');
+        setUploads(uploads.filter((upload) => upload.id !== id));
+        onUploadDeleted?.();
+      } else {
+        toast.error(result.error || 'Something went wrong');
+      }
+    } finally {
+      setLoading(`uploads:delete:${id}`, false);
     }
-    setDeletingId(null);
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -90,38 +95,38 @@ export function UploadsGallery({
   const handleBulkDelete = async () => {
     if (selectedIds.size === 0) return;
 
-    setBulkDeleting(true);
+    setLoading('uploads:bulkDelete', true);
     const selectedUploads = uploads.filter((upload) => selectedIds.has(upload.id));
     const totalCount = selectedUploads.length;
     let deletedCount = 0;
 
     setDeletionProgress({ current: 0, total: totalCount });
 
-    for (let i = 0; i < selectedUploads.length; i++) {
-      const upload = selectedUploads[i];
-      setDeletingId(upload.id);
-      setDeletionProgress({ current: i + 1, total: totalCount });
+    try {
+      for (let i = 0; i < selectedUploads.length; i++) {
+        const upload = selectedUploads[i];
+        setDeletionProgress({ current: i + 1, total: totalCount });
 
-      const result = await UploadService.deleteUpload(upload.id, upload.file_url);
+        const result = await UploadService.deleteUpload(upload.id, upload.file_url);
 
-      if (result.success) {
-        deletedCount++;
-        setUploads((prev) => prev.filter((u) => u.id !== upload.id));
-      } else {
-        toast.error(`Failed to delete ${upload.file_name}: ${result.error}`);
+        if (result.success) {
+          deletedCount++;
+          setUploads((prev) => prev.filter((u) => u.id !== upload.id));
+        } else {
+          toast.error(`Failed to delete ${upload.file_name}: ${result.error}`);
+        }
       }
-    }
 
-    setDeletingId(null);
-    setBulkDeleting(false);
-    setSelectedIds(new Set());
-    setDeletionProgress({ current: 0, total: 0 });
-
-    if (deletedCount > 0) {
-      toast.success(
-        `Successfully deleted ${deletedCount} image${deletedCount !== 1 ? 's' : ''}`
-      );
-      onUploadDeleted?.();
+      if (deletedCount > 0) {
+        toast.success(
+          `Successfully deleted ${deletedCount} image${deletedCount !== 1 ? 's' : ''}`
+        );
+        onUploadDeleted?.();
+      }
+    } finally {
+      setLoading('uploads:bulkDelete', false);
+      setSelectedIds(new Set());
+      setDeletionProgress({ current: 0, total: 0 });
     }
   };
 
@@ -136,7 +141,7 @@ export function UploadsGallery({
         <div className='flex flex-col gap-2'>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
-            {loading ? (
+            {isLoading('uploads:fetch') ? (
               <Skeleton className='h-4 w-32' />
             ) : (
               description ||
@@ -146,13 +151,13 @@ export function UploadsGallery({
         </div>
       </CardHeader>
       <CardContent>
-        {uploads.length > 0 && !loading && (
+        {uploads.length > 0 && !isLoading('uploads:fetch') && (
           <div className='flex items-center justify-between w-full gap-2 mb-2'>
             <label className='flex items-center gap-2 cursor-pointer'>
               <Checkbox
                 checked={selectedIds.size === uploads.length && uploads.length > 0}
                 onCheckedChange={handleSelectAll}
-                disabled={bulkDeleting}
+                disabled={isLoading('uploads:bulkDelete')}
                 className='size-5 flex justify-center items-center border
                   data-[state=checked]:bg-primary
                   data-[state=checked]:text-primary-foreground transition-colors'
@@ -166,9 +171,9 @@ export function UploadsGallery({
                 variant='destructive'
                 size='sm'
                 onClick={handleBulkDelete}
-                disabled={bulkDeleting}
+                disabled={isLoading('uploads:bulkDelete')}
               >
-                {bulkDeleting ? (
+                {isLoading('uploads:bulkDelete') ? (
                   <>
                     <Spinner /> Deleting {deletionProgress.current} of{' '}
                     {deletionProgress.total}...
@@ -182,7 +187,7 @@ export function UploadsGallery({
             )}
           </div>
         )}
-        {loading ? (
+        {isLoading('uploads:fetch') ? (
           <div className='text-center py-8'>
             <Spinner className='size-8 mx-auto' />
           </div>
@@ -208,7 +213,7 @@ export function UploadsGallery({
                       onCheckedChange={(checked) =>
                         handleSelectOne(upload.id, checked as boolean)
                       }
-                      disabled={bulkDeleting}
+                      disabled={isLoading('uploads:bulkDelete')}
                       className='size-5 flex justify-center items-center border
                         data-[state=checked]:bg-primary
                         data-[state=checked]:text-primary-foreground bg-background/80
@@ -223,9 +228,12 @@ export function UploadsGallery({
                       size='sm'
                       className='w-full'
                       onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
-                      disabled={deletingId === upload.id || bulkDeleting}
+                      disabled={
+                        isLoading(`uploads:delete:${upload.id}`) ||
+                        isLoading('uploads:bulkDelete')
+                      }
                     >
-                      {deletingId === upload.id ? (
+                      {isLoading(`uploads:delete:${upload.id}`) ? (
                         <>
                           <Spinner />
                         </>

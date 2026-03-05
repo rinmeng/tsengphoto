@@ -4,6 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { LoadingProvider } from '@/hooks/use-loading';
 import { Toaster } from '@/components/ui/sonner';
 import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
@@ -72,12 +73,14 @@ export default function RootLayout({
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
         <AuthProvider>
           <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
-            <ToastProvider>
-              <Navbar />
-              <main>{children}</main>
-              <Toaster />
-              <Analytics />
-            </ToastProvider>
+            <LoadingProvider>
+              <ToastProvider>
+                <Navbar />
+                <main>{children}</main>
+                <Toaster />
+                <Analytics />
+              </ToastProvider>
+            </LoadingProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>

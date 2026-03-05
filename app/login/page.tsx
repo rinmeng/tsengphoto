@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +23,7 @@ import {
 
 import { signInWithEmail } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { useLoading } from '@/hooks/use-loading';
 import { useRouter } from 'next/navigation';
 import { Text } from '@/components/Text';
 import { LogIn } from 'lucide-react';
@@ -37,7 +37,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { setLoading, isLoading } = useLoading();
   const router = useRouter();
 
   const loginForm = useForm<LoginFormValues>({
@@ -49,31 +49,32 @@ export default function LoginPage() {
   });
 
   const onLoginSubmit = async (data: LoginFormValues) => {
-    setLoading(true);
+    setLoading('auth:login', true);
     try {
       const { email, password } = data;
       const { error } = await signInWithEmail(email, password);
       if (error) {
-        // Show email-specific errors on email field, others on password field
-        if (error.message.toLowerCase().includes('email not confirmed')) {
-          loginForm.setError('email', { message: error.message });
-        } else {
-          loginForm.setError('password', { message: error.message });
-        }
+        loginForm.setError('root', {
+          message: 'Invalid email or password',
+        });
         toast.error('Login failed', {
           description: 'Please check your credentials and try again.',
         });
+        setLoading('auth:login', false);
       } else {
-        toast.success('Login successful', { description: 'You are now signed in.' });
         router.push('/admin');
+        toast.success('Login successful', {
+          description: 'You are now signed in as ' + email.split('@')[0],
+        });
+        setLoading('auth:login', false);
       }
     } catch (err) {
       toast.error('Login failed', {
         description: 'Unexpected error occurred.',
       });
+      setLoading('auth:login', false);
       throw err;
     }
-    setLoading(false);
   };
 
   return (
@@ -156,12 +157,17 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+                {loginForm.formState.errors.root && (
+                  <div className='text-sm text-destructive'>
+                    {loginForm.formState.errors.root.message}
+                  </div>
+                )}
                 <Button
                   type='submit'
                   className='w-full fade-in-from-top delay-450'
-                  disabled={loading}
+                  disabled={isLoading('auth:login')}
                 >
-                  {loading ? (
+                  {isLoading('auth:login') ? (
                     <>
                       <Spinner /> Signing In...
                     </>
