@@ -37,9 +37,9 @@ export const ourFileRouter = {
       console.log('[UploadThing] Upload complete for userId:', metadata.userId);
       console.log('[UploadThing] File URL:', file.ufsUrl);
       console.log('[UploadThing] Environment check:', {
-        hasSupabaseUrl: !!process.env.SUPABASE_URL,
+        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-        supabaseUrl: process.env.SUPABASE_URL,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       });
 
       try {
