@@ -29,6 +29,7 @@ export default function Admin() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
 
   const fetchUploads = async () => {
@@ -78,11 +79,17 @@ export default function Admin() {
 
     setBulkDeleting(true);
     const selectedUploads = uploads.filter((upload) => selectedIds.has(upload.id));
+    const totalCount = selectedUploads.length;
     let deletedCount = 0;
 
+    setDeletionProgress({ current: 0, total: totalCount });
+
     // Sequential deletion
-    for (const upload of selectedUploads) {
+    for (let i = 0; i < selectedUploads.length; i++) {
+      const upload = selectedUploads[i];
       setDeletingId(upload.id);
+      setDeletionProgress({ current: i + 1, total: totalCount });
+
       const result = await UploadService.deleteUpload(upload.id, upload.file_url);
 
       if (result.success) {
@@ -96,6 +103,7 @@ export default function Admin() {
     setDeletingId(null);
     setBulkDeleting(false);
     setSelectedIds(new Set());
+    setDeletionProgress({ current: 0, total: 0 });
 
     if (deletedCount > 0) {
       toast.success(
@@ -185,7 +193,8 @@ export default function Admin() {
                 >
                   {bulkDeleting ? (
                     <>
-                      <Spinner /> Deleting {selectedIds.size}...
+                      <Spinner /> Deleting {deletionProgress.current} of{' '}
+                      {deletionProgress.total}...
                     </>
                   ) : (
                     <>
