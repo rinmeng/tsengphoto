@@ -51,14 +51,11 @@ export default proxy;
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - /api/v1/uploadthing (UploadThing handles its own callbacks)
-     * Always run for API routes (except uploadthing)
+     * Match all request paths EXCEPT:
+     * - _next internals
+     * - static files
+     * - /api/v1/uploadthing (UploadThing callbacks)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/v1/uploadthing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next|api/v1/uploadthing|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
   ],
 };
