@@ -161,10 +161,10 @@ ALTER TABLE
     "public"."collections" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE
-    "public"."collection_images" ENABLE ROW LEVEL SECURITY;
+    "public"."collection_image" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE
-    "public"."collection_image" ENABLE ROW LEVEL SECURITY;
+    "public"."uploads" ENABLE ROW LEVEL SECURITY;
 
 -- Collections Policies
 CREATE POLICY "Public can read published collections" ON "public"."collections" FOR

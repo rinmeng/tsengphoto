@@ -193,6 +193,7 @@ export function UploadsGallery({
           </div>
         ) : uploads.length === 0 ? (
           <EmptyState
+            bordered={true}
             icon={ImageOff}
             title='No uploads yet'
             description='Upload your first image to get started!'
