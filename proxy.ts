@@ -2,9 +2,16 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/utils/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
+  const { nextUrl } = request;
+
+  // Skip middleware for UploadThing API routes (they handle their own callbacks)
+  if (nextUrl.pathname.startsWith('/api/v1/uploadthing')) {
+    return;
+  }
+
   const { user, supabaseResponse } = await updateSession(request);
 
-  const pathname = request.nextUrl.pathname;
+  const pathname = nextUrl.pathname;
 
   // Define protected routes
   const protectedRoutes = ['/admin'];
@@ -37,6 +44,9 @@ export async function proxy(request: NextRequest) {
   return supabaseResponse;
 }
 
+// Export as default for Next.js middleware
+export default proxy;
+
 export const config = {
   matcher: [
     /*
@@ -45,8 +55,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * - api/v1/uploadthing (uploadthing callbacks)
+     * Always run for API routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/v1/uploadthing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/(api|trpc)(.*)',
   ],
 };
