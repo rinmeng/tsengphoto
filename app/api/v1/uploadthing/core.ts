@@ -17,13 +17,17 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
-      console.log('[UploadThing] middleware CALLED');
+      console.warn('[UploadThing] ===== MIDDLEWARE CALLED =====');
+      console.warn('[UploadThing] Request URL:', req.url);
 
       // Skip auth check for callback requests (they don't have user cookies)
       const url = new URL(req.url);
-      if (!url.searchParams.has('actionType')) {
-        console.log('[UploadThing] Callback request detected - skipping auth');
-        return { userId: 'callback' }; // Placeholder, unused in callback
+      const hasActionType = url.searchParams.has('actionType');
+      console.warn('[UploadThing] Has actionType param:', hasActionType);
+
+      if (!hasActionType) {
+        console.warn('[UploadThing] ⚠️ CALLBACK REQUEST - Skipping auth completely');
+        return { userId: 'system-callback' };
       }
 
       console.log('[UploadThing] Upload request - authorizing user');
