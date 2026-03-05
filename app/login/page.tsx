@@ -63,6 +63,7 @@ export default function LoginPage() {
         toast.error('Login failed', {
           description: 'Please check your credentials and try again.',
         });
+        setLoading(false);
       } else {
         toast.success('Login successful', { description: 'You are now signed in.' });
         router.push('/admin');
@@ -71,9 +72,9 @@ export default function LoginPage() {
       toast.error('Login failed', {
         description: 'Unexpected error occurred.',
       });
+      setLoading(false);
       throw err;
     }
-    setLoading(false);
   };
 
   return (
