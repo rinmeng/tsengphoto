@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/animate-ui/components/';
+import { Spinner } from '@/components/ui';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -40,6 +41,7 @@ import { signOut, useAuth } from '@/hooks/use-auth';
 import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useLoading } from '@/hooks/use-loading';
 
 function LoginButton({ onClose }: { onClose?: () => void }) {
   return (
@@ -53,19 +55,24 @@ function LoginButton({ onClose }: { onClose?: () => void }) {
 
 function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { setLoading, isLoading } = useLoading();
   const router = useRouter();
   const { toast } = useToast();
 
   const handleLogout = async () => {
+    setLoading('auth:logout', true);
     try {
       await signOut();
+      setDialogOpen(false);
+      onClose?.();
+      router.push('/login');
       toast.success('You have been logged out.');
+      // Don't clear loading - we're navigating away
     } catch {
       toast.error('There was an issue logging you out.');
+    } finally {
+      setLoading('auth:logout', false);
     }
-    setDialogOpen(false);
-    onClose?.();
-    router.push('/login');
   };
 
   return (
@@ -83,8 +90,20 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
           Are you sure you want to logout from your account <strong>{user.email}</strong>?
         </DialogDescription>
         <DialogFooter>
-          <Button variant='destructive' onClick={handleLogout}>
-            Logout <LogOut />
+          <Button
+            variant='destructive'
+            onClick={handleLogout}
+            disabled={isLoading('auth:logout')}
+          >
+            {isLoading('auth:logout') ? (
+              <>
+                <Spinner /> Logging Out...
+              </>
+            ) : (
+              <>
+                Logout <LogOut />
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
