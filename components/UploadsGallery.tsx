@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  ScrollArea,
   Skeleton,
   Spinner,
 } from '@/components/ui';
@@ -193,77 +194,79 @@ export function UploadsGallery({
             className='border-dashed border-2'
           />
         ) : (
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            {uploads.map((upload) => (
-              <div
-                key={upload.id}
-                className='border rounded-lg overflow-hidden hover:shadow-lg
-                  transition-shadow relative'
-              >
-                <div className='absolute top-2 left-2 z-10'>
-                  <Checkbox
-                    checked={selectedIds.has(upload.id)}
-                    onCheckedChange={(checked) =>
-                      handleSelectOne(upload.id, checked as boolean)
-                    }
-                    disabled={bulkDeleting}
-                    className='size-5 flex justify-center items-center border
-                      data-[state=checked]:bg-primary
-                      data-[state=checked]:text-primary-foreground bg-background/80
-                      backdrop-blur-sm transition-colors'
-                  >
-                    <CheckboxIndicator className='size-3.5' />
-                  </Checkbox>
-                </div>
-                <div className='absolute top-2 right-2 z-10'>
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    className='w-full'
-                    onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
-                    disabled={deletingId === upload.id || bulkDeleting}
-                  >
-                    {deletingId === upload.id ? (
-                      <>
-                        <Spinner />
-                      </>
-                    ) : (
-                      <>
-                        <Trash2 />
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <div className='relative aspect-video bg-muted'>
-                  <Image
-                    src={upload.file_url}
-                    alt={upload.file_name}
-                    fill
-                    className='object-cover'
-                  />
-                </div>
-                <div className='p-3 space-y-2'>
-                  <a
-                    href={upload.file_url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-sm font-medium truncate hover:underline
-                      hover:text-primary transition-colors block'
-                  >
-                    {upload.file_name}
-                  </a>
-                  <div className='flex items-center justify-between'>
-                    <Text variant='caption'>
-                      {(upload.file_size / 1024).toFixed(1)} KB
-                    </Text>
-                    <Text variant='caption'>
-                      {new Date(upload.created_at).toLocaleDateString()}
-                    </Text>
+          <ScrollArea className='h-[600px] pr-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              {uploads.map((upload) => (
+                <div
+                  key={upload.id}
+                  className='border rounded-lg overflow-hidden hover:shadow-lg
+                    transition-shadow relative'
+                >
+                  <div className='absolute top-2 left-2 z-10'>
+                    <Checkbox
+                      checked={selectedIds.has(upload.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectOne(upload.id, checked as boolean)
+                      }
+                      disabled={bulkDeleting}
+                      className='size-5 flex justify-center items-center border
+                        data-[state=checked]:bg-primary
+                        data-[state=checked]:text-primary-foreground bg-background/80
+                        backdrop-blur-sm transition-colors'
+                    >
+                      <CheckboxIndicator className='size-3.5' />
+                    </Checkbox>
+                  </div>
+                  <div className='absolute top-2 right-2 z-10'>
+                    <Button
+                      variant='destructive'
+                      size='sm'
+                      className='w-full'
+                      onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
+                      disabled={deletingId === upload.id || bulkDeleting}
+                    >
+                      {deletingId === upload.id ? (
+                        <>
+                          <Spinner />
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <div className='relative aspect-video bg-muted'>
+                    <Image
+                      src={upload.file_url}
+                      alt={upload.file_name}
+                      fill
+                      className='object-cover'
+                    />
+                  </div>
+                  <div className='p-3 space-y-2'>
+                    <a
+                      href={upload.file_url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-sm font-medium truncate hover:underline
+                        hover:text-primary transition-colors block'
+                    >
+                      {upload.file_name}
+                    </a>
+                    <div className='flex items-center justify-between'>
+                      <Text variant='caption'>
+                        {(upload.file_size / 1024).toFixed(1)} KB
+                      </Text>
+                      <Text variant='caption'>
+                        {new Date(upload.created_at).toLocaleDateString()}
+                      </Text>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>

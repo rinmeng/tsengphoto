@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useUploadThing } from '@/utils/uploadthing/uploadthing';
-import { Button, Progress } from '@/components/ui';
+import { Button, Progress, ScrollArea } from '@/components/ui';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -187,63 +187,65 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
           </div>
 
           {/* File List */}
-          <div className='space-y-3 max-h-96 overflow-y-auto'>
-            {files.map((fileWithStatus, index) => (
-              <div key={`${fileWithStatus.file.name}-${index}`} className='space-y-2'>
-                <div className='flex flex-col bg-muted/50 pb-2'>
-                  {/* File Info */}
-                  <div className='flex items-center gap-3 p-2 rounded-md'>
-                    <div className='rounded-md bg-primary/10 p-2 text-primary shrink-0'>
-                      <ImageIcon className='size-4' />
-                    </div>
-                    <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-medium truncate'>
-                        {fileWithStatus.file.name}
-                      </p>
-                      <p className='text-xs text-muted-foreground'>
-                        {(fileWithStatus.file.size / 1024 / 1024).toFixed(2)} MB
-                        {fileWithStatus.error && (
-                          <span className='text-destructive ml-2'>
-                            Error: {fileWithStatus.error}
-                          </span>
-                        )}
-                      </p>
-                    </div>
+          <ScrollArea className='h-96'>
+            <div className='space-y-3 pr-4'>
+              {files.map((fileWithStatus, index) => (
+                <div key={`${fileWithStatus.file.name}-${index}`} className='space-y-2'>
+                  <div className='flex flex-col bg-muted/50 pb-2'>
+                    {/* File Info */}
+                    <div className='flex items-center gap-3 p-2 rounded-md'>
+                      <div className='rounded-md bg-primary/10 p-2 text-primary shrink-0'>
+                        <ImageIcon className='size-4' />
+                      </div>
+                      <div className='flex-1 min-w-0'>
+                        <p className='text-sm font-medium truncate'>
+                          {fileWithStatus.file.name}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          {(fileWithStatus.file.size / 1024 / 1024).toFixed(2)} MB
+                          {fileWithStatus.error && (
+                            <span className='text-destructive ml-2'>
+                              Error: {fileWithStatus.error}
+                            </span>
+                          )}
+                        </p>
+                      </div>
 
-                    {/* Status Icon */}
-                    {fileWithStatus.status === 'success' && (
-                      <CheckCircle2 className='size-5 text-green-500 shrink-0' />
-                    )}
-                    {fileWithStatus.status === 'error' && (
-                      <XCircle className='size-5 text-destructive shrink-0' />
-                    )}
-                    {!isUploading && fileWithStatus.status === 'pending' && (
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        onClick={() => removeFile(index)}
-                        className='shrink-0 size-8'
-                      >
-                        <X className='size-4' />
-                      </Button>
+                      {/* Status Icon */}
+                      {fileWithStatus.status === 'success' && (
+                        <CheckCircle2 className='size-5 text-green-500 shrink-0' />
+                      )}
+                      {fileWithStatus.status === 'error' && (
+                        <XCircle className='size-5 text-destructive shrink-0' />
+                      )}
+                      {!isUploading && fileWithStatus.status === 'pending' && (
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => removeFile(index)}
+                          className='shrink-0 size-8'
+                        >
+                          <X className='size-4' />
+                        </Button>
+                      )}
+                    </div>
+                    {/* Per-file Progress Bar */}
+                    {fileWithStatus.status === 'uploading' && (
+                      <div className='space-y-1 px-2'>
+                        <div className='flex items-center justify-between text-xs'>
+                          <span className='text-muted-foreground'>Uploading...</span>
+                          <span className='text-muted-foreground'>
+                            {fileWithStatus.progress}%
+                          </span>
+                        </div>
+                        <Progress value={fileWithStatus.progress} />
+                      </div>
                     )}
                   </div>
-                  {/* Per-file Progress Bar */}
-                  {fileWithStatus.status === 'uploading' && (
-                    <div className='space-y-1 px-2'>
-                      <div className='flex items-center justify-between text-xs'>
-                        <span className='text-muted-foreground'>Uploading...</span>
-                        <span className='text-muted-foreground'>
-                          {fileWithStatus.progress}%
-                        </span>
-                      </div>
-                      <Progress value={fileWithStatus.progress} />
-                    </div>
-                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
 
           {/* Upload Button or Summary */}
           {!isUploading ? (
