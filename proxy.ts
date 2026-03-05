@@ -4,11 +4,6 @@ import { updateSession } from '@/utils/supabase/proxy';
 export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
-  // Skip middleware for UploadThing API routes (they handle their own callbacks)
-  if (nextUrl.pathname.startsWith('/api/v1/uploadthing')) {
-    return;
-  }
-
   const { user, supabaseResponse } = await updateSession(request);
 
   const pathname = nextUrl.pathname;
@@ -54,9 +49,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * Always run for API routes
+     * - /api/v1/uploadthing (UploadThing handles its own callbacks)
+     * Always run for API routes (except uploadthing)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-    '/(api|trpc)(.*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/v1/uploadthing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
