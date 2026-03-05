@@ -17,7 +17,7 @@ export default function AboutPage() {
             {/* Header */}
             {/* Image */}
             <div
-              className='relative w-full aspect-video rounded-lg overflow-hidden
+              className='relative w-full aspect-video rounded overflow-hidden
                 fade-in-from-left'
             >
               <Image

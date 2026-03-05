@@ -170,7 +170,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
       <div
         {...getRootProps()}
         className={cn(
-          `border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+          `border-2 border-dashed rounded p-8 text-center cursor-pointer
           transition-colors`,
           isDragActive
             ? 'border-primary bg-primary/5'
@@ -200,7 +200,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
 
       {/* Selected Files Preview */}
       {files.length > 0 && (
-        <div className='border rounded-lg p-4 space-y-3'>
+        <div className='border rounded p-4 space-y-3'>
           <div className='flex items-center justify-between'>
             <Text variant='bd-sm' className='font-medium'>
               {files.length} file{files.length !== 1 ? 's' : ''} selected
@@ -217,11 +217,11 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
             <div className='space-y-3 pr-4'>
               {files.map((fileWithStatus, index) => (
                 <div key={`${fileWithStatus.file.name}-${index}`} className='space-y-2'>
-                  <div className='flex flex-col bg-muted/50 pb-2'>
+                  <div className='flex flex-col bg-muted/50 border rounded'>
                     {/* File Info */}
-                    <div className='flex items-center gap-3 p-2 rounded-md'>
-                      <div className='rounded-md bg-primary/10 p-2 text-primary shrink-0'>
-                        <ImageIcon className='size-4' />
+                    <div className='flex items-center gap-3 p-2 rounded'>
+                      <div className='rounded bg-primary/10 p-2 text-primary'>
+                        <ImageIcon />
                       </div>
                       <div className='flex-1 min-w-0'>
                         <Text variant='bd-sm' className='font-medium truncate'>
@@ -256,8 +256,8 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
                       )}
                     </div>
                     {/* Per-file Progress Bar */}
-                    {fileWithStatus.status === 'uploading' && (
-                      <div className='space-y-1 px-2'>
+                    {fileWithStatus.status !== 'uploading' && (
+                      <div className='space-y-1 px-2 pb-2'>
                         <div className='flex items-center justify-between'>
                           <Text variant='caption'>Uploading...</Text>
                           <Text variant='caption'>{fileWithStatus.progress}%</Text>

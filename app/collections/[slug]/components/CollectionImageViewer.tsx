@@ -58,7 +58,7 @@ export function CollectionImageViewer({
             {sortedImages.map((image, index) => (
               <div
                 key={image.id}
-                className={`relative overflow-hidden rounded-lg bg-muted cursor-pointer
+                className={`relative overflow-hidden rounded bg-muted cursor-pointer
                   fade-in-from-bottom ${getDelayClass(index)}`}
                 onClick={() => handleImageClick(index)}
               >
