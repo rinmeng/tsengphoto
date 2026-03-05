@@ -28,19 +28,7 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      try {
-        console.log('[UploadThing] onUploadComplete CALLED');
-        console.log('[UploadThing] metadata:', JSON.stringify(metadata));
-        console.log('[UploadThing] file object:', JSON.stringify(file));
-        console.log('[UploadThing] Environment:', {
-          nodeEnv: process.env.NODE_ENV,
-          hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        });
-      } catch (logError) {
-        console.error('[UploadThing] Error during logging:', logError);
-      }
+      console.log('[UploadThing] onUploadComplete CALLED');
 
       try {
         // Save to Supabase database using admin client to bypass RLS
