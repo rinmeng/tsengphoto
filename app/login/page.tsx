@@ -67,7 +67,9 @@ export default function LoginPage() {
         setLoading('auth:login', false);
       } else {
         router.push('/admin');
-        toast.success('Login successful', { description: 'You are now signed in.' });
+        toast.success('Login successful', {
+          description: 'You are now signed in as ' + email.split('@')[0],
+        });
         setLoading('auth:login', false);
       }
     } catch (err) {
