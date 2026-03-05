@@ -137,7 +137,7 @@ export default function Home() {
         </div>
       </section>
       <Separator className='border-t-2' />
-      <section className='bg-muted py-8'>
+      <section className='container mx-auto border-x-2 border-dashed bg-muted py-8'>
         <div
           className='container mx-auto flex justify-center items-center flex-col gap-8
             px-8'
@@ -165,7 +165,7 @@ export default function Home() {
         </div>
       </section>
       <Separator className='border-t-2' />
-      <section className='bg-muted py-8'>
+      <section className='container mx-auto border-x-2 border-dashed bg-muted py-8'>
         <div
           className='container mx-auto flex justify-center items-center flex-col gap-8
             px-8'
