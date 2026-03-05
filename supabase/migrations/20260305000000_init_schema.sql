@@ -181,15 +181,7 @@ CREATE POLICY "Public can read all uploads" ON "public"."uploads" FOR
 SELECT
     USING (true);
 
-CREATE POLICY "Authenticated users can insert uploads" ON "public"."uploads" FOR
-INSERT
-    TO authenticated WITH CHECK ("auth"."uid"() = "user_id");
-
-CREATE POLICY "Users can update their own uploads" ON "public"."uploads" FOR
-UPDATE
-    TO authenticated USING ("auth"."uid"() = "user_id") WITH CHECK ("auth"."uid"() = "user_id");
-
-CREATE POLICY "Users can delete their own uploads" ON "public"."uploads" FOR DELETE TO authenticated USING ("auth"."uid"() = "user_id");
+CREATE POLICY "Users can manage their own uploads" ON "public"."uploads" FOR ALL TO authenticated USING ("auth"."uid"() = "user_id") WITH CHECK ("auth"."uid"() = "user_id");
 
 -- =====================================================
 -- Grant Permissions
