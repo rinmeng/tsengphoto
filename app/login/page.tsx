@@ -4,7 +4,6 @@ import { Logo } from '@/components/Logo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useEffect } from 'react';
 import {
   Button,
   Card,
@@ -55,12 +54,9 @@ export default function LoginPage() {
       const { email, password } = data;
       const { error } = await signInWithEmail(email, password);
       if (error) {
-        // Show email-specific errors on email field, others on password field
-        if (error.message.toLowerCase().includes('email not confirmed')) {
-          loginForm.setError('email', { message: error.message });
-        } else {
-          loginForm.setError('password', { message: error.message });
-        }
+        loginForm.setError('root', {
+          message: 'Invalid email or password',
+        });
         toast.error('Login failed', {
           description: 'Please check your credentials and try again.',
         });
@@ -161,6 +157,11 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+                {loginForm.formState.errors.root && (
+                  <div className='text-sm text-destructive'>
+                    {loginForm.formState.errors.root.message}
+                  </div>
+                )}
                 <Button
                   type='submit'
                   className='w-full fade-in-from-top delay-450'
