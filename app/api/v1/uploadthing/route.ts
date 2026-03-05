@@ -11,7 +11,6 @@ export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
     logLevel: 'Info',
-    // Let UploadThing auto-detect the callback URL - works better on Vercel
-    // Manual callbackUrl can cause "Callback Failed" errors in serverless environments
+    callbackUrl: `https://${process.env.VERCEL_URL || 'localhost:3000'}/api/v1/uploadthing`,
   },
 });
