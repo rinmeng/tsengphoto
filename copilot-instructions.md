@@ -34,12 +34,40 @@ lib/
 utils/supabase/       # Supabase client configurations
   ├── client.ts       # Client-side Supabase client
   ├── server.ts       # Server-side Supabase client (with cookies)
-  └── admin.ts        # Admin client (service role, bypasses RLS)
+  ├── admin.ts        # Admin client (service role, bypasses RLS)
+  └── proxy.ts        # Supabase session update for middleware
+
+proxy.ts              # Next.js middleware (route protection)
 
 supabase/             # Supabase local development
   ├── migrations/     # Database migrations
   └── seed.sql        # Seed data
 ```
+
+---
+
+## Middleware (proxy.ts)
+
+**Important:** This project uses `proxy.ts` instead of the standard `middleware.ts` (Next.js 15 convention).
+
+The middleware handles:
+- Authentication state via Supabase session refresh
+- Protected route redirects (e.g., `/admin` requires auth)
+- Auth page redirects (e.g., logged-in users redirected away from `/login`)
+
+### Excluding Routes from Middleware
+
+When adding third-party API callbacks (like UploadThing), **exclude them from the middleware matcher** to prevent interference:
+
+```typescript
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|api/v1/uploadthing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+}
+```
+
+**Rule:** Always exclude external callback endpoints (e.g., `/api/v1/uploadthing`) from middleware to avoid transport errors or callback failures.
 
 ---
 
@@ -234,6 +262,12 @@ When calling Supabase:
 ---
 
 ## UploadThing Handling
+
+**Callback URL Configuration:**
+- UploadThing callbacks are configured in `/app/api/v1/uploadthing/route.ts`
+- Uses `VERCEL_URL` environment variable (automatically set by Vercel)
+- Falls back to `NEXT_PUBLIC_SITE_URL` if set manually
+- **Must exclude `/api/v1/uploadthing` from middleware matcher** to prevent callback failures
 
 When upload fails:
 - Log full UploadThing error server-side.
@@ -531,13 +565,16 @@ Required environment variables for the project:
 
 ```bash
 # Supabase Configuration
-SUPABASE_URL=          # Supabase project URL (local: http://127.0.0.1:8000)
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=  # Supabase anon/public key
+NEXT_PUBLIC_SUPABASE_URL=          # Supabase project URL (local: http://127.0.0.1:8000)
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=  # Supabase anon/public key (client-safe)
 SUPABASE_SERVICE_ROLE_KEY=         # Supabase service role key (server-side only, never expose to client)
 
 # UploadThing Configuration
 UPLOADTHING_TOKEN=                 # UploadThing API token
 UPLOADTHING_APP_ID=                # UploadThing app ID (used for image hostname in next.config)
+
+# Site URL (optional - used for UploadThing callbacks on Vercel)
+NEXT_PUBLIC_SITE_URL=              # Your deployment URL (auto-detected via VERCEL_URL)
 ```
 
 **Important:**
@@ -545,6 +582,7 @@ UPLOADTHING_APP_ID=                # UploadThing app ID (used for image hostname
 - `UPLOADTHING_APP_ID` is used dynamically in `next.config.ts` for image optimization
 - All `NEXT_PUBLIC_*` variables are exposed to the client
 - Use `.env.local` for local development (not committed to git)
+- On Vercel, `VERCEL_URL` is automatically set for UploadThing callbacks
 
 ---
 
