@@ -49,6 +49,9 @@ export function PhotoCarousel({
     loop: true,
   };
 
+  // Only use Autoplay plugin if autoplayDelay is greater than 0
+  const plugins = autoplayDelay > 0 ? [Autoplay({ delay: autoplayDelay })] : [];
+
   return (
     <section className={cn(!fullWidth && 'container mx-auto', className)}>
       <Carousel
@@ -58,11 +61,7 @@ export function PhotoCarousel({
         dotsLocation={dotsLocation}
         className='w-full'
         opts={carouselOpts}
-        plugins={[
-          Autoplay({
-            delay: autoplayDelay,
-          }),
-        ]}
+        plugins={plugins}
       >
         <CarouselContent className='-ml-2 md:-ml-4'>
           {images.map((src, index) => (

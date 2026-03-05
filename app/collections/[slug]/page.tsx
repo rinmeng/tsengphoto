@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { getCollectionBySlug, getAllCollections } from '@/lib/placeholder/collections';
 import { Text } from '@/components/Text';
 import { Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Badge, Button } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
+import { CollectionImageViewer } from './components/CollectionImageViewer';
 
 interface CollectionPageProps {
   params: Promise<{ slug: string }>;
@@ -74,7 +74,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   return (
     <div className='container mx-auto px-4 nb-padding'>
       {/* Back Button */}
-      <div className={`sticky top-20 mb-6 z-60 fade-in-from-right ${getDelayClass(0)}`}>
+      <div className={`sticky top-20 mb-6 z-50 fade-in-from-right ${getDelayClass(0)}`}>
         <Link href='/collections'>
           <Button variant='default'>
             <ArrowLeft />
@@ -130,47 +130,11 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className='space-y-6'>
-        {collection.images.length > 0 ? (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {collection.images
-              .sort((a, b) => (a.order || 0) - (b.order || 0))
-              .map((image, index) => (
-                <div
-                  key={image.id}
-                  className={`relative overflow-hidden rounded-lg bg-muted
-                    fade-in-from-bottom ${getDelayClass(index)}`}
-                >
-                  <div className={'relative aspect-16/10 overflow-hidden bg-muted'}>
-                    {image.image_url ? (
-                      <Image
-                        src={image.image_url}
-                        alt={`${collection.title || collection.name} - Photo ${index + 1}`}
-                        fill
-                        className='object-cover hover:scale-105 transition-transform
-                          duration-300'
-                        sizes={
-                          index === 0 || index === 2
-                            ? '(max-width: 768px) 100vw, 66vw'
-                            : '(max-width: 768px) 100vw, 33vw'
-                        }
-                      />
-                    ) : (
-                      <div className='flex h-full items-center justify-center'>
-                        <Text variant='muted'>No image</Text>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <div className='text-center py-12'>
-            <Text variant='muted'>No images in this collection</Text>
-          </div>
-        )}
-      </div>
+      {/* Image Gallery with Viewer */}
+      <CollectionImageViewer
+        images={collection.images}
+        collectionTitle={collection.title || collection.name}
+      />
     </div>
   );
 }
