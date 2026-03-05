@@ -22,11 +22,14 @@ INSERT INTO
 VALUES
     (
         '00000000-0000-0000-0000-000000000000',
-        gen_random_uuid(),
+        gen_random_uuid (),
         'authenticated',
         'authenticated',
         'test@rinm.dev',
-        crypt('testrinmdev1!', gen_salt('bf')),
+        extensions.crypt (
+            'testrinmdev1!',
+            extensions.gen_salt ('bf')
+        ),
         NOW(),
         NOW(),
         NOW(),
