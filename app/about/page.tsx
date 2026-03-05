@@ -1,3 +1,4 @@
+'use client';
 import { Footer } from '@/components/Footer';
 import { Text } from '@/components/Text';
 import Image from 'next/image';
@@ -6,7 +7,7 @@ import { Separator } from '@/components/ui';
 export default function AboutPage() {
   return (
     <>
-      <div className='pt-18'>
+      <div className='pt-18 relative'>
         <div className='container mx-auto fade-in-from-top p-4 border-x-2 border-dashed'>
           <Text variant='hd-xxl'>About me</Text>
         </div>
