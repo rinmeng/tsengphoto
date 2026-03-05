@@ -4,6 +4,7 @@ import { Logo } from '@/components/Logo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useEffect } from 'react';
 import {
   Button,
   Card,
@@ -67,6 +68,7 @@ export default function LoginPage() {
       } else {
         router.push('/admin');
         toast.success('Login successful', { description: 'You are now signed in.' });
+        setLoading('auth:login', false);
       }
     } catch (err) {
       toast.error('Login failed', {
