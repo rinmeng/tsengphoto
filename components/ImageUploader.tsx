@@ -256,7 +256,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
                       )}
                     </div>
                     {/* Per-file Progress Bar */}
-                    {fileWithStatus.status !== 'uploading' && (
+                    {fileWithStatus.status === 'uploading' && (
                       <div className='space-y-1 px-2 pb-2'>
                         <div className='flex items-center justify-between'>
                           <Text variant='caption'>Uploading...</Text>
