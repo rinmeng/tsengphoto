@@ -44,7 +44,6 @@ export async function proxy(request: NextRequest) {
   return supabaseResponse;
 }
 
-// Export as default for Next.js middleware
 export default proxy;
 
 export const config = {
