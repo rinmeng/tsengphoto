@@ -570,7 +570,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=  # Supabase anon/public key (client-safe)
 SUPABASE_SERVICE_ROLE_KEY=         # Supabase service role key (server-side only, never expose to client)
 
 # UploadThing Configuration
-UPLOADTHING_TOKEN=                 # UploadThing API token
+UPLOADTHING_SECRET=                # UploadThing API secret key
 UPLOADTHING_APP_ID=                # UploadThing app ID (used for image hostname in next.config)
 
 # Site URL (optional - used for UploadThing callbacks on Vercel)
