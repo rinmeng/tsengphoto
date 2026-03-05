@@ -51,7 +51,7 @@ export const ourFileRouter = {
 
         const uploadData = {
           user_id: metadata.userId,
-          file_url: file.url,
+          file_url: file.ufsUrl,
           file_name: file.name,
           file_size: file.size,
           file_type: file.type,
@@ -68,17 +68,21 @@ export const ourFileRouter = {
         if (error) {
           console.error('[UploadThing] Database error:', error);
           // Return success to prevent UploadThing from marking as failed
-          return { uploadedBy: metadata.userId, url: file.url, dbError: error.message };
+          return {
+            uploadedBy: metadata.userId,
+            url: file.ufsUrl,
+            dbError: error.message,
+          };
         }
 
         console.log('[UploadThing] SUCCESS! Saved to database:', data);
-        return { uploadedBy: metadata.userId, url: file.url, success: true };
+        return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
       } catch (error) {
         console.error('[UploadThing] Exception caught:', error);
         // Return a valid response instead of throwing
         return {
           uploadedBy: metadata.userId,
-          url: file.url,
+          url: file.ufsUrl,
           error: error instanceof Error ? error.message : 'Unknown error',
         };
       }
