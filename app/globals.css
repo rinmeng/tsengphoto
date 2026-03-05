@@ -9,7 +9,7 @@
 
 @layer components {
   .nb-padding {
-    @apply py-24;
+    @apply pt-24;
   }
 
   .fade-in-from-bottom {
