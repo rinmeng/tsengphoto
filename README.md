@@ -153,7 +153,7 @@ The easiest way to deploy is using [Vercel](https://vercel.com/new):
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Cloud anon/publishable key
    - `SUPABASE_SERVICE_ROLE_KEY` - Cloud service role key (required for uploadthing)
    - `NEXT_PUBLIC_SITE_URL` - Your Vercel deployment URL (e.g., https://your-app.vercel.app)
-   - `UPLOADTHING_SECRET` - Your UploadThing secret key
+   - `UPLOADTHING_TOKEN` - Your UploadThing secret key
    - `UPLOADTHING_APP_ID` - Your UploadThing app ID
 4. Deploy
 
