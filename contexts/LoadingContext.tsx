@@ -22,7 +22,6 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
       } else {
         next.delete(key);
       }
-      console.log('all loading states:', next);
       return next;
     });
   };
