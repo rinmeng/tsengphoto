@@ -6,14 +6,30 @@ import { ourFileRouter } from './core';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes max for serverless function
 
+// Get the correct callback URL - use production domain if available
+const getCallbackUrl = () => {
+  // In production, use the production domain
+  if (
+    process.env.NEXT_PUBLIC_SITE_URL &&
+    !process.env.NEXT_PUBLIC_SITE_URL.includes('localhost')
+  ) {
+    return `${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/uploadthing`;
+  }
+  // For preview deployments, use VERCEL_URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/v1/uploadthing`;
+  }
+  // Local development - no callback URL (uses polling)
+  return undefined;
+};
+
+const callbackUrl = getCallbackUrl();
+
 const handlers = createRouteHandler({
   router: ourFileRouter,
   config: {
     logLevel: 'Debug',
-    // Only set callback for production, let it auto-detect/poll for dev
-    ...(process.env.VERCEL_URL && {
-      callbackUrl: `https://${process.env.VERCEL_URL}/api/v1/uploadthing`,
-    }),
+    callbackUrl,
   },
 });
 
