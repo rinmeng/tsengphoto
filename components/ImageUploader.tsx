@@ -6,6 +6,7 @@ import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button, Progress } from '@/components/ui';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ImageUploaderProps {
   onUploadComplete?: () => void;
@@ -34,12 +35,6 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
           prev.map((f, idx) => (idx === currentIdx ? { ...f, progress } : f))
         );
       }
-    },
-    onClientUploadComplete: (files) => {
-      console.log('[ImageUploader] Upload complete:', files);
-    },
-    onUploadError: (error) => {
-      console.error('[ImageUploader] Upload error:', error);
     },
   });
 
