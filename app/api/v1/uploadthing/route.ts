@@ -7,6 +7,9 @@ export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
     logLevel: 'Info',
-    callbackUrl: `https://${process.env.VERCEL_URL || 'localhost:3000'}/api/v1/uploadthing`,
+    // Only set callbackUrl for Vercel deployments, let UploadThing use polling for local dev
+    ...(process.env.VERCEL_URL && {
+      callbackUrl: `https://${process.env.VERCEL_URL}/api/v1/uploadthing`,
+    }),
   },
 });
