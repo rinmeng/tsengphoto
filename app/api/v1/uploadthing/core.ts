@@ -16,8 +16,17 @@ export const ourFileRouter = {
       maxFileCount: 10,
     },
   })
-    .middleware(async () => {
-      console.log('[UploadThing] middleware CALLED - authorizing user');
+    .middleware(async ({ req }) => {
+      console.log('[UploadThing] middleware CALLED');
+
+      // Skip auth check for callback requests (they don't have user cookies)
+      const url = new URL(req.url);
+      if (!url.searchParams.has('actionType')) {
+        console.log('[UploadThing] Callback request detected - skipping auth');
+        return { userId: 'callback' }; // Placeholder, unused in callback
+      }
+
+      console.log('[UploadThing] Upload request - authorizing user');
       // This code runs on your server before upload
       const supabase = await createClient();
       const {
