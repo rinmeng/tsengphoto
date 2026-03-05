@@ -148,7 +148,7 @@ export function UploadsGallery({
       <CardContent>
         {uploads.length > 0 && !loading && (
           <div className='flex items-center justify-between w-full gap-2 mb-2'>
-            <label className='flex items-center gap-2 text-sm cursor-pointer'>
+            <label className='flex items-center gap-2 cursor-pointer'>
               <Checkbox
                 checked={selectedIds.size === uploads.length && uploads.length > 0}
                 onCheckedChange={handleSelectAll}
@@ -159,7 +159,7 @@ export function UploadsGallery({
               >
                 <CheckboxIndicator className='size-3.5' />
               </Checkbox>
-              Select All
+              <Text variant='bd-sm'>Select All</Text>
             </label>
             {selectedIds.size > 0 && (
               <Button
@@ -194,7 +194,7 @@ export function UploadsGallery({
             className='border-dashed border-2'
           />
         ) : (
-          <ScrollArea className='h-[600px] pr-4'>
+          <ScrollArea className='h-150 pr-4'>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
               {uploads.map((upload) => (
                 <div
@@ -249,10 +249,12 @@ export function UploadsGallery({
                       href={upload.file_url}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='text-sm font-medium truncate hover:underline
-                        hover:text-primary transition-colors block'
+                      className='hover:underline hover:text-primary transition-colors
+                        block'
                     >
-                      {upload.file_name}
+                      <Text variant='bd-sm' className='font-medium truncate'>
+                        {upload.file_name}
+                      </Text>
                     </a>
                     <div className='flex items-center justify-between'>
                       <Text variant='caption'>

@@ -4,9 +4,9 @@ import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button, Progress, ScrollArea } from '@/components/ui';
+import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 interface ImageUploaderProps {
   onUploadComplete?: () => void;
@@ -158,15 +158,15 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
             <Upload className='size-8' />
           </div>
           {isDragActive ? (
-            <p className='text-sm font-medium'>Drop the images here...</p>
+            <Text variant='bd-sm' className='font-medium'>
+              Drop the images here...
+            </Text>
           ) : (
             <>
-              <p className='text-sm font-medium'>
+              <Text variant='bd-sm' className='font-medium'>
                 Drag & drop images here, or click to select
-              </p>
-              <p className='text-xs text-muted-foreground'>
-                PNG, JPG, JPEG, GIF, WEBP up to 16MB per file
-              </p>
+              </Text>
+              <Text variant='caption'>PNG, JPG, JPEG, GIF, WEBP up to 16MB per file</Text>
             </>
           )}
         </div>
@@ -176,9 +176,9 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
       {files.length > 0 && (
         <div className='border rounded-lg p-4 space-y-3'>
           <div className='flex items-center justify-between'>
-            <p className='text-sm font-medium'>
+            <Text variant='bd-sm' className='font-medium'>
               {files.length} file{files.length !== 1 ? 's' : ''} selected
-            </p>
+            </Text>
             {!isUploading && (
               <Button variant='ghost' size='sm' onClick={removeAllFiles}>
                 Clear all
@@ -198,17 +198,17 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
                         <ImageIcon className='size-4' />
                       </div>
                       <div className='flex-1 min-w-0'>
-                        <p className='text-sm font-medium truncate'>
+                        <Text variant='bd-sm' className='font-medium truncate'>
                           {fileWithStatus.file.name}
-                        </p>
-                        <p className='text-xs text-muted-foreground'>
+                        </Text>
+                        <Text variant='caption'>
                           {(fileWithStatus.file.size / 1024 / 1024).toFixed(2)} MB
                           {fileWithStatus.error && (
-                            <span className='text-destructive ml-2'>
+                            <Text variant='caption' className='text-destructive ml-2'>
                               Error: {fileWithStatus.error}
-                            </span>
+                            </Text>
                           )}
-                        </p>
+                        </Text>
                       </div>
 
                       {/* Status Icon */}
@@ -232,11 +232,9 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
                     {/* Per-file Progress Bar */}
                     {fileWithStatus.status === 'uploading' && (
                       <div className='space-y-1 px-2'>
-                        <div className='flex items-center justify-between text-xs'>
-                          <span className='text-muted-foreground'>Uploading...</span>
-                          <span className='text-muted-foreground'>
-                            {fileWithStatus.progress}%
-                          </span>
+                        <div className='flex items-center justify-between'>
+                          <Text variant='caption'>Uploading...</Text>
+                          <Text variant='caption'>{fileWithStatus.progress}%</Text>
                         </div>
                         <Progress value={fileWithStatus.progress} />
                       </div>
@@ -258,10 +256,10 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
               Upload {files.length} Image{files.length !== 1 ? 's' : ''}
             </Button>
           ) : (
-            <div className='text-center text-sm text-muted-foreground'>
+            <Text variant='bd-sm' className='text-center text-muted-foreground'>
               Uploading {files.filter((f) => f.status === 'success').length} of{' '}
               {files.length} files...
-            </div>
+            </Text>
           )}
         </div>
       )}
