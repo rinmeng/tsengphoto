@@ -5,12 +5,12 @@ const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl) {
   console.warn(
-    '⚠️  NEXT_PUBLIC_SUPABASE_URL is not set. Please add it to your .env.local file to enable Supabase features.'
+    '⚠️  NEXT_PUBLIC_SUPABASE_URL is not set. Please add it to your env vars to enable Supabase features.'
   );
 }
 if (!supabasePublishableKey) {
   console.warn(
-    '⚠️  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set. Please add it to your .env.local file to enable Supabase features.'
+    '⚠️  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set. Please add it to your env vars to enable Supabase features.'
   );
 }
 
