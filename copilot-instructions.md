@@ -531,7 +531,7 @@ Required environment variables for the project:
 
 ```bash
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=          # Supabase project URL (local: http://127.0.0.1:8000)
+SUPABASE_URL=          # Supabase project URL (local: http://127.0.0.1:8000)
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=  # Supabase anon/public key
 SUPABASE_SERVICE_ROLE_KEY=         # Supabase service role key (server-side only, never expose to client)
 
