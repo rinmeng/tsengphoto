@@ -26,7 +26,6 @@ export async function DELETE(req: NextRequest) {
     // Delete from UploadThing first
     try {
       await utapi.deleteFiles(fileKey);
-      console.log(`Deleted file from UploadThing: ${fileKey}`);
     } catch (utError) {
       console.error('Error deleting from UploadThing:', utError);
       return NextResponse.json(

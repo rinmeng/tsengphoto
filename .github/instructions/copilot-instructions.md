@@ -1,3 +1,8 @@
+---
+description: Describe when these instructions should be loaded
+applyTo: '**/*' # when provided, instructions will automatically be added to the request context when the pattern matches an attached file
+---
+
 # Copilot Project Instructions
 
 ## Stack
@@ -57,17 +62,36 @@ The middleware handles:
 
 ### Excluding Routes from Middleware
 
-When adding third-party API callbacks (like UploadThing), **exclude them from the middleware matcher** to prevent interference:
+Third-party API callbacks must be completely excluded from middleware to avoid interference.
 
+**Best Practice Pattern:**
 ```typescript
+export async function proxy(request: NextRequest) {
+  const { nextUrl } = request;
+
+  // Early return for routes that handle their own auth
+  if (nextUrl.pathname.startsWith('/api/v1/uploadthing')) {
+    return NextResponse.next();
+  }
+
+  // Normal middleware logic continues...
+  const { user, supabaseResponse } = await updateSession(request);
+  // ...
+}
+
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/v1/uploadthing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Use negative lookahead to exclude specific routes
+    '/((?!_next|api/v1/uploadthing|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
   ],
-}
+};
 ```
 
-**Rule:** Always exclude external callback endpoints (e.g., `/api/v1/uploadthing`) from middleware to avoid transport errors or callback failures.
+**Critical Rules:**
+1. Exclude callback routes in BOTH matcher AND early return
+2. Use negative lookahead pattern in matcher for exclusions
+3. Always return `NextResponse.next()` for excluded routes (not `undefined`)
+4. If using Vercel Deployment Protection, add callback routes to bypass list
 
 ---
 
@@ -187,6 +211,45 @@ Examples of safe user-facing errors:
 
 ---
 
+## Console Logging Best Practices
+
+**Log Only What Matters:**
+- ❌ Remove verbose debug logs from production code
+- ❌ Remove request/response logging for successful operations
+- ✅ Keep error logs with context (service name prefix: `[ServiceName] Error:`)
+- ✅ Keep critical failure logs (database errors, auth failures, callback failures)
+- ✅ Keep warnings for unexpected but handled conditions
+
+**Comment Only When Needed:**
+- Remove comments that simply restate the code
+- Keep comments for complex logic, workarounds, or non-obvious behavior
+- Document WHY, not WHAT (code shows what, comments explain why)
+
+**Examples:**
+```typescript
+// ❌ Bad: Verbose success logging
+console.log('[API] Request received');
+console.log('[API] Processing data');
+console.log('[API] Sending response');
+
+// ✅ Good: Error logging only
+if (error) {
+  console.error('[UploadService] Database error:', error);
+}
+
+// ❌ Bad: Obvious comment
+// Create a new user
+const user = await createUser();
+
+// ✅ Good: Explains non-obvious behavior
+// Skip auth check for callbacks - they don't have user session cookies
+if (!url.searchParams.has('actionType')) {
+  return { userId: 'system-callback' };
+}
+```
+
+---
+
 ## Authentication & Authorization
 
 ### Available Auth Functions
@@ -263,16 +326,31 @@ When calling Supabase:
 
 ## UploadThing Handling
 
-**Callback URL Configuration:**
-- UploadThing callbacks are configured in `/app/api/v1/uploadthing/route.ts`
-- Uses `VERCEL_URL` environment variable (automatically set by Vercel)
-- Falls back to `NEXT_PUBLIC_SITE_URL` if set manually
-- **Must exclude `/api/v1/uploadthing` from middleware matcher** to prevent callback failures
+**CRITICAL: Vercel Deployment Protection**
+- UploadThing callbacks will receive 401 errors if Vercel Authentication/Protection is enabled
+- **Solution:** Add `/api/v1/uploadthing` to "Protection Bypass for Automation" in Vercel dashboard
+- Location: Project Settings → Deployment Protection → Protection Bypass for Automation
+- Without this bypass, callbacks fail silently with 401 (files upload but database insert never happens)
+
+**Middleware Configuration:**
+- `/api/v1/uploadthing` routes MUST be excluded from proxy.ts middleware
+- Middleware matcher must use negative lookahead: `/((?!_next|api/v1/uploadthing|...]).*)`
+- Early return in proxy function: `if (nextUrl.pathname.startsWith('/api/v1/uploadthing')) return NextResponse.next();`
+
+**Callback Authentication:**
+- Callbacks from UploadThing servers don't have user session cookies
+- Middleware in core.ts detects callbacks by absence of `actionType` query parameter
+- Skip auth checks for callback requests (they use userId from metadata sent during upload)
+
+**Auto-Detection:**
+- Let UploadThing auto-detect callback URLs (don't set callbackUrl manually)
+- Vercel sets VERCEL_URL automatically, but it may point to different preview deployments
+- For production stability, set NEXT_PUBLIC_SITE_URL environment variable
 
 When upload fails:
-- Log full UploadThing error server-side.
-- Return a generic failure message.
-- Only expose validation-related failures (size/type) if safe.
+- Log full UploadThing error server-side
+- Return a generic failure message
+- Only expose validation-related failures (size/type) if safe
 
 ---
 

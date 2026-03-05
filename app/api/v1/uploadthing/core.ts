@@ -17,59 +17,35 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
-      console.warn('[UploadThing] ===== MIDDLEWARE CALLED =====');
-      console.warn('[UploadThing] Request URL:', req.url);
-
-      // Skip auth check for callback requests (they don't have user cookies)
       const url = new URL(req.url);
-      const hasActionType = url.searchParams.has('actionType');
-      console.warn('[UploadThing] Has actionType param:', hasActionType);
+      const isCallback = !url.searchParams.has('actionType');
 
-      if (!hasActionType) {
-        console.warn('[UploadThing] ⚠️ CALLBACK REQUEST - Skipping auth completely');
+      if (isCallback) {
         return { userId: 'system-callback' };
       }
 
-      console.log('[UploadThing] Upload request - authorizing user');
-      // This code runs on your server before upload
       const supabase = await createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        console.error('[UploadThing] middleware - No user found, throwing Unauthorized');
-        throw new UploadThingError('Unauthorized');
-      }
+      if (!user) throw new UploadThingError('Unauthorized');
 
-      console.log('[UploadThing] middleware - User authorized:', user.id);
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.warn(
-        '==================== UPLOADTHING CALLBACK START ===================='
-      );
-      console.warn('[UploadThing] onUploadComplete CALLED');
-      console.warn('[UploadThing] File:', file);
-      console.warn('[UploadThing] Metadata:', metadata);
-
       try {
-        // Save to Supabase database using admin client to bypass RLS
         const supabase = createAdminClient();
-
-        const uploadData = {
-          user_id: metadata.userId,
-          file_url: file.ufsUrl,
-          file_name: file.name,
-          file_size: file.size,
-          file_type: file.type,
-        };
-
-        console.log('[UploadThing] Inserting data:', uploadData);
 
         const { data, error } = await supabase
           .from('uploads')
-          .insert(uploadData)
+          .insert({
+            user_id: metadata.userId,
+            file_url: file.ufsUrl,
+            file_name: file.name,
+            file_size: file.size,
+            file_type: file.type,
+          })
           .select()
           .single();
 
@@ -82,20 +58,9 @@ export const ourFileRouter = {
           };
         }
 
-        console.log('[UploadThing] SUCCESS! Saved to database:', data);
-        console.warn(
-          '==================== UPLOADTHING CALLBACK SUCCESS ===================='
-        );
         return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
       } catch (error) {
-        console.error('[UploadThing] CRITICAL EXCEPTION:', error);
-        console.error(
-          '[UploadThing] Error stack:',
-          error instanceof Error ? error.stack : 'No stack'
-        );
-        console.warn(
-          '==================== UPLOADTHING CALLBACK ERROR ===================='
-        );
+        console.error('[UploadThing] Callback error:', error);
         return {
           uploadedBy: metadata.userId,
           url: file.ufsUrl,

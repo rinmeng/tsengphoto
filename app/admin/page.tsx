@@ -140,7 +140,6 @@ export default function Admin() {
               fetchUploads();
             }}
             onUploadError={(error: Error) => {
-              console.error('Upload error:', error);
               toast.error(`Upload failed: ${error.message}`);
             }}
           />
