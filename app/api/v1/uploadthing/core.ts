@@ -5,9 +5,7 @@ import { createAdminClient } from '@/utils/supabase/admin';
 
 const f = createUploadthing();
 
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({
     image: {
       /**
@@ -18,7 +16,6 @@ export const ourFileRouter = {
       maxFileCount: 10,
     },
   })
-    // Set permissions and file types for this FileRoute
     .middleware(async () => {
       // This code runs on your server before upload
       const supabase = await createClient();
@@ -26,18 +23,12 @@ export const ourFileRouter = {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError('Unauthorized');
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // CRITICAL: First line - if you see this, callback was reached
-      console.log('🔥🔥🔥 [UploadThing] onUploadComplete ENTRY POINT REACHED 🔥🔥🔥');
-
       try {
-        console.log('[UploadThing] ========================================');
         console.log('[UploadThing] onUploadComplete CALLED');
         console.log('[UploadThing] metadata:', JSON.stringify(metadata));
         console.log('[UploadThing] file object:', JSON.stringify(file));
@@ -73,7 +64,6 @@ export const ourFileRouter = {
 
         if (error) {
           console.error('[UploadThing] Database error:', error);
-          // Return success to prevent UploadThing from marking as failed
           return {
             uploadedBy: metadata.userId,
             url: file.ufsUrl,
@@ -89,7 +79,6 @@ export const ourFileRouter = {
           '[UploadThing] Error stack:',
           error instanceof Error ? error.stack : 'No stack'
         );
-        // Return a valid response instead of throwing
         return {
           uploadedBy: metadata.userId,
           url: file.ufsUrl,
