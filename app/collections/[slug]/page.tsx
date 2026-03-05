@@ -140,15 +140,9 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                 <div
                   key={image.id}
                   className={`relative overflow-hidden rounded-lg bg-muted
-                    fade-in-from-bottom ${getDelayClass(index)} ${
-                      index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-                    }`}
+                    fade-in-from-bottom ${getDelayClass(index)}`}
                 >
-                  <div
-                    className={`relative ${
-                      index === 0 ? 'aspect-16/10' : 'aspect-square'
-                      }`}
-                  >
+                  <div className={'relative aspect-16/10 overflow-hidden bg-muted'}>
                     {image.image_url ? (
                       <Image
                         src={image.image_url}
@@ -157,7 +151,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                         className='object-cover hover:scale-105 transition-transform
                           duration-300'
                         sizes={
-                          index === 0
+                          index === 0 || index === 2
                             ? '(max-width: 768px) 100vw, 66vw'
                             : '(max-width: 768px) 100vw, 33vw'
                         }
