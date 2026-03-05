@@ -113,8 +113,8 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
 
 const portfolioLinks = [
   {
-    href: '/collection',
-    label: 'Collection',
+    href: '/collections',
+    label: 'Collections',
     description: 'Browse through curated collections of my photography work',
   },
   {

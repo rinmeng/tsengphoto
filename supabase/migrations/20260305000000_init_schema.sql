@@ -58,6 +58,8 @@ SET
 CREATE TABLE IF NOT EXISTS "public"."collections" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" "text" NOT NULL,
+    "slug" "text" NOT NULL,
+    -- URL-friendly identifier
     "type" "text" NOT NULL,
     -- 'event', 'video', 'series', etc.
     "title" "text",
@@ -74,10 +76,10 @@ ALTER TABLE
     "public"."collections" OWNER TO "postgres";
 
 -- =====================================================
--- Collection Images Table
+-- Collection Image Table
 -- Images/media associated with collections
 -- =====================================================
-CREATE TABLE IF NOT EXISTS "public"."collection_images" (
+CREATE TABLE IF NOT EXISTS "public"."collection_image" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "collection_id" "uuid" NOT NULL,
     "image_url" "text",
@@ -86,7 +88,7 @@ CREATE TABLE IF NOT EXISTS "public"."collection_images" (
 );
 
 ALTER TABLE
-    "public"."collection_images" OWNER TO "postgres";
+    "public"."collection_image" OWNER TO "postgres";
 
 -- =====================================================
 -- Uploads Table
@@ -119,9 +121,9 @@ ADD
     CONSTRAINT "collections_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE
-    ONLY "public"."collection_images"
+    ONLY "public"."collection_image"
 ADD
-    CONSTRAINT "collection_images_pkey" PRIMARY KEY ("id");
+    CONSTRAINT "collection_image_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE
     ONLY "public"."uploads"
@@ -132,9 +134,9 @@ ADD
 -- Foreign Keys
 -- =====================================================
 ALTER TABLE
-    ONLY "public"."collection_images"
+    ONLY "public"."collection_image"
 ADD
-    CONSTRAINT "collection_images_collection_id_fkey" FOREIGN KEY ("collection_id") REFERENCES "public"."collections"("id") ON UPDATE CASCADE ON DELETE CASCADE;
+    CONSTRAINT "collection_image_collection_id_fkey" FOREIGN KEY ("collection_id") REFERENCES "public"."collections"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE
     ONLY "public"."uploads"
@@ -144,6 +146,8 @@ ADD
 -- =====================================================
 -- Indexes
 -- =====================================================
+CREATE UNIQUE INDEX IF NOT EXISTS "collections_slug_idx" ON "public"."collections" USING btree ("slug");
+
 CREATE INDEX IF NOT EXISTS "collections_type_idx" ON "public"."collections" USING btree ("type");
 
 CREATE INDEX IF NOT EXISTS "collections_is_published_idx" ON "public"."collections" USING btree ("is_published");
@@ -160,7 +164,7 @@ ALTER TABLE
     "public"."collection_images" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE
-    "public"."uploads" ENABLE ROW LEVEL SECURITY;
+    "public"."collection_image" ENABLE ROW LEVEL SECURITY;
 
 -- Collections Policies
 CREATE POLICY "Public can read published collections" ON "public"."collections" FOR
@@ -169,12 +173,12 @@ SELECT
 
 CREATE POLICY "Authenticated users can modify all collections" ON "public"."collections" FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
--- Collection Images Policies
-CREATE POLICY "Public can read collection images" ON "public"."collection_images" FOR
+-- Collection Image Policies
+CREATE POLICY "Public can read collection images" ON "public"."collection_image" FOR
 SELECT
     USING (true);
 
-CREATE POLICY "Authenticated users can modify all collection images" ON "public"."collection_images" FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Authenticated users can modify all collection images" ON "public"."collection_image" FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Uploads Policies
 CREATE POLICY "Public can read all uploads" ON "public"."uploads" FOR
@@ -198,12 +202,12 @@ GRANT ALL ON TABLE "public"."collections" TO "authenticated";
 
 GRANT ALL ON TABLE "public"."collections" TO "service_role";
 
--- Grant permissions on collection_images
-GRANT ALL ON TABLE "public"."collection_images" TO "anon";
+-- Grant permissions on collection_image
+GRANT ALL ON TABLE "public"."collection_image" TO "anon";
 
-GRANT ALL ON TABLE "public"."collection_images" TO "authenticated";
+GRANT ALL ON TABLE "public"."collection_image" TO "authenticated";
 
-GRANT ALL ON TABLE "public"."collection_images" TO "service_role";
+GRANT ALL ON TABLE "public"."collection_image" TO "service_role";
 
 -- Grant permissions on uploads
 GRANT ALL ON TABLE "public"."uploads" TO "anon";

@@ -671,6 +671,49 @@ import { Spinner } from '@/components/ui';
 
 ---
 
+###
+
+### Buttons with Icons
+
+Shadcn buttons have built-in icon support with automatic spacing. Icons from lucide-react are placed directly inside the button:
+
+**Icon with text:**
+```tsx
+import { Button } from '@/components/ui';
+import { Trash2, Plus, ArrowLeft } from 'lucide-react';
+
+// Icon before text
+<Button variant='destructive'>
+  <Trash2 />
+  Delete
+</Button>
+
+// Icon after text
+<Button>
+  Continue
+  <ArrowLeft />
+</Button>
+
+// Primary action
+<Button>
+  <Plus />
+  Add New
+</Button>
+```
+
+**Icon only:**
+```tsx
+<Button variant='ghost' size='icon'>
+  <Trash2 />
+</Button>
+```
+
+**Rules:**
+- Don't wrap icons in spans or fragments
+- Don't manually add gap/spacing classes (buttons handle this automatically)
+- Use `size='icon'` variant for icon-only buttons
+- Icons automatically get proper sizing and spacing from parent button
+
 ## Environment Variables
 
 Required environment variables for the project:

@@ -13,6 +13,7 @@ export interface Upload {
 export interface Collection {
   id: string;
   name: string;
+  slug: string; // URL-friendly identifier
   type: string; // 'event', 'video', 'series', etc.
   title: string | null;
   date: string | null;
@@ -30,4 +31,9 @@ export interface CollectionImage {
   image_url: string | null;
   order: number | null;
   created_at: string;
+}
+
+// Extended type for collections with their images
+export interface CollectionWithImages extends Collection {
+  images: CollectionImage[];
 }
