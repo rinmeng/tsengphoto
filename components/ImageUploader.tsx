@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, type FileRejection } from 'react-dropzone';
 import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button, Progress, ScrollArea } from '@/components/ui';
 import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploaderProps {
   onUploadComplete?: () => void;
@@ -26,6 +27,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
   const [files, setFiles] = useState<FileWithStatus[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const currentFileIndexRef = useRef<number>(-1);
+  const { toast } = useToast();
 
   const { startUpload } = useUploadThing('imageUploader', {
     onUploadProgress: (progress) => {
@@ -72,8 +74,32 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
     });
   }, []);
 
+  const onDropRejected = useCallback(
+    (fileRejections: FileRejection[]) => {
+      fileRejections.forEach((rejection) => {
+        const { file, errors } = rejection;
+
+        errors.forEach((error) => {
+          if (error.code === 'file-invalid-type') {
+            toast.error(
+              `"${file.name}" is not a supported image format. Please use PNG, JPG, JPEG, GIF, or WEBP.`
+            );
+          } else if (error.code === 'file-too-large') {
+            toast.error(`"${file.name}" is too large. Maximum file size is 16MB.`);
+          } else if (error.code === 'too-many-files') {
+            toast.error('Too many files selected. Maximum is 10 files at a time.');
+          } else {
+            toast.error(`Error with "${file.name}": ${error.message}`);
+          }
+        });
+      });
+    },
+    [toast]
+  );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
     },
