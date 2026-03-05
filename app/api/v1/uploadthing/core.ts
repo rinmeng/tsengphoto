@@ -17,18 +17,28 @@ export const ourFileRouter = {
     },
   })
     .middleware(async () => {
+      console.log('[UploadThing] middleware CALLED - authorizing user');
       // This code runs on your server before upload
       const supabase = await createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) throw new UploadThingError('Unauthorized');
+      if (!user) {
+        console.error('[UploadThing] middleware - No user found, throwing Unauthorized');
+        throw new UploadThingError('Unauthorized');
+      }
 
+      console.log('[UploadThing] middleware - User authorized:', user.id);
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log('[UploadThing] onUploadComplete CALLED');
+      console.warn(
+        '==================== UPLOADTHING CALLBACK START ===================='
+      );
+      console.warn('[UploadThing] onUploadComplete CALLED');
+      console.warn('[UploadThing] File:', file);
+      console.warn('[UploadThing] Metadata:', metadata);
 
       try {
         // Save to Supabase database using admin client to bypass RLS
@@ -60,12 +70,18 @@ export const ourFileRouter = {
         }
 
         console.log('[UploadThing] SUCCESS! Saved to database:', data);
+        console.warn(
+          '==================== UPLOADTHING CALLBACK SUCCESS ===================='
+        );
         return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
       } catch (error) {
         console.error('[UploadThing] CRITICAL EXCEPTION:', error);
         console.error(
           '[UploadThing] Error stack:',
           error instanceof Error ? error.stack : 'No stack'
+        );
+        console.warn(
+          '==================== UPLOADTHING CALLBACK ERROR ===================='
         );
         return {
           uploadedBy: metadata.userId,
