@@ -4,6 +4,11 @@ import { updateSession } from '@/utils/supabase/proxy';
 export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
+  // Skip middleware for API routes that handle their own auth
+  if (nextUrl.pathname.startsWith('/api/v1/uploadthing')) {
+    return NextResponse.next();
+  }
+
   const { user, supabaseResponse } = await updateSession(request);
 
   const pathname = nextUrl.pathname;
