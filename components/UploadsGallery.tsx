@@ -197,7 +197,6 @@ export function UploadsGallery({
             icon={ImageOff}
             title='No uploads yet'
             description='Upload your first image to get started!'
-            className='border-dashed border-2'
           />
         ) : (
           <ScrollArea className='h-150 pr-4'>

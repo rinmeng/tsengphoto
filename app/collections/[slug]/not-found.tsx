@@ -3,7 +3,7 @@ import { ArrowLeft, ImageOff } from 'lucide-react';
 
 export default function CollectionNotFound() {
   return (
-    <div className='container mx-auto nb-padding fade-in-from-bottom'>
+    <div className='container mx-auto nb-padding fade-in-from-bottom px-4'>
       <EmptyState
         bordered={true}
         icon={ImageOff}
