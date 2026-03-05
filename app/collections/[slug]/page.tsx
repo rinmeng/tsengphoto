@@ -74,9 +74,9 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   return (
     <div className='container mx-auto px-4 nb-padding'>
       {/* Back Button */}
-      <div className='mb-8'>
+      <div className={`sticky top-20 mb-6 z-60 fade-in-from-right ${getDelayClass(0)}`}>
         <Link href='/collections'>
-          <Button variant='outline' className={`fade-in-from-right ${getDelayClass(0)}`}>
+          <Button variant='default'>
             <ArrowLeft />
             Back to Collections
           </Button>

@@ -1,20 +1,7 @@
-import { Metadata } from 'next';
 import { getAllCollections } from '@/lib/placeholder/collections';
 import { CollectionGrid } from '@/components/collections/CollectionGrid';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
-
-export const metadata: Metadata = {
-  title: 'Collections | TsengPhoto',
-  description:
-    'Browse our collection of event photography, video projects, and photo series. Professional photography services in Vancouver and Kelowna.',
-  openGraph: {
-    title: 'Collections | TsengPhoto',
-    description:
-      'Browse our collection of event photography, video projects, and photo series.',
-    type: 'website',
-  },
-};
 
 export default async function CollectionsPage() {
   // Fetch collections (using placeholder data for now)
