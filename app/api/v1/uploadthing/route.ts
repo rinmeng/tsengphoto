@@ -4,32 +4,37 @@ import { NextRequest } from 'next/server';
 import { ourFileRouter } from './core';
 
 export const runtime = 'nodejs';
+export const maxDuration = 300; // 5 minutes max for serverless function
 
 const handlers = createRouteHandler({
   router: ourFileRouter,
   config: {
-    callbackUrl: process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api/v1/uploadthing`
-      : undefined,
-    isDev: !process.env.VERCEL_URL, // Dev mode only for local
+    logLevel: 'Debug',
+    // Only set callback for production, let it auto-detect/poll for dev
+    ...(process.env.VERCEL_URL && {
+      callbackUrl: `https://${process.env.VERCEL_URL}/api/v1/uploadthing`,
+    }),
   },
 });
 
 export async function GET(req: NextRequest) {
-  console.log('[UploadThing] GET called - URL:', req.url);
-  console.log('[UploadThing] VERCEL_URL:', process.env.VERCEL_URL);
+  console.warn('[UploadThing] ===== GET REQUEST =====');
+  console.warn('[UploadThing] URL:', req.url);
+  console.warn('[UploadThing] VERCEL_URL:', process.env.VERCEL_URL || 'NOT SET');
   return handlers.GET(req);
 }
 
 export async function POST(req: NextRequest) {
-  console.log('[UploadThing] POST called - URL:', req.url);
-  console.log(
-    '[UploadThing] Callback URL configured:',
-    process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api/v1/uploadthing`
-      : 'undefined (local dev mode)'
-  );
+  console.warn('[UploadThing] ===== POST REQUEST =====');
+  console.warn('[UploadThing] URL:', req.url);
+  console.warn('[UploadThing] VERCEL_URL:', process.env.VERCEL_URL || 'NOT SET');
+  if (process.env.VERCEL_URL) {
+    console.warn(
+      '[UploadThing] Callback URL:',
+      `https://${process.env.VERCEL_URL}/api/v1/uploadthing`
+    );
+  }
   const result = await handlers.POST(req);
-  console.log('[UploadThing] POST completed - Status:', result.status);
+  console.warn('[UploadThing] POST completed - Status:', result.status);
   return result;
 }
