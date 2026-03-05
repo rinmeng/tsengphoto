@@ -1,56 +1,53 @@
+'use client';
+
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui';
-import { Shield, Lock, SquareArrowOutUpRight } from 'lucide-react';
+import { ImageUploader } from '@/components/ImageUploader';
+import { UploadsGallery } from '@/components/UploadsGallery';
+import { Text } from '@/components/Text';
+import { Info } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Admin() {
+  const { toast } = useToast();
+  const [galleryKey, setGalleryKey] = useState(0);
+
   return (
-    <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-right'>
+    <div className='nb-padding max-w-2xl mx-auto px-4 fade-in-from-bottom'>
       <Card>
-        <CardHeader className='text-center'>
-          <div className='flex justify-center mb-4'>
-            <div className='p-3 rounded-full bg-primary/10'>
-              <Shield className='h-8 w-8 text-primary' />
-            </div>
-          </div>
-          <CardTitle className='text-2xl sm:text-3xl'>
-            Admin Page - Protected Route
-          </CardTitle>
-          <CardDescription className='text-sm sm:text-base'>
-            This page is a protected route that only authenticated users can see.
+        <CardHeader>
+          <CardTitle>Upload Image</CardTitle>
+          <CardDescription
+            className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'
+          >
+            <Info className='size-4' />
+            <Text variant='muted-sm'>
+              Tip: Keep files under 16MB for faster uploads and storage efficiency.
+            </Text>
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4 justify-center flex flex-col'>
-          <div className='flex items-start gap-3 p-3 sm:p-4 rounded-lg border bg-muted/50'>
-            <Lock className='h-5 w-5 text-muted-foreground mt-0.5 shrink-0' />
-            <div>
-              <p className='font-medium mb-1 text-sm sm:text-base'>Route Protection</p>
-              <p className='text-xs sm:text-sm text-muted-foreground'>
-                This is an example usage of proxy/middleware to restrict access to
-                authenticated users only.
-              </p>
-            </div>
-          </div>
-
-          <Button variant='default' className='w-full sm:w-auto mx-auto' asChild>
-            <a
-              href='https://github.com/rinmeng/next-shadcn-supabase-starter/blob/main/proxy.ts'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='inline-flex items-center gap-2'
-            >
-              <span className='hidden sm:inline'>View proxy.ts</span>
-              <span className='sm:hidden'>View Source Code</span>
-              <SquareArrowOutUpRight className='h-3 w-3' />
-            </a>
-          </Button>
+        <CardContent>
+          <ImageUploader
+            onUploadComplete={() => {
+              toast.success('Upload completed successfully!');
+              setGalleryKey((prev) => prev + 1);
+            }}
+            onUploadError={(error: Error) => {
+              toast.error(`Upload failed: ${error.message}`);
+            }}
+          />
         </CardContent>
       </Card>
+
+      <div className='mt-4'>
+        <UploadsGallery key={galleryKey} />
+      </div>
     </div>
   );
 }

@@ -2,8 +2,10 @@
 import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Footer } from '@/components/Footer';
+import { Text } from '@/components/Text';
 import { Button, Separator } from '@/components/ui';
 import { SendHorizonal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 
@@ -48,6 +50,8 @@ const portraitPhotography = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className='mx-auto overflow-x-hidden'>
       <Hero />
@@ -56,8 +60,12 @@ export default function Home() {
           className='flex justify-center items-center h-30 md:h-60 flex-col gap-4
             border-dashed border-x-2'
         >
-          <div className='text-3xl md:text-7xl font-bold'>Event Photographer</div>
-          <div className='text-xl md:text-2xl'>Kelowna & Vancouver</div>
+          <div className='text-center space-y-2'>
+            <Text variant='hd-xl'>Event Photographer</Text>
+            <Text variant='bd-lg' className='text-muted-foreground'>
+              Kelowna & Vancouver
+            </Text>
+          </div>
         </div>
       </section>
       <Separator className='border-t-2' />
@@ -75,10 +83,15 @@ export default function Home() {
             />
           </div>
           <div className='w-full md:w-1/2 flex flex-col gap-4 px-4'>
-            <div className='text-xl lg:text-3xl text-center md:text-left'>
+            <Text variant='bd-lg' className='text-center md:text-left'>
               Check out photos taken at various events, capturing the best moments within.
-            </div>
-            <Button variant='default' size='lg' className='self-center md:self-start'>
+            </Text>
+            <Button
+              variant='default'
+              size='lg'
+              className='self-center md:self-start'
+              onClick={() => router.push('/events')}
+            >
               Learn More
             </Button>
           </div>
@@ -99,11 +112,16 @@ export default function Home() {
             />
           </div>
           <div className='w-full md:w-1/2 flex flex-col gap-4 px-4'>
-            <div className='text-xl lg:text-3xl text-center md:text-right'>
+            <Text variant='bd-lg' className='text-center md:text-right'>
               A collection of photos featuring my best work within different photography
               fields.
-            </div>
-            <Button variant='default' size='lg' className='self-center md:self-end'>
+            </Text>
+            <Button
+              variant='default'
+              size='lg'
+              className='self-center md:self-end'
+              onClick={() => router.push('/collection')}
+            >
               Learn More
             </Button>
           </div>
@@ -115,18 +133,21 @@ export default function Home() {
           className='flex justify-center items-center h-30 md:h-60 flex-col gap-4
             border-dashed border-x-2'
         >
-          <div className='text-3xl md:text-7xl font-bold'>Photography Services</div>
+          <Text variant='hd-xl'>Photography Services</Text>
         </div>
       </section>
       <Separator className='border-t-2' />
-      <section className='bg-muted py-8'>
-        <div className='container mx-auto flex justify-center items-center flex-col gap-8'>
-          <div className='text-2xl md:text-4xl'>Event Photography</div>
-          <div className='text-center max-w-3xl'>
+      <section className='container mx-auto border-x-2 border-dashed bg-muted py-8'>
+        <div
+          className='container mx-auto flex justify-center items-center flex-col gap-8
+            px-8'
+        >
+          <Text variant='hd-lg'>Event Photography</Text>
+          <Text variant='bd-md' className='text-center max-w-3xl'>
             Capturing key moments and details of a special occasion such as a wedding,
             corporate event, or party! Candid and posed shots are captured to create a
             lasting record.
-          </div>
+          </Text>
         </div>
         <PhotoCarousel
           className='mt-8'
@@ -137,25 +158,24 @@ export default function Home() {
           images={eventPhotography}
         />
         <div className='container mx-auto flex justify-center mt-8'>
-          <Button
-            variant='default'
-            size='xl'
-            onClick={() => console.log('Navigate to event photography booking')}
-          >
+          <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />
           </Button>
         </div>
       </section>
       <Separator className='border-t-2' />
-      <section className='bg-muted py-8'>
-        <div className='container mx-auto flex justify-center items-center flex-col gap-8'>
-          <div className='text-2xl md:text-4xl'>Portrait Photography</div>
-          <div className='text-center max-w-3xl'>
+      <section className='container mx-auto border-x-2 border-dashed bg-muted py-8'>
+        <div
+          className='container mx-auto flex justify-center items-center flex-col gap-8
+            px-8'
+        >
+          <Text variant='hd-lg'>Portrait Photography</Text>
+          <Text variant='bd-md' className='text-center max-w-3xl'>
             Creating stunning images through a photoshoot, whether it is for personal
             portrait, fashion, or graduation, I capture both artistic and traditional
             shots to showcase every detail.
-          </div>
+          </Text>
         </div>
         <PhotoCarousel
           className='mt-8'
@@ -166,11 +186,7 @@ export default function Home() {
           images={portraitPhotography}
         />
         <div className='container mx-auto flex justify-center mt-8'>
-          <Button
-            variant='default'
-            size='xl'
-            onClick={() => console.log('Navigate to portrait photography booking')}
-          >
+          <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />
           </Button>

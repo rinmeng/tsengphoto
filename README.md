@@ -66,8 +66,8 @@ cp .env.example .env.local
 Add your Supabase credentials to `.env.local`:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-anon-key
+SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-key
 ```
 
 You can find these in your [Supabase project settings](https://supabase.com/dashboard/project/_/settings/api).
@@ -148,9 +148,13 @@ The easiest way to deploy is using [Vercel](https://vercel.com/new):
 
 1. Push your code to a GitHub repository
 2. Import the repository in Vercel
-3. Add environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+3. Add environment variables (use your **cloud** Supabase values, not localhost):
+   - `SUPABASE_URL` - Your cloud Supabase URL (e.g., https://xxx.supabase.co)
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Cloud anon/publishable key
+   - `SUPABASE_SERVICE_ROLE_KEY` - Cloud service role key (required for uploadthing)
+   - `NEXT_PUBLIC_SITE_URL` - Your Vercel deployment URL (e.g., https://your-app.vercel.app)
+   - `UPLOADTHING_TOKEN` - Your UploadThing secret key
+   - `UPLOADTHING_APP_ID` - Your UploadThing app ID
 4. Deploy
 
 See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for other platforms.
