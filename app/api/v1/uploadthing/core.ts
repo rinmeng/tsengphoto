@@ -34,9 +34,12 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log('[UploadThing] Upload complete for userId:', metadata.userId);
-      console.log('[UploadThing] File URL:', file.ufsUrl);
-      console.log('[UploadThing] Environment check:', {
+      console.log('[UploadThing] ========================================');
+      console.log('[UploadThing] onUploadComplete CALLED');
+      console.log('[UploadThing] metadata:', metadata);
+      console.log('[UploadThing] file object:', file);
+      console.log('[UploadThing] Environment:', {
+        nodeEnv: process.env.NODE_ENV,
         hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -45,36 +48,39 @@ export const ourFileRouter = {
       try {
         // Save to Supabase database using admin client to bypass RLS
         const supabase = createAdminClient();
+
+        const uploadData = {
+          user_id: metadata.userId,
+          file_url: file.url,
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type,
+        };
+
+        console.log('[UploadThing] Inserting data:', uploadData);
+
         const { data, error } = await supabase
           .from('uploads')
-          .insert({
-            user_id: metadata.userId,
-            file_url: file.ufsUrl,
-            file_name: file.name,
-            file_size: file.size,
-            file_type: file.type,
-          })
+          .insert(uploadData)
           .select()
           .single();
 
         if (error) {
-          console.error('[UploadThing] Error saving upload to database:', error);
-          console.error('[UploadThing] Error details:', JSON.stringify(error));
-          // Log error but don't throw - allow upload to succeed even if DB insert fails
-          return { uploadedBy: metadata.userId, url: file.ufsUrl, dbError: true };
+          console.error('[UploadThing] Database error:', error);
+          // Return success to prevent UploadThing from marking as failed
+          return { uploadedBy: metadata.userId, url: file.url, dbError: error.message };
         }
 
-        console.log('[UploadThing] Upload saved to database:', data);
-        return { uploadedBy: metadata.userId, url: file.ufsUrl };
+        console.log('[UploadThing] SUCCESS! Saved to database:', data);
+        return { uploadedBy: metadata.userId, url: file.url, success: true };
       } catch (error) {
-        console.error('[UploadThing] Failed to save upload:', error);
-        console.error(
-          '[UploadThing] Exception details:',
-          error instanceof Error ? error.message : String(error)
-        );
-        // Return success to UploadThing even if DB insert fails
-        // This prevents the callback from failing
-        return { uploadedBy: metadata.userId, url: file.ufsUrl, dbError: true };
+        console.error('[UploadThing] Exception caught:', error);
+        // Return a valid response instead of throwing
+        return {
+          uploadedBy: metadata.userId,
+          url: file.url,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        };
       }
     }),
 } satisfies FileRouter;
