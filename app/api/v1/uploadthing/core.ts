@@ -33,17 +33,23 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log('[UploadThing] ========================================');
-      console.log('[UploadThing] onUploadComplete CALLED');
-      console.log('[UploadThing] metadata:', metadata);
-      console.log('[UploadThing] file object:', file);
-      console.log('[UploadThing] Environment:', {
-        nodeEnv: process.env.NODE_ENV,
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      });
+      // CRITICAL: First line - if you see this, callback was reached
+      console.log('🔥🔥🔥 [UploadThing] onUploadComplete ENTRY POINT REACHED 🔥🔥🔥');
+
+      try {
+        console.log('[UploadThing] ========================================');
+        console.log('[UploadThing] onUploadComplete CALLED');
+        console.log('[UploadThing] metadata:', JSON.stringify(metadata));
+        console.log('[UploadThing] file object:', JSON.stringify(file));
+        console.log('[UploadThing] Environment:', {
+          nodeEnv: process.env.NODE_ENV,
+          hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+          hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        });
+      } catch (logError) {
+        console.error('[UploadThing] Error during logging:', logError);
+      }
 
       try {
         // Save to Supabase database using admin client to bypass RLS
@@ -78,7 +84,11 @@ export const ourFileRouter = {
         console.log('[UploadThing] SUCCESS! Saved to database:', data);
         return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
       } catch (error) {
-        console.error('[UploadThing] Exception caught:', error);
+        console.error('[UploadThing] CRITICAL EXCEPTION:', error);
+        console.error(
+          '[UploadThing] Error stack:',
+          error instanceof Error ? error.stack : 'No stack'
+        );
         // Return a valid response instead of throwing
         return {
           uploadedBy: metadata.userId,
