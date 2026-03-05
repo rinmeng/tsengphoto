@@ -44,12 +44,14 @@ export async function POST(req: NextRequest) {
   console.warn('[UploadThing] ===== POST REQUEST =====');
   console.warn('[UploadThing] URL:', req.url);
   console.warn('[UploadThing] VERCEL_URL:', process.env.VERCEL_URL || 'NOT SET');
-  if (process.env.VERCEL_URL) {
-    console.warn(
-      '[UploadThing] Callback URL:',
-      `https://${process.env.VERCEL_URL}/api/v1/uploadthing`
-    );
-  }
+  console.warn(
+    '[UploadThing] NEXT_PUBLIC_SITE_URL:',
+    process.env.NEXT_PUBLIC_SITE_URL || 'NOT SET'
+  );
+  console.warn(
+    '[UploadThing] Callback URL configured:',
+    callbackUrl || 'NOT SET (polling mode)'
+  );
   const result = await handlers.POST(req);
   console.warn('[UploadThing] POST completed - Status:', result.status);
   return result;
