@@ -54,7 +54,6 @@ export default function Admin() {
           <UploadsGallery key={galleryKey} />
         </div>
       </section>
-
       <Footer />
     </div>
   );
