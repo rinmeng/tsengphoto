@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getCollectionBySlug, getAllCollections } from '@/lib/placeholder/collections';
 import { Text } from '@/components/Text';
@@ -10,41 +9,6 @@ import { CollectionImageViewer } from './components/CollectionImageViewer';
 
 interface CollectionPageProps {
   params: Promise<{ slug: string }>;
-}
-
-// Generate metadata for SEO
-export async function generateMetadata({
-  params,
-}: CollectionPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
-
-  if (!collection) {
-    return {
-      title: 'Collection Not Found',
-    };
-  }
-
-  return {
-    title: `${collection.title || collection.name} | TsengPhoto`,
-    description:
-      collection.description || `View ${collection.title || collection.name} collection`,
-    openGraph: {
-      title: collection.title || collection.name,
-      description: collection.description || undefined,
-      type: 'website',
-      images: collection.cover_image
-        ? [
-            {
-              url: collection.cover_image,
-              width: 1200,
-              height: 630,
-              alt: collection.title || collection.name,
-            },
-          ]
-        : undefined,
-    },
-  };
 }
 
 // Generate static params for all collections (optional, for static generation)
