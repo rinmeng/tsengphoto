@@ -2,9 +2,10 @@
 import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Text } from '@/components/Text';
-import { Button, Separator } from '@/components/ui';
+import { Separator } from '@/components/ui';
 import { SendHorizonal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/animate-ui/components/button';
 
 import Image from 'next/image';
 
