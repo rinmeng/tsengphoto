@@ -26,7 +26,7 @@ import { sendContactForm } from '@/services/contact.service';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui';
-import { Footer } from '@/components/Footer';
+import { toast } from 'sonner';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
@@ -88,6 +88,9 @@ export default function ContactPage() {
     try {
       await sendContactForm(values);
       setSubmitted(true);
+      toast.success('Message sent', {
+        description: 'Your message has been sent successfully.',
+      });
     } finally {
       setLoading('contact:submit', false);
     }

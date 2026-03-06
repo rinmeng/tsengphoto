@@ -66,6 +66,7 @@ function LogoutButton({ user, onClose }: { user: User; onClose?: () => void }) {
       await signOut();
       setDialogOpen(false);
       onClose?.();
+      router.refresh();
       router.push('/login');
       toast.success('You have been logged out.');
       // Don't clear loading - we're navigating away
