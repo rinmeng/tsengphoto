@@ -1,5 +1,4 @@
 'use client';
-import { Footer } from '@/components/Footer';
 import { Text } from '@/components/Text';
 import Image from 'next/image';
 import { Separator } from '@/components/ui';
@@ -43,7 +42,6 @@ export default function AboutPage() {
           </div>
         </section>
       </div>
-      <Footer />
     </>
   );
 }

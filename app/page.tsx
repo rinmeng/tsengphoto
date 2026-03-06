@@ -1,7 +1,6 @@
 'use client';
 import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
-import { Footer } from '@/components/Footer';
 import { Text } from '@/components/Text';
 import { Button, Separator } from '@/components/ui';
 import { SendHorizonal } from 'lucide-react';
@@ -192,7 +191,6 @@ export default function Home() {
           </Button>
         </div>
       </section>
-      <Footer />
     </div>
   );
 }

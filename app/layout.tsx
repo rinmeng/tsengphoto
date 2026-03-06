@@ -8,6 +8,7 @@ import { LoadingProvider } from '@/hooks/use-loading';
 import { Toaster } from '@/components/ui/sonner';
 import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
+import { Footer } from '@/components/Footer';
 
 const fontSans = Libre_Baskerville({
   subsets: ['latin'],
@@ -77,6 +78,7 @@ export default function RootLayout({
               <ToastProvider>
                 <Navbar />
                 <main>{children}</main>
+                <Footer />
                 <Toaster />
                 <Analytics />
               </ToastProvider>

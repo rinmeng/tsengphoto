@@ -94,247 +94,240 @@ export default function ContactPage() {
   }
 
   return (
-    <div>
-      <main className='min-h-screen flex flex-col lg:flex-row fade-in-from-bottom'>
-        {/* ── Left: Photo panel ── */}
+    <section className='min-h-screen flex flex-col lg:flex-row fade-in-from-bottom'>
+      {/* ── Left: Photo panel ── */}
+      <div
+        className='relative lg:sticky lg:top-0 lg:h-screen w-full lg:w-[65%]
+          overflow-hidden shrink-0'
+      >
+        <Image
+          src={PHOTO_URL}
+          alt='Crowd celebrating at a welcome center event'
+          className='w-full h-full object-cover'
+          fill
+        />
         <div
-          className='relative lg:sticky lg:top-0 lg:h-screen w-full lg:w-[65%]
-            overflow-hidden shrink-0'
-        >
-          <Image
-            src={PHOTO_URL}
-            alt='Crowd celebrating at a welcome center event'
-            className='w-full h-full object-cover'
-            fill
-          />
-          <div
-            className='absolute inset-0 bg-linear-to-t from-black/60 via-black/10
-              to-transparent'
-          />
-          <div className='absolute bottom-10 left-8 right-8'>
-            <Text variant='caption'>Let&apos;s create together</Text>
-            <Text variant='hd-lg'>
-              Get in touch with
-              <br />
-              <Text variant='hd-xl'>Tseng Photography.</Text>
-            </Text>
-          </div>
+          className='absolute inset-0 bg-linear-to-t from-black/60 via-black/10
+            to-transparent'
+        />
+        <div className='absolute bottom-10 left-8 right-8'>
+          <Text variant='caption'>Let&apos;s create together</Text>
+          <Text variant='hd-lg'>
+            Get in touch with
+            <br />
+            <Text variant='hd-xl'>Tseng Photography.</Text>
+          </Text>
         </div>
+      </div>
 
-        {/* ── Right: Form panel ── */}
-        <div
-          className='flex-1 flex flex-col justify-center px-8 md:px-14 lg:px-16 py-20
-            lg:py-24'
-        >
-          <div className='max-w-130 w-full mx-auto lg:mx-0'>
-            {submitted ? (
-              <SuccessMessage
-                onReset={() => {
-                  form.reset();
-                  setSubmitted(false);
-                }}
-              />
-            ) : (
-              <>
-                <div className='mb-12'>
-                  <Text>Contact</Text>
-                  <Text variant='hd-lg' className='leading-tight'>
-                    Tell me about your project
-                  </Text>
-                  <Text variant='caption'>
-                    Fill out the form below and I&apos;ll be in touch shortly.
-                  </Text>
-                </div>
+      {/* ── Right: Form panel ── */}
+      <div
+        className='flex-1 flex flex-col justify-center px-8 md:px-14 lg:px-16 py-20
+          lg:py-24'
+      >
+        <div className='max-w-130 w-full mx-auto lg:mx-0'>
+          {submitted ? (
+            <SuccessMessage
+              onReset={() => {
+                form.reset();
+                setSubmitted(false);
+              }}
+            />
+          ) : (
+            <>
+              <div className='mb-12'>
+                <Text>Contact</Text>
+                <Text variant='hd-lg' className='leading-tight'>
+                  Tell me about your project
+                </Text>
+                <Text variant='caption'>
+                  Fill out the form below and I&apos;ll be in touch shortly.
+                </Text>
+              </div>
 
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-                    {/* Name row */}
-                    <div className='grid grid-cols-2 gap-4'>
-                      <FormField
-                        control={form.control}
-                        name='firstName'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              First Name <Required />
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder='Jane' />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name='lastName'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Last Name <Required />
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder='Doe' />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Email */}
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                  {/* Name row */}
+                  <div className='grid grid-cols-2 gap-4'>
                     <FormField
                       control={form.control}
-                      name='email'
+                      name='firstName'
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Email <Required />
+                            First Name <Required />
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              type='email'
-                              placeholder='jane@example.com'
-                            />
+                            <Input {...field} placeholder='Jane' />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-                    {/* Phone */}
                     <FormField
                       control={form.control}
-                      name='phone'
+                      name='lastName'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone</FormLabel>
+                          <FormLabel>
+                            Last Name <Required />
+                          </FormLabel>
                           <FormControl>
-                            <Input {...field} type='tel' placeholder='(XXX) XXX-XXXX' />
+                            <Input {...field} placeholder='Doe' />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                  </div>
 
-                    {/* Services */}
-                    <FormField
-                      control={form.control}
-                      name='services'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Services</FormLabel>
-                          <div className='flex gap-6'>
-                            {SERVICES.map((service) => (
-                              <FormItem
-                                key={service}
-                                className='flex items-center gap-2.5 space-y-0'
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(service)}
-                                    onCheckedChange={(checked) => {
-                                      const current = field.value ?? [];
-                                      field.onChange(
-                                        checked
-                                          ? [...current, service]
-                                          : current.filter((s) => s !== service)
-                                      );
-                                    }}
-                                  >
-                                    <CheckboxIndicator />
-                                  </Checkbox>
-                                </FormControl>
-                                <FormLabel>{service}</FormLabel>
-                              </FormItem>
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  {/* Email */}
+                  <FormField
+                    control={form.control}
+                    name='email'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Email <Required />
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} type='email' placeholder='jane@example.com' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* Preferred Date */}
-                    <FormField
-                      control={form.control}
-                      name='preferredDate'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
+                  {/* Phone */}
+                  <FormField
+                    control={form.control}
+                    name='phone'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} type='tel' placeholder='(XXX) XXX-XXXX' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Services */}
+                  <FormField
+                    control={form.control}
+                    name='services'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Services</FormLabel>
+                        <div className='flex gap-6'>
+                          {SERVICES.map((service) => (
+                            <FormItem
+                              key={service}
+                              className='flex items-center gap-2.5 space-y-0'
+                            >
                               <FormControl>
-                                <Button
-                                  variant='outline'
-                                  className={`w-full justify-start text-left font-normal
-                                    ${!field.value && 'text-muted-foreground'} `}
+                                <Checkbox
+                                  checked={field.value?.includes(service)}
+                                  onCheckedChange={(checked) => {
+                                    const current = field.value ?? [];
+                                    field.onChange(
+                                      checked
+                                        ? [...current, service]
+                                        : current.filter((s) => s !== service)
+                                    );
+                                  }}
                                 >
-                                  <CalendarIcon />
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                </Button>
+                                  <CheckboxIndicator />
+                                </Checkbox>
                               </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className='w-auto p-0' align='start'>
-                              <Calendar
-                                mode='single'
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date < new Date(new Date().setHours(0, 0, 0, 0))
-                                }
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                              <FormLabel>{service}</FormLabel>
+                            </FormItem>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* Message */}
-                    <FormField
-                      control={form.control}
-                      name='message'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Message</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              rows={4}
-                              placeholder='Tell me a bit about your vision...'
+                  {/* Preferred Date */}
+                  <FormField
+                    control={form.control}
+                    name='preferredDate'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preferred Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant='outline'
+                                className={`w-full justify-start text-left font-normal
+                                  ${!field.value && 'text-muted-foreground'} `}
+                              >
+                                <CalendarIcon />
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className='w-auto p-0' align='start'>
+                            <Calendar
+                              mode='single'
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
+                              }
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* Submit */}
-                    <div className='pt-2'>
-                      <Button type='submit' disabled={loading} className='w-full h-12'>
-                        {loading ? (
-                          <>
-                            <Loader2 className='size-4 animate-spin' />
-                            Sending...
-                          </>
-                        ) : (
-                          'Send Message'
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </>
-            )}
-          </div>
+                  {/* Message */}
+                  <FormField
+                    control={form.control}
+                    name='message'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Message</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            rows={4}
+                            placeholder='Tell me a bit about your vision...'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit */}
+                  <div className='pt-2'>
+                    <Button type='submit' disabled={loading} className='w-full h-12'>
+                      {loading ? (
+                        <>
+                          <Loader2 className='size-4 animate-spin' />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Message'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </>
+          )}
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </section>
   );
 }
