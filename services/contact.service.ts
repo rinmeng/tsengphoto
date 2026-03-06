@@ -19,5 +19,7 @@ export async function sendContactForm(values: ContactFormValues): Promise<void> 
     ...values,
     preferredDate: values.preferredDate?.toISOString(),
   };
+  // wait for 3 seconds to simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   console.info('To be implemented: sendContactForm', formattedValues);
 }
