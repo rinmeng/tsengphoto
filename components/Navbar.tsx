@@ -3,6 +3,7 @@
 import { LogIn, LogOut, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 import {
   Button,
@@ -134,9 +135,13 @@ const portfolioLinks = [
   },
 ];
 
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
+  const pathname = usePathname();
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <nav className='fixed z-50 w-full border-b bg-background'>
@@ -152,13 +157,21 @@ export function Navbar() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Link href='/'>Home</Link>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                  data-active={isActive('/')}
+                >
+                  <Link href='/' aria-current={isActive('/') ? 'page' : undefined}>
+                    Home
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
+                <NavigationMenuTrigger>
+                  Portfolio
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className='grid w-150 gap-2 p-2 md:grid-cols-2'>
                     {portfolioLinks.map((link) => (
@@ -166,6 +179,8 @@ export function Navbar() {
                         <NavigationMenuLink asChild>
                           <Link
                             href={link.href}
+                            data-active={isActive(link.href)}
+                            aria-current={isActive(link.href) ? 'page' : undefined}
                             className='block select-none space-y-1 rounded-md p-3
                               leading-none no-underline outline-none transition-colors
                               hover:bg-accent hover:text-accent-foreground focus:bg-accent
@@ -189,21 +204,39 @@ export function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Link href='/about'>About</Link>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                  data-active={isActive('/about')}
+                >
+                  <Link href='/about' aria-current={isActive('/about') ? 'page' : undefined}>
+                    About
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Link href='/contact'>Contact</Link>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                  data-active={isActive('/contact')}
+                >
+                  <Link href='/contact' aria-current={isActive('/contact') ? 'page' : undefined}>
+                    Contact
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               {user && (
                 <NavigationMenuItem>
-                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                    <Link href='/admin'>Admin</Link>
+                  <NavigationMenuLink
+                    asChild
+                    className={navigationMenuTriggerStyle()}
+                    data-active={isActive('/admin')}
+                  >
+                    <Link href='/admin' aria-current={isActive('/admin') ? 'page' : undefined}>
+                      Admin
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               )}
@@ -231,7 +264,11 @@ export function Navbar() {
               </SheetHeader>
               <div className='flex flex-col gap-6'>
                 <nav className='flex flex-col gap-4 justify-center items-center'>
-                  <Button variant='ghost' className='w-1/2' asChild>
+                  <Button
+                    variant={isActive('/') ? 'default' : 'ghost'}
+                    className='w-1/2'
+                    asChild
+                  >
                     <Link href='/' onClick={() => setOpen(false)}>
                       Home
                     </Link>
@@ -251,9 +288,9 @@ export function Navbar() {
                           {portfolioLinks.map((link) => (
                             <Button
                               key={link.href}
-                              variant='ghost'
+                              variant={isActive(link.href) ? 'default' : 'ghost'}
                               size='sm'
-                              className='w-full justify-end text-muted-foreground'
+                              className='w-full justify-end'
                               asChild
                             >
                               <Link href={link.href} onClick={() => setOpen(false)}>
@@ -266,20 +303,32 @@ export function Navbar() {
                     </AccordionItem>
                   </Accordion>
 
-                  <Button variant='ghost' className='w-1/2' asChild>
+                  <Button
+                    variant={isActive('/about') ? 'default' : 'ghost'}
+                    className='w-1/2'
+                    asChild
+                  >
                     <Link href='/about' onClick={() => setOpen(false)}>
                       About
                     </Link>
                   </Button>
 
-                  <Button variant='ghost' className='w-1/2' asChild>
+                  <Button
+                    variant={isActive('/contact') ? 'default' : 'ghost'}
+                    className='w-1/2'
+                    asChild
+                  >
                     <Link href='/contact' onClick={() => setOpen(false)}>
                       Contact
                     </Link>
                   </Button>
 
                   {user && (
-                    <Button variant='ghost' className='w-1/2' asChild>
+                    <Button
+                      variant={isActive('/admin') ? 'default' : 'ghost'}
+                      className='w-1/2'
+                      asChild
+                    >
                       <Link href='/admin' onClick={() => setOpen(false)}>
                         Admin
                       </Link>
