@@ -11,10 +11,7 @@ import {
   Skeleton,
   Spinner,
 } from '@/components/ui';
-import {
-  Checkbox,
-  CheckboxIndicator,
-} from '@/components/animate-ui/primitives/radix/checkbox';
+import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
 import { Download, ImageOff, Trash2 } from 'lucide-react';
@@ -171,11 +168,8 @@ export function UploadsGallery({
                 checked={selectedIds.size === uploads.length && uploads.length > 0}
                 onCheckedChange={handleSelectAll}
                 disabled={isLoading('uploads:bulkDelete')}
-                className='size-5 flex justify-center items-center border
-                  data-[state=checked]:bg-primary
-                  data-[state=checked]:text-primary-foreground transition-colors'
               >
-                <CheckboxIndicator className='size-3.5' />
+                <CheckboxIndicator />
               </Checkbox>
               <Text variant='bd-sm'>Select All</Text>
             </label>
@@ -227,12 +221,9 @@ export function UploadsGallery({
                         handleSelectOne(upload.id, checked as boolean)
                       }
                       disabled={isLoading('uploads:bulkDelete')}
-                      className='size-5 flex justify-center items-center border
-                        data-[state=checked]:bg-primary
-                        data-[state=checked]:text-primary-foreground bg-background/80
-                        backdrop-blur-sm transition-colors'
+                      variant='overlay'
                     >
-                      <CheckboxIndicator className='size-3.5' />
+                      <CheckboxIndicator />
                     </Checkbox>
                   </div>
                   <div className='absolute top-2 right-2 z-10'>
