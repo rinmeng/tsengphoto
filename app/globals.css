@@ -7,7 +7,30 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes sweep {
+  from {
+    transform: translateX(-550%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-550%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(550%);
+    opacity: 0;
+  }
+}
+
 @layer components {
+  .sweep-across {
+    opacity: 0;
+    animation: sweep 1s 0.4s forwards;
+  }
+
   .nb-padding {
     @apply pt-24;
   }
@@ -30,6 +53,10 @@
 
   .fade-in-from-top {
     @apply animate-in slide-in-from-top-10 fade-in fill-mode-both duration-500;
+  }
+
+  .fade-in-from-0 {
+    @apply animate-in fade-in fill-mode-both duration-500;
   }
 }
 

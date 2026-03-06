@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, SendHorizonal } from 'lucide-react';
 
 import { Text } from '@/components/Text';
 import { Button } from '@/components/animate-ui/components/button';
@@ -27,6 +27,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui';
 import { toast } from 'sonner';
+import { getDelayClass } from '@/utils/animations';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
@@ -51,14 +52,27 @@ function Required() {
 
 function SuccessMessage({ onReset }: { onReset: () => void }) {
   return (
-    <div className='flex flex-col justify-center text-center items-center gap-6 py-8'>
-      <Separator className='w-12 h-px' />
-      <Text variant='hd-md'>Message received.</Text>
-      <Text variant='bd-md'>
+    <div className={'flex flex-col justify-center text-center items-center gap-6 py-8'}>
+      <Separator
+        className={`w-12 h-px fade-in-from-right fade-in-from-left ${getDelayClass(1)}`}
+      />
+      {/* make this swipe left to right */}
+      <div className='relative flex items-center justify-center'>
+        {/* Icon sweeps across the full width of the text */}
+        <SendHorizonal className='absolute sweep-across' />
+        <Text variant='hd-md' className={`fade-in-from-0 ${getDelayClass(15)}`}>
+          Message received.
+        </Text>
+      </div>
+      <Text variant='bd-md' className={`fade-in-from-left ${getDelayClass(16)}`}>
         Thank you for reaching out. I&lsquo;ll be in touch with you shortly to discuss
         your project.
       </Text>
-      <Button variant='link' onClick={onReset}>
+      <Button
+        variant='link'
+        onClick={onReset}
+        className={`fade-in-from-left ${getDelayClass(17)}`}
+      >
         Send another message
       </Button>
     </div>
@@ -130,7 +144,7 @@ export default function ContactPage() {
           lg:py-24'
       >
         <div className='max-w-130 w-full mx-auto lg:mx-0'>
-          {submitted ? (
+          {!submitted ? (
             <SuccessMessage
               onReset={() => {
                 form.reset();
