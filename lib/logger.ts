@@ -1,11 +1,13 @@
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
+const IS_VERCEL = process.env.VERCEL === '1';
+
 const COLORS = {
-  info: '\x1b[36m', // cyan
-  warn: '\x1b[33m', // yellow
-  error: '\x1b[31m', // red
-  debug: '\x1b[90m', // gray
-  reset: '\x1b[0m',
+  info: IS_VERCEL ? '' : '\x1b[36m',
+  warn: IS_VERCEL ? '' : '\x1b[33m',
+  error: IS_VERCEL ? '' : '\x1b[31m',
+  debug: IS_VERCEL ? '' : '\x1b[90m',
+  reset: IS_VERCEL ? '' : '\x1b[0m',
 };
 
 function getCaller(): string {
