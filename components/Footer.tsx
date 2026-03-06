@@ -4,7 +4,7 @@ import { Separator } from './ui';
 
 export function Footer() {
   return (
-    <footer>
+    <footer className='fade-in-from-bottom'>
       <Separator className='border-t-2' />
       <div className='container mx-auto border-x-2 border-dashed'>
         <div className='flex flex-col items-center gap-6 py-8'>
