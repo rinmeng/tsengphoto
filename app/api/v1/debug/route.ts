@@ -1,7 +1,6 @@
 import { Logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 
-// REMOVE THIS FILE AFTER DEBUGGING
 export async function GET() {
   Logger.debug('Debug endpoint hit');
   Logger.info('Debug endpoint hit');
