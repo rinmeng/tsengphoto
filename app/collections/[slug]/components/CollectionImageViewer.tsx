@@ -1,10 +1,11 @@
 'use client';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Dialog, DialogContent } from '@/components/ui';
+import { Button, Dialog, DialogClose, DialogContent } from '@/components/ui';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
+import { X } from 'lucide-react';
 
 interface CollectionImage {
   id: string;
@@ -90,19 +91,24 @@ export function CollectionImageViewer({
       {/* Image Viewer Dialog */}
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent
-          className='w-full sm:w-[90%] h-auto p-5 sm:max-w-none overflow-hidden flex
-            flex-col'
+          showCloseButton={false}
+          className='w-full sm:w-[95%] h-auto p-0 sm:max-w-none overflow-hidden'
         >
+          <DialogClose className='absolute top-2 right-2 z-10'>
+            <Button variant='ghost' size='icon'>
+              <X className='size-5' />
+            </Button>
+          </DialogClose>
           {rotatedImageUrls.length > 0 && (
             <PhotoCarousel
               images={rotatedImageUrls}
               autoplayDelay={0}
               itemsToShow={1}
               btnVariant='ghost'
-              btnLocation='below-carousel'
-              dotsLocation='below-carousel'
+              btnLocation='mb'
+              dotsLocation='absolute'
               fullWidth={true}
-              className='w-full flex-1 min-h-0 mt-6'
+              className='w-full flex-1 min-h-0'
               itemClassName='aspect-video max-h-[calc(90vh-8rem)]'
             />
           )}
