@@ -144,7 +144,7 @@ export default function ContactPage() {
           lg:py-24'
       >
         <div className='max-w-130 w-full mx-auto lg:mx-0'>
-          {!submitted ? (
+          {submitted ? (
             <SuccessMessage
               onReset={() => {
                 form.reset();
