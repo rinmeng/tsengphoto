@@ -89,7 +89,10 @@ export function CollectionImageViewer({
 
       {/* Image Viewer Dialog */}
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
-        <DialogContent className='w-full sm:w-[90%] p-5 sm:max-w-none'>
+        <DialogContent
+          className='w-full sm:w-[90%] h-auto p-5 sm:max-w-none overflow-hidden flex
+            flex-col'
+        >
           {rotatedImageUrls.length > 0 && (
             <PhotoCarousel
               images={rotatedImageUrls}
@@ -99,8 +102,8 @@ export function CollectionImageViewer({
               btnLocation='below-carousel'
               dotsLocation='below-carousel'
               fullWidth={true}
-              className='h-full w-full mt-6'
-              itemClassName='aspect-16/10'
+              className='w-full flex-1 min-h-0 mt-6'
+              itemClassName='aspect-video max-h-[calc(90vh-8rem)]'
             />
           )}
         </DialogContent>
