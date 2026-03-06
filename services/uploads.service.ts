@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/client';
 import type { Upload } from '@/lib/types';
+import { Logger } from '@/lib/logger';
 
 /**
  * Fetches all uploads for the current authenticated user
@@ -14,13 +15,13 @@ export async function fetchUploads(): Promise<Upload[] | null> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('[UploadService] Error fetching uploads:', error);
+      Logger.error('Error fetching uploads:', error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('[UploadService] Unexpected error fetching uploads:', error);
+    Logger.error('Unexpected error fetching uploads:', error);
     return null;
   }
 }
@@ -46,13 +47,13 @@ export async function deleteUpload(
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('[UploadService] Delete failed:', error);
+      Logger.error('Delete failed:', error);
       return { success: false, error: 'Failed to delete upload' };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[UploadService] Unexpected error deleting upload:', error);
+    Logger.error('Unexpected error deleting upload:', error);
     return { success: false, error: 'Something went wrong' };
   }
 }

@@ -2,6 +2,7 @@ import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
 import { createClient } from '@/utils/supabase/server';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { Logger } from '@/lib/logger';
 
 const f = createUploadthing();
 
@@ -37,7 +38,7 @@ export const ourFileRouter = {
       try {
         const supabase = createAdminClient();
 
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('uploads')
           .insert({
             user_id: metadata.userId,
@@ -50,7 +51,7 @@ export const ourFileRouter = {
           .single();
 
         if (error) {
-          console.error('[UploadThing] Database error:', error);
+          Logger.error('Database error:', error);
           return {
             uploadedBy: metadata.userId,
             url: file.ufsUrl,
@@ -60,7 +61,7 @@ export const ourFileRouter = {
 
         return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
       } catch (error) {
-        console.error('[UploadThing] Callback error:', error);
+        Logger.error('Callback error:', error);
         return {
           uploadedBy: metadata.userId,
           url: file.ufsUrl,

@@ -310,3 +310,20 @@ Login pages: redirect authenticated users away to `/admin`.
 - Separate logging from response logic
 - Prefer explicit types and return contracts
 - Service functions must return structured `{ success, data?, error? }` responses
+
+### Logging — Use `Logger` from `@/lib/logger`
+
+Never use `console.log`, `console.error`, `console.warn`, or `console.debug` directly. Always use the `Logger` utility — server-side only.
+```typescript
+import { Logger } from '@/lib/logger';
+
+Logger.info('Fetching uploads');
+Logger.warn('No data returned');
+Logger.error('Database failed', error);
+Logger.debug('Payload', payload);
+```
+
+- `Logger` is server-side only — never import it in components or client code
+- Caller name is auto-detected — never pass a prefix like `[ServiceName]` manually
+- Use `Logger.error` for caught exceptions, always pass the error object as a second arg
+- Remove any existing `console.*` calls when touching a file

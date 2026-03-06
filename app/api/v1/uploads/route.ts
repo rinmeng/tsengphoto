@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/utils/supabase/admin';
 import { UTApi } from 'uploadthing/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { Logger } from '@/lib/logger';
 
 const utapi = new UTApi();
 
@@ -27,7 +28,7 @@ export async function DELETE(req: NextRequest) {
     try {
       await utapi.deleteFiles(fileKey);
     } catch (utError) {
-      console.error('Error deleting from UploadThing:', utError);
+      Logger.error('Error deleting from UploadThing:', utError);
       return NextResponse.json(
         { error: 'Failed to delete file from UploadThing' },
         { status: 500 }
@@ -39,7 +40,7 @@ export async function DELETE(req: NextRequest) {
     const { error: dbError } = await supabase.from('uploads').delete().eq('id', uploadId);
 
     if (dbError) {
-      console.error('Error deleting from database:', dbError);
+      Logger.error('Error deleting from database:', dbError);
       return NextResponse.json(
         { error: 'Failed to delete from database' },
         { status: 500 }
@@ -51,7 +52,7 @@ export async function DELETE(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Unexpected error in DELETE /api/v1/uploads:', error);
+    Logger.error('Unexpected error in DELETE /api/v1/uploads:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
