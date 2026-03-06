@@ -125,9 +125,9 @@ export default function ContactPage() {
         <div className='absolute bottom-10 left-8 right-8'>
           <Text variant='caption'>Let&apos;s create together</Text>
           <Text variant='hd-lg'>
-            Get in
+            Get in touch with
             <br />
-            <Text variant='hd-xl'>Touch.</Text>
+            <Text variant='hd-xl'>Tseng Photography.</Text>
           </Text>
         </div>
       </div>
