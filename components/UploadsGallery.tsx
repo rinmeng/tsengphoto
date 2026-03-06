@@ -257,13 +257,16 @@ export function UploadsGallery({
                     </Button>
                   </div>
                   <div className='relative aspect-video bg-muted'>
-                    <Link href={upload.file_url} target='_blank' rel='noopener noreferrer'>
+                    <Link
+                      href={upload.file_url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
                       <Image
-                      src={upload.file_url}
-                      alt={upload.file_name}
-                      
-                      fill
-                      className='object-cover'
+                        src={upload.file_url}
+                        alt={upload.file_name}
+                        fill
+                        className='object-cover'
                       />
                     </Link>
                   </div>
