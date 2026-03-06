@@ -10,6 +10,7 @@ applyTo: '**/*'
 ## Project Overview
 
 ### Stack
+
 - **Framework:** Next.js 15 (App Router)
 - **Backend:** Supabase (PostgreSQL)
 - **File Uploads:** UploadThing
@@ -55,12 +56,14 @@ NEXT_PUBLIC_SITE_URL=               # Optional, used for UploadThing callbacks o
 This project follows a strict 3-layer architecture:
 
 ### 1. UI Layer (Components)
+
 - React components in `/components/` and `/app/`
 - No business logic, no direct Supabase calls
 - Use service layer for all data operations
 - Handle loading/error states via toast notifications
 
 ### 2. Service Layer (`/services/*.service.ts`)
+
 - All business logic and data operations live here
 - Returns structured responses: `{ success: boolean, data?: T, error?: string }`
 - Logs errors with prefix: `[ServiceName] Error: ...`
@@ -85,6 +88,7 @@ export async function fetchUploads(): Promise<Upload[] | null> {
 ```
 
 ### 3. API / Route Layer (`/app/api/`)
+
 - Authentication + input validation
 - Calls service layer
 - Returns safe, sanitized responses
@@ -168,14 +172,28 @@ try {
 Context from `@/context/LoadingContext.tsx` provides: `setLoading(key, value)`, `isLoading(key)`, `isAnyLoading()`, `loadingStates`.
 
 **Skeleton** for data-dependent content (text, cards, images):
+
 ```tsx
-{isLoading('data:fetch') ? <Skeleton className='h-4 w-32' /> : <span>{count} items</span>}
+{
+  isLoading('data:fetch') ? (
+    <Skeleton className='h-4 w-32' />
+  ) : (
+    <span>{count} items</span>
+  );
+}
 ```
 
 **Spinner** for action-based operations (buttons, form submissions):
+
 ```tsx
 <Button disabled={isLoading('form:submit')}>
-  {isLoading('form:submit') ? <><Spinner /> Saving...</> : 'Save'}
+  {isLoading('form:submit') ? (
+    <>
+      <Spinner /> Saving...
+    </>
+  ) : (
+    'Save'
+  )}
 </Button>
 ```
 
@@ -190,7 +208,7 @@ import { ImageOff } from 'lucide-react';
   title='No items found'
   description='Get started by uploading your first item.'
   className='border-dashed border-2'
-/>
+/>;
 ```
 
 ### File Uploads — Use `ImageUploader`
@@ -199,9 +217,13 @@ import { ImageOff } from 'lucide-react';
 import { ImageUploader } from '@/components/ImageUploader';
 
 <ImageUploader
-  onUploadComplete={() => { toast.success('Done!'); }}
-  onUploadError={(error) => { toast.error(`Failed: ${error.message}`); }}
-/>
+  onUploadComplete={() => {
+    toast.success('Done!');
+  }}
+  onUploadError={(error) => {
+    toast.error(`Failed: ${error.message}`);
+  }}
+/>;
 ```
 
 ### Buttons with Icons
@@ -221,29 +243,34 @@ Icons go directly inside `<Button>` — no extra wrappers or spacing classes nee
 ### Security & Error Handling
 
 **Never expose to clients:**
+
 - Supabase error messages or stack traces
 - SQL details or internal IDs
 - Auth state details (`"User does not exist"`, `"Incorrect password"`)
 - UploadThing internal errors
 
 **Default user-facing error:**
+
 > "Something went wrong. Please try again."
 
 **Safe errors allowed to show:**
+
 - "Invalid email format."
 - "Password must be at least 8 characters."
 - "File type not supported."
 - "File size exceeds limit."
 
 **Auth errors always use:**
+
 - `"Invalid credentials."` or `"Unauthorized."`
 
 **Supabase calls:**
+
 ```typescript
 const { data, error } = await supabase.from('table').select('*');
 if (error) {
   console.error('[Service] Error:', error); // Log server-side only
-  throw new Error('Something went wrong.');  // Generic to client
+  throw new Error('Something went wrong.'); // Generic to client
 }
 ```
 
@@ -314,6 +341,7 @@ Login pages: redirect authenticated users away to `/admin`.
 ### Logging — Use `Logger` from `@/lib/logger`
 
 Never use `console.log`, `console.error`, `console.warn`, or `console.debug` directly. Always use the `Logger` utility — server-side only.
+
 ```typescript
 import { Logger } from '@/lib/logger';
 

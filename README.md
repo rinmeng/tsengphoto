@@ -122,6 +122,7 @@ State management follows a clean architecture:
 4. **Barrel Exports** - Index files for easy imports
 
 Example:
+
 ```tsx
 // Use authentication
 import { useAuth } from '@/hooks/use-auth';
@@ -217,6 +218,7 @@ See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your
 ### SEO Optimization
 
 Each page section (Collection, Events, Series, Videos) includes comprehensive SEO metadata:
+
 - Custom titles and descriptions
 - Open Graph tags for social media previews
 - Twitter Card support
@@ -227,6 +229,7 @@ Each page section (Collection, Events, Series, Videos) includes comprehensive SE
 ### Hero Carousel
 
 The landing page features an auto-playing carousel with:
+
 - 5 featured images from `/public/landing/carousel/`
 - Autoplay with 2-second delay
 - Navigation buttons and dots

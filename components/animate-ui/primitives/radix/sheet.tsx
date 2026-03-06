@@ -12,8 +12,7 @@ type SheetContextType = {
   setIsOpen: (isOpen: boolean) => void;
 };
 
-const [SheetProvider, useSheet] =
-  getStrictContext<SheetContextType>('SheetContext');
+const [SheetProvider, useSheet] = getStrictContext<SheetContextType>('SheetContext');
 
 type SheetProps = React.ComponentProps<typeof SheetPrimitive.Root>;
 
@@ -26,11 +25,7 @@ function Sheet(props: SheetProps) {
 
   return (
     <SheetProvider value={{ isOpen, setIsOpen }}>
-      <SheetPrimitive.Root
-        data-slot="sheet"
-        {...props}
-        onOpenChange={setIsOpen}
-      />
+      <SheetPrimitive.Root data-slot='sheet' {...props} onOpenChange={setIsOpen} />
     </SheetProvider>
   );
 }
@@ -38,13 +33,13 @@ function Sheet(props: SheetProps) {
 type SheetTriggerProps = React.ComponentProps<typeof SheetPrimitive.Trigger>;
 
 function SheetTrigger(props: SheetTriggerProps) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
+  return <SheetPrimitive.Trigger data-slot='sheet-trigger' {...props} />;
 }
 
 type SheetCloseProps = React.ComponentProps<typeof SheetPrimitive.Close>;
 
 function SheetClose(props: SheetCloseProps) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
+  return <SheetPrimitive.Close data-slot='sheet-close' {...props} />;
 }
 
 type SheetPortalProps = React.ComponentProps<typeof SheetPrimitive.Portal>;
@@ -54,9 +49,7 @@ function SheetPortal(props: SheetPortalProps) {
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <SheetPrimitive.Portal forceMount data-slot="sheet-portal" {...props} />
-      )}
+      {isOpen && <SheetPrimitive.Portal forceMount data-slot='sheet-portal' {...props} />}
     </AnimatePresence>
   );
 }
@@ -74,8 +67,8 @@ function SheetOverlay({
   return (
     <SheetPrimitive.Overlay asChild forceMount>
       <motion.div
-        key="sheet-overlay"
-        data-slot="sheet-overlay"
+        key='sheet-overlay'
+        data-slot='sheet-overlay'
         initial={{ opacity: 0, filter: 'blur(4px)' }}
         animate={{ opacity: 1, filter: 'blur(0px)' }}
         exit={{ opacity: 0, filter: 'blur(4px)' }}
@@ -119,8 +112,8 @@ function SheetContent({
   return (
     <SheetPrimitive.Content asChild forceMount {...props}>
       <motion.div
-        key="sheet-content"
-        data-slot="sheet-content"
+        key='sheet-content'
+        data-slot='sheet-content'
         data-side={side}
         initial={offscreen[side]}
         animate={{ [axis]: 0, opacity: 1 }}
@@ -141,29 +134,25 @@ function SheetContent({
 type SheetHeaderProps = React.ComponentProps<'div'>;
 
 function SheetHeader(props: SheetHeaderProps) {
-  return <div data-slot="sheet-header" {...props} />;
+  return <div data-slot='sheet-header' {...props} />;
 }
 
 type SheetFooterProps = React.ComponentProps<'div'>;
 
 function SheetFooter(props: SheetFooterProps) {
-  return <div data-slot="sheet-footer" {...props} />;
+  return <div data-slot='sheet-footer' {...props} />;
 }
 
 type SheetTitleProps = React.ComponentProps<typeof SheetPrimitive.Title>;
 
 function SheetTitle(props: SheetTitleProps) {
-  return <SheetPrimitive.Title data-slot="sheet-title" {...props} />;
+  return <SheetPrimitive.Title data-slot='sheet-title' {...props} />;
 }
 
-type SheetDescriptionProps = React.ComponentProps<
-  typeof SheetPrimitive.Description
->;
+type SheetDescriptionProps = React.ComponentProps<typeof SheetPrimitive.Description>;
 
 function SheetDescription(props: SheetDescriptionProps) {
-  return (
-    <SheetPrimitive.Description data-slot="sheet-description" {...props} />
-  );
+  return <SheetPrimitive.Description data-slot='sheet-description' {...props} />;
 }
 
 export {

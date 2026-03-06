@@ -1,4 +1,3 @@
-
 import { ExternalToast, toast as sonnerToast } from 'sonner';
 
 export interface ToastContextType {
