@@ -100,7 +100,7 @@ export default function ContactPage() {
     <section className='min-h-screen flex flex-col lg:flex-row fade-in-from-bottom'>
       {/* ── Left: Photo panel ── */}
       <div
-        className='relative lg:sticky lg:top-0 lg:h-screen w-full lg:w-[65%]
+        className='relative h-[50vh] lg:sticky lg:top-0 lg:h-screen w-full lg:w-[65%]
           overflow-hidden shrink-0'
       >
         <Image
@@ -114,9 +114,10 @@ export default function ContactPage() {
             to-transparent'
         />
         <div className='absolute bottom-10 left-8 right-8'>
-          <Text variant='caption'>Let&apos;s create together</Text>
+          <Text variant='caption'>Let&lsquo;s make some memories.</Text>
+
           <Text variant='hd-lg'>
-            Get in touch with
+            Book a session with
             <br />
             <Text variant='hd-xl'>Tseng Photography.</Text>
           </Text>
