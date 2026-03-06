@@ -53,7 +53,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className='mx-auto overflow-x-hidden'>
+    <div className='mx-auto overflow-x-hidden fade-in-from-top'>
       <Hero />
       <section className='container mx-auto'>
         <div
