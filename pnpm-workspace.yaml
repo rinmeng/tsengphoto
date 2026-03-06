@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - msgpackr-extract
+  - sharp
+  - supabase
+  - unrs-resolver

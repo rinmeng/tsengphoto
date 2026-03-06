@@ -17,13 +17,15 @@ import {
 } from '@/components/animate-ui/primitives/radix/checkbox';
 import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
-import { ImageOff, Trash2 } from 'lucide-react';
+import { Download, ImageOff, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useLoading } from '@/hooks/use-loading';
 import type { Upload } from '@/lib/types';
 import * as UploadService from '@/services/uploads.service';
+import Link from 'next/link';
 
 interface UploadsGalleryProps {
   title?: string;
@@ -41,6 +43,17 @@ export function UploadsGallery({
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
   const { setLoading, isLoading } = useLoading();
+
+  const handleDownload = async (fileUrl: string, fileName: string) => {
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const fetchUploads = async () => {
     setLoading('uploads:fetch', true);
@@ -200,7 +213,7 @@ export function UploadsGallery({
           />
         ) : (
           <ScrollArea className='h-150 pr-4'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
               {uploads.map((upload) => (
                 <div
                   key={upload.id}
@@ -225,8 +238,7 @@ export function UploadsGallery({
                   <div className='absolute top-2 right-2 z-10'>
                     <Button
                       variant='destructive'
-                      size='sm'
-                      className='w-full'
+                      size='icon'
                       onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
                       disabled={
                         isLoading(`uploads:delete:${upload.id}`) ||
@@ -245,15 +257,18 @@ export function UploadsGallery({
                     </Button>
                   </div>
                   <div className='relative aspect-video bg-muted'>
-                    <Image
+                    <Link href={upload.file_url} target='_blank' rel='noopener noreferrer'>
+                      <Image
                       src={upload.file_url}
                       alt={upload.file_name}
+                      
                       fill
                       className='object-cover'
-                    />
+                      />
+                    </Link>
                   </div>
                   <div className='p-3 space-y-2'>
-                    <a
+                    <Link
                       href={upload.file_url}
                       target='_blank'
                       rel='noopener noreferrer'
@@ -263,14 +278,21 @@ export function UploadsGallery({
                       <Text variant='bd-sm' className='font-medium truncate'>
                         {upload.file_name}
                       </Text>
-                    </a>
+                      <Text variant='caption'>
+                        {(upload.file_size / 1024 / 1024).toFixed(1)} MB
+                      </Text>
+                    </Link>
                     <div className='flex items-center justify-between'>
                       <Text variant='caption'>
-                        {(upload.file_size / 1024).toFixed(1)} KB
+                        {format(new Date(upload.created_at), 'MMM d, yyyy')}
                       </Text>
-                      <Text variant='caption'>
-                        {new Date(upload.created_at).toLocaleDateString()}
-                      </Text>
+                      <Button
+                        variant='secondary'
+                        size='icon'
+                        onClick={() => handleDownload(upload.file_url, upload.file_name)}
+                      >
+                        <Download />
+                      </Button>
                     </div>
                   </div>
                 </div>
