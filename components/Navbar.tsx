@@ -135,7 +135,6 @@ const portfolioLinks = [
   },
 ];
 
-
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -169,9 +168,7 @@ export function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger>
-                  Portfolio
-                </NavigationMenuTrigger>
+                <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className='grid w-150 gap-2 p-2 md:grid-cols-2'>
                     {portfolioLinks.map((link) => (
@@ -209,7 +206,10 @@ export function Navbar() {
                   className={navigationMenuTriggerStyle()}
                   data-active={isActive('/about')}
                 >
-                  <Link href='/about' aria-current={isActive('/about') ? 'page' : undefined}>
+                  <Link
+                    href='/about'
+                    aria-current={isActive('/about') ? 'page' : undefined}
+                  >
                     About
                   </Link>
                 </NavigationMenuLink>
@@ -221,7 +221,10 @@ export function Navbar() {
                   className={navigationMenuTriggerStyle()}
                   data-active={isActive('/contact')}
                 >
-                  <Link href='/contact' aria-current={isActive('/contact') ? 'page' : undefined}>
+                  <Link
+                    href='/contact'
+                    aria-current={isActive('/contact') ? 'page' : undefined}
+                  >
                     Contact
                   </Link>
                 </NavigationMenuLink>
@@ -234,7 +237,10 @@ export function Navbar() {
                     className={navigationMenuTriggerStyle()}
                     data-active={isActive('/admin')}
                   >
-                    <Link href='/admin' aria-current={isActive('/admin') ? 'page' : undefined}>
+                    <Link
+                      href='/admin'
+                      aria-current={isActive('/admin') ? 'page' : undefined}
+                    >
                       Admin
                     </Link>
                   </NavigationMenuLink>

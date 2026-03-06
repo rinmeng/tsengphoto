@@ -1,7 +1,7 @@
 'use client';
 
+import { Button } from '@/components/animate-ui/components/button';
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,

@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 
 import { Text } from '@/components/Text';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/animate-ui/components/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import { Input } from '@/components/ui/input';

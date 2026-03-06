@@ -3,7 +3,8 @@ import { getCollectionBySlug, getAllCollections } from '@/lib/placeholder/collec
 import { Text } from '@/components/Text';
 import { Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Badge, Button } from '@/components/ui';
+import { Button } from '@/components/animate-ui/components/button';
+import { Badge } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
 import { CollectionImageViewer } from './components/CollectionImageViewer';
 

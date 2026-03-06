@@ -1,7 +1,8 @@
 'use client';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Button, Dialog, DialogClose, DialogContent } from '@/components/ui';
+import { Button } from '@/components/animate-ui/components/button';
+import { Dialog, DialogClose, DialogContent } from '@/components/ui';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';

@@ -3,12 +3,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone, type FileRejection } from 'react-dropzone';
 import { useUploadThing } from '@/utils/uploadthing/uploadthing';
-import { Button, Progress, ScrollArea } from '@/components/ui';
+import { Button } from '@/components/animate-ui/components/button';
+import { Progress, ScrollArea } from '@/components/ui';
 import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Footer } from './Footer';
 
 interface ImageUploaderProps {
   onUploadComplete?: () => void;

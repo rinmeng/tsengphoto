@@ -4,8 +4,8 @@ import { Logo } from '@/components/Logo';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Button } from '@/components/animate-ui/components/button';
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
