@@ -8,6 +8,7 @@ import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Footer } from './Footer';
 
 interface ImageUploaderProps {
   onUploadComplete?: () => void;
@@ -213,7 +214,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
           </div>
 
           {/* File List */}
-          <ScrollArea className='h-96'>
+          <ScrollArea className='h-80'>
             <div className='space-y-3 pr-4'>
               {files.map((fileWithStatus, index) => (
                 <div key={`${fileWithStatus.file.name}-${index}`} className='space-y-2'>
