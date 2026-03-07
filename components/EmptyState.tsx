@@ -9,6 +9,7 @@ import { Button } from '@/components/animate-ui/components/button';
 import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib';
+import { getDelayClass } from '@/utils/animations';
 
 type EmptyStateSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -61,15 +62,28 @@ export function EmptyState({
   const config = sizeConfig[size];
 
   return (
-    <Empty className={cn(className, { 'border-2 rounded border-dashed': bordered })}>
+    <Empty
+      className={cn(
+        className,
+        { 'border-2 rounded border-dashed': bordered },
+        `fade-in-from-bottom ${getDelayClass(3)}`
+      )}
+    >
       <EmptyHeader className={config.spacing}>
-        <EmptyMedia variant='icon' className='flex h-auto'>
+        <EmptyMedia
+          variant='icon'
+          className={`flex h-auto fade-in-from-bottom ${getDelayClass(4)}`}
+        >
           <Icon className={config.icon} />
         </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
+        <EmptyTitle className={`mb-0 fade-in-from-bottom ${getDelayClass(5)}`}>
+          {title}
+        </EmptyTitle>
+        <EmptyDescription className={`fade-in-from-bottom ${getDelayClass(6)}`}>
+          {description}
+        </EmptyDescription>
         {buttonText && buttonHref && (
-          <Link href={buttonHref}>
+          <Link className={`fade-in-from-bottom ${getDelayClass(7)}`} href={buttonHref}>
             <Button className={config.button}>
               {ButtonIcon && <ButtonIcon />}
               {buttonText}
