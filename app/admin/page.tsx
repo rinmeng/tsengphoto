@@ -13,6 +13,7 @@ import { Text } from '@/components/Text';
 import { Info } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { getDelayClass } from '@/utils/animations';
 
 export default function Admin() {
   const { toast } = useToast();
@@ -20,10 +21,10 @@ export default function Admin() {
 
   return (
     <section
-      className='container nb-padding mx-auto pb-4 px-4 fade-in-from-bottom border-x-2
-        border-dashed'
+      className={`container nb-padding mx-auto pb-4 px-4 fade-in-from-top border-x-2
+        border-dashed ${getDelayClass(0)}`}
     >
-      <Card>
+      <Card className={`fade-in-from-top ${getDelayClass(1)}`}>
         <CardHeader>
           <CardTitle>Upload Image</CardTitle>
           <CardDescription
@@ -48,7 +49,7 @@ export default function Admin() {
         </CardContent>
       </Card>
 
-      <div className='mt-4'>
+      <div className={`mt-4 fade-in-from-top ${getDelayClass(2)}`}>
         <UploadsGallery key={galleryKey} />
       </div>
     </section>

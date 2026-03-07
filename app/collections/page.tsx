@@ -24,10 +24,7 @@ export default async function CollectionsPage() {
         </Text>
       </div>
 
-      {/* Collections Grid */}
-      <div className={`fade-in-from-bottom ${getDelayClass(2)}`}>
-        <CollectionGrid collections={collections} />
-      </div>
+      <CollectionGrid collections={collections} />
     </div>
   );
 }

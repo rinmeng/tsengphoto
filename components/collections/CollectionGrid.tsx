@@ -1,5 +1,6 @@
 import { CollectionWithImages } from '@/lib/types/database';
 import { CollectionCard } from './CollectionCard';
+import { getDelayClass } from '@/utils/animations';
 
 interface CollectionGridProps {
   collections: CollectionWithImages[];
@@ -16,8 +17,12 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-      {collections.map((collection) => (
-        <CollectionCard key={collection.id} collection={collection} />
+      {collections.map((collection, index) => (
+        <CollectionCard
+          className={`fade-in-from-top ${getDelayClass(index)}`}
+          key={collection.id}
+          collection={collection}
+        />
       ))}
     </div>
   );

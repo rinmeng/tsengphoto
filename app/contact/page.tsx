@@ -127,13 +127,20 @@ export default function ContactPage() {
           className='absolute inset-0 bg-linear-to-t from-black/60 via-black/10
             to-transparent'
         />
-        <div className='absolute bottom-10 left-8 right-8'>
-          <Text variant='caption'>Let&lsquo;s make some memories.</Text>
+        <div
+          className={`absolute bottom-10 left-8 right-8 fade-in-from-bottom
+            ${getDelayClass(10)}`}
+        >
+          <Text variant='caption' className={`fade-in-from-bottom ${getDelayClass(11)}`}>
+            Let&lsquo;s make some memories.
+          </Text>
 
-          <Text variant='hd-lg'>
+          <Text variant='hd-lg' className={`fade-in-from-bottom ${getDelayClass(12)}`}>
             Book a session with
             <br />
-            <Text variant='hd-xl'>Tseng Photography.</Text>
+            <Text variant='hd-xl' className={`fade-in-from-bottom ${getDelayClass(13)}`}>
+              Tseng Photography.
+            </Text>
           </Text>
         </div>
       </div>

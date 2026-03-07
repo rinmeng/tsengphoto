@@ -11,12 +11,14 @@ import {
 } from '@/components/ui';
 import { Text } from '@/components/Text';
 import { Calendar, MapPin } from 'lucide-react';
+import { cn } from '@/lib';
 
 interface CollectionCardProps {
   collection: CollectionWithImages;
+  className?: string;
 }
 
-export function CollectionCard({ collection }: CollectionCardProps) {
+export function CollectionCard({ collection, className }: CollectionCardProps) {
   const imageCount = collection.images.length;
   const formattedDate = collection.date
     ? new Date(collection.date).toLocaleDateString('en-US', {
@@ -29,8 +31,10 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   return (
     <Link href={`/collections/${collection.slug}`} className='group block'>
       <Card
-        className='overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1
-          pt-0'
+        className={cn(
+          'overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 pt-0',
+          className
+        )}
       >
         {/* Cover Image */}
         <div className='relative aspect-4/3 overflow-hidden bg-muted'>

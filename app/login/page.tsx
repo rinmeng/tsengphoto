@@ -88,11 +88,11 @@ export default function LoginPage() {
         <div className='text-center space-y-6 max-w-md'>
           <Logo
             iconSize={40}
-            className={`text-4xl fade-in-from-left ${getDelayClass(0)}`}
+            className={`text-4xl fade-in-from-left ${getDelayClass(2)}`}
           />
           <Text
             variant='muted'
-            className={`fade-in-from-left w-full text-center ${getDelayClass(1)}`}
+            className={`fade-in-from-left w-full text-center ${getDelayClass(3)}`}
           >
             Professional event photography services in Vancouver and Kelowna. Capturing
             your special moments with creativity and precision. Book now for unforgettable
