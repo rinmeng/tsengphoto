@@ -7,7 +7,7 @@ export default async function EventsPage() {
   const collections = getCollectionsByType('event');
 
   return (
-    <div className='container mx-auto px-4 nb-padding'>
+    <div className='container mx-auto px-4 pb-4 nb-padding'>
       {/* Page Header */}
       <div className='mb-12 text-center space-y-4'>
         <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(0)}`}>
