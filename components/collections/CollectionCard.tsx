@@ -29,10 +29,11 @@ export function CollectionCard({ collection, className }: CollectionCardProps) {
     : null;
 
   return (
-    <Link href={`/collections/${collection.slug}`} className='group block'>
+    <Link href={`/collections/${collection.slug}`} className='group block h-full'>
       <Card
         className={cn(
-          'overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 pt-0',
+          `h-full flex flex-col overflow-hidden transition-all hover:shadow-lg
+          hover:-translate-y-1 pt-0`,
           className
         )}
       >
