@@ -61,7 +61,7 @@ export function CollectionImageViewer({
               <div
                 key={image.id}
                 className={`relative overflow-hidden rounded bg-muted cursor-pointer
-                  fade-in-from-bottom ${getDelayClass(index)}`}
+                  fade-in-from-top ${getDelayClass(index + 5)}`}
                 onClick={() => handleImageClick(index)}
               >
                 <div className={'relative aspect-16/10 overflow-hidden bg-muted'}>

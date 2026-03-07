@@ -57,10 +57,8 @@ export function CollectionCard({ collection }: CollectionCardProps) {
 
         {/* Card Content */}
         <CardHeader>
-          <CardTitle className='line-clamp-1'>
-            {collection.title || collection.name}
-          </CardTitle>
-          <CardDescription className='line-clamp-2'>
+          <CardTitle>{collection.title || collection.name}</CardTitle>
+          <CardDescription>
             {collection.description || 'No description available'}
           </CardDescription>
         </CardHeader>

@@ -42,7 +42,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         min-h-screen'
     >
       {/* Back Button */}
-      <div className={`sticky top-20 mb-6 z-50 fade-in-from-right ${getDelayClass(0)}`}>
+      <div className={`sticky top-20 mb-6 z-50 fade-in-from-top ${getDelayClass(0)}`}>
         <Link href='/collections'>
           <Button variant='default'>
             <ArrowLeft />

@@ -53,10 +53,10 @@ const VARIANT_ELEMENT_MAP: Record<NonNullable<TextVariant>, React.ElementType> =
   'bd-md': 'p',
   'bd-sm': 'p',
   'bd-xs': 'p',
-  caption: 'span',
+  caption: 'p',
   label: 'label',
-  muted: 'span',
-  'muted-sm': 'span',
+  muted: 'p',
+  'muted-sm': 'p',
 };
 
 export function Text({ variant = 'bd-md', className, children, ...props }: TextProps) {

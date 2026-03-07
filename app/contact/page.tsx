@@ -154,11 +154,17 @@ export default function ContactPage() {
           ) : (
             <>
               <div className='mb-12'>
-                <Text>Contact</Text>
-                <Text variant='hd-lg' className='leading-tight'>
+                <Text className={`fade-in-from-right ${getDelayClass(0)}`}>Contact</Text>
+                <Text
+                  variant='hd-lg'
+                  className={`leading-tight fade-in-from-right ${getDelayClass(1)}`}
+                >
                   Tell me about your project
                 </Text>
-                <Text variant='caption'>
+                <Text
+                  variant='caption'
+                  className={`fade-in-from-right ${getDelayClass(2)}`}
+                >
                   Fill out the form below and I&apos;ll be in touch shortly.
                 </Text>
               </div>
@@ -166,7 +172,10 @@ export default function ContactPage() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                   {/* Name row */}
-                  <div className='grid grid-cols-2 gap-4'>
+                  <div
+                    className={`grid grid-cols-2 gap-4 fade-in-from-right
+                      ${getDelayClass(3)}`}
+                  >
                     <FormField
                       control={form.control}
                       name='firstName'
@@ -200,135 +209,149 @@ export default function ContactPage() {
                   </div>
 
                   {/* Email */}
-                  <FormField
-                    control={form.control}
-                    name='email'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Email <Required />
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} type='email' placeholder='jane@example.com' />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className={`fade-in-from-right ${getDelayClass(4)}`}>
+                    <FormField
+                      control={form.control}
+                      name='email'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Email <Required />
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='email'
+                              placeholder='jane@example.com'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Phone */}
-                  <FormField
-                    control={form.control}
-                    name='phone'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input {...field} type='tel' placeholder='(XXX) XXX-XXXX' />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className={`fade-in-from-right ${getDelayClass(5)}`}>
+                    <FormField
+                      control={form.control}
+                      name='phone'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} type='tel' placeholder='(XXX) XXX-XXXX' />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Services */}
-                  <FormField
-                    control={form.control}
-                    name='services'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Services</FormLabel>
-                        <div className='flex gap-6'>
-                          {SERVICES.map((service) => (
-                            <FormItem
-                              key={service}
-                              className='flex items-center gap-2.5 space-y-0'
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(service)}
-                                  onCheckedChange={(checked) => {
-                                    const current = field.value ?? [];
-                                    field.onChange(
-                                      checked
-                                        ? [...current, service]
-                                        : current.filter((s) => s !== service)
-                                    );
-                                  }}
-                                >
-                                  <CheckboxIndicator />
-                                </Checkbox>
-                              </FormControl>
-                              <FormLabel>{service}</FormLabel>
-                            </FormItem>
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className={`fade-in-from-right ${getDelayClass(6)}`}>
+                    <FormField
+                      control={form.control}
+                      name='services'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Services</FormLabel>
+                          <div className='flex gap-6'>
+                            {SERVICES.map((service) => (
+                              <FormItem
+                                key={service}
+                                className='flex items-center gap-2.5 space-y-0'
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(service)}
+                                    onCheckedChange={(checked) => {
+                                      const current = field.value ?? [];
+                                      field.onChange(
+                                        checked
+                                          ? [...current, service]
+                                          : current.filter((s) => s !== service)
+                                      );
+                                    }}
+                                  >
+                                    <CheckboxIndicator />
+                                  </Checkbox>
+                                </FormControl>
+                                <FormLabel>{service}</FormLabel>
+                              </FormItem>
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Preferred Date */}
-                  <FormField
-                    control={form.control}
-                    name='preferredDate'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Preferred Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant='outline'
-                                className={`w-full justify-start text-left font-normal
-                                  ${!field.value && 'text-muted-foreground'} `}
-                              >
-                                <CalendarIcon />
-                                {field.value ? (
-                                  format(field.value, 'PPP')
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className='w-auto p-0' align='start'>
-                            <Calendar
-                              mode='single'
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date < new Date(new Date().setHours(0, 0, 0, 0))
-                              }
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className={`fade-in-from-right ${getDelayClass(7)}`}>
+                    <FormField
+                      control={form.control}
+                      name='preferredDate'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant='outline'
+                                  className={`w-full justify-start text-left font-normal
+                                    ${!field.value && 'text-muted-foreground'} `}
+                                >
+                                  <CalendarIcon />
+                                  {field.value ? (
+                                    format(field.value, 'PPP')
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className='w-auto p-0' align='start'>
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                                }
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Message */}
-                  <FormField
-                    control={form.control}
-                    name='message'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            rows={4}
-                            placeholder='Tell me a bit about your vision...'
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className={`fade-in-from-right ${getDelayClass(8)}`}>
+                    <FormField
+                      control={form.control}
+                      name='message'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Message</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              rows={4}
+                              placeholder='Tell me a bit about your vision...'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Submit */}
-                  <div className='pt-2'>
+                  <div className={`pt-2 fade-in-from-right ${getDelayClass(9)}`}>
                     <Button type='submit' disabled={loading} className='w-full h-12'>
                       {loading ? (
                         <>
