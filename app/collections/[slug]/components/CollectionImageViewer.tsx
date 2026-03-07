@@ -112,7 +112,7 @@ export function CollectionImageViewer({
               dotsLocation='absolute'
               fullWidth={true}
               className='w-full flex-1 min-h-0'
-              itemClassName='aspect-video max-h-[calc(90vh-8rem)]'
+              itemClassName='aspect-video max-h-[90vh]'
             />
           )}
         </DialogContent>
