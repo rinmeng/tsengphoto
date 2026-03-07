@@ -120,7 +120,7 @@ export default function Home() {
               variant='default'
               size='lg'
               className='self-center md:self-end'
-              onClick={() => router.push('/collection')}
+              onClick={() => router.push('/collections')}
             >
               Learn More
             </Button>
