@@ -28,7 +28,7 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
       {collections.map((collection, index) => (
         <CollectionCard
-          className={`fade-in-from-top ${getDelayClass(index)}`}
+          className={`fade-in-from-bottom ${getDelayClass(index)}`}
           key={collection.id}
           collection={collection}
         />
