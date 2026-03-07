@@ -60,18 +60,18 @@ function SuccessMessage({ onReset }: { onReset: () => void }) {
       <div className='relative flex items-center justify-center'>
         {/* Icon sweeps across the full width of the text */}
         <SendHorizonal className='absolute sweep-across' />
-        <Text variant='hd-md' className={`fade-in-from-0 ${getDelayClass(15)}`}>
+        <Text variant='hd-md' className={`fade-in-from-left ${getDelayClass(27)}`}>
           Message received.
         </Text>
       </div>
-      <Text variant='bd-md' className={`fade-in-from-left ${getDelayClass(16)}`}>
+      <Text variant='bd-md' className={`fade-in-from-left ${getDelayClass(28)}`}>
         Thank you for reaching out. I&lsquo;ll be in touch with you shortly to discuss
         your project.
       </Text>
       <Button
         variant='link'
         onClick={onReset}
-        className={`fade-in-from-left ${getDelayClass(17)}`}
+        className={`fade-in-from-left ${getDelayClass(29)}`}
       >
         Send another message
       </Button>
