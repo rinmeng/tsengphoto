@@ -146,7 +146,7 @@ export function Navbar() {
   return (
     <nav className='fixed z-50 w-full border-b bg-background'>
       <div
-        className='mx-auto flex max-w-11/12 items-center justify-between px-4 py-4 sm:px-6
+        className='mx-auto flex max-w-5/6 items-center justify-between px-4 py-4 sm:px-6
           lg:px-8'
       >
         {/* Logo */}
