@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { Footer } from '@/components/Footer';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const fontSans = Libre_Baskerville({
   subsets: ['latin'],
@@ -81,6 +82,7 @@ export default function RootLayout({
                 <Footer />
                 <Toaster />
                 <Analytics />
+                <SpeedInsights />
               </ToastProvider>
             </LoadingProvider>
           </ThemeProvider>
