@@ -72,6 +72,8 @@ export function CollectionImageViewer({
                       fill
                       className='object-cover hover:scale-105 transition-transform
                         duration-300'
+                      loading='eager'
+                      sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                     />
                   ) : (
                     <div className='flex h-full items-center justify-center'>

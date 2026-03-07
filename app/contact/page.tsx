@@ -135,13 +135,12 @@ export default function ContactPage() {
             Let&lsquo;s make some memories.
           </Text>
 
-          <Text variant='hd-lg' className={`fade-in-from-bottom ${getDelayClass(12)}`}>
-            Book a session with
-            <br />
+          <div className={`fade-in-from-bottom ${getDelayClass(12)}`}>
+            <Text variant='hd-lg'>Book a session with</Text>
             <Text variant='hd-xl' className={`fade-in-from-bottom ${getDelayClass(13)}`}>
               Tseng Photography.
             </Text>
-          </Text>
+          </div>
         </div>
       </div>
 
