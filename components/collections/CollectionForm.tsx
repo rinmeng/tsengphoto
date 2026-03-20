@@ -60,6 +60,7 @@ interface CollectionFormProps {
   collection?: Collection;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (updatedSlug?: string) => void;
 }
 
 export function CollectionForm({
@@ -67,6 +68,7 @@ export function CollectionForm({
   collection,
   open,
   onOpenChange,
+  onSuccess,
 }: CollectionFormProps) {
   const queryClient = useQueryClient();
 
@@ -118,6 +120,9 @@ export function CollectionForm({
           const error = await response.json();
           throw new Error(error.error || 'Failed to create collection');
         }
+
+        const result = await response.json();
+        return { slug: result.data?.slug || values.slug };
       } else {
         const response = await fetch('/api/v1/collections', {
           method: 'PATCH',
@@ -131,9 +136,12 @@ export function CollectionForm({
           const error = await response.json();
           throw new Error(error.error || 'Failed to update collection');
         }
+
+        const result = await response.json();
+        return { slug: result.data?.slug || values.slug };
       }
     },
-    onSuccess: async () => {
+    onSuccess: async (data: { slug: string }) => {
       await queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
       await queryClient.refetchQueries({ queryKey: collectionsQueryKeys.all });
       toast.success(mode === 'add' ? 'Collection created' : 'Collection updated', {
@@ -142,6 +150,9 @@ export function CollectionForm({
       onOpenChange(false);
       form.reset();
       mutation.reset();
+
+      // Call onSuccess callback with the slug (for potential redirect)
+      onSuccess?.(data.slug);
     },
     onError: (error: Error) => {
       form.setError('root', { message: error.message });
