@@ -118,21 +118,21 @@ export function CollectionCard({
               </Tooltip>
             </div>
           )}
-
-          {/* Badges - Top Right */}
-          <div className='absolute top-3 right-3 flex flex-col gap-2 items-end'>
-            <Badge>
-              <Text variant='bd-sm' className='font-medium'>
-                {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
-              </Text>
-            </Badge>
-          </div>
         </div>
 
         {/* Card Content */}
         <CardHeader>
-          <CardTitle>{collection.title}</CardTitle>
-          <CardDescription>{collection.description}</CardDescription>
+          <CardTitle>
+            <Text variant='bd-sm'>{collection.title}</Text>
+          </CardTitle>
+          <CardDescription>
+            <Text variant='caption'>{collection.description}</Text>
+          </CardDescription>
+          <Badge variant='outline'>
+            <Text variant='bd-sm'>
+              {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
+            </Text>
+          </Badge>
         </CardHeader>
 
         <CardContent className='space-y-2'>
