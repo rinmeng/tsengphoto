@@ -63,6 +63,7 @@ interface CollectionFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (updatedSlug?: string) => void;
+  defaultType?: 'event' | 'video' | 'series';
 }
 
 export function CollectionForm({
@@ -71,6 +72,7 @@ export function CollectionForm({
   open,
   onOpenChange,
   onSuccess,
+  defaultType = 'event',
 }: CollectionFormProps) {
   const queryClient = useQueryClient();
 
@@ -91,7 +93,7 @@ export function CollectionForm({
       : {
           title: '',
           slug: '',
-          type: 'event',
+          type: defaultType,
           date: undefined,
           location: '',
           description: '',

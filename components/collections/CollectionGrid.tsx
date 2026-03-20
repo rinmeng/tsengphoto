@@ -21,9 +21,9 @@ export function CollectionGrid({
 }: CollectionGridProps) {
   if (collections.length === 0) {
     return (
-      <div className='container mx-auto fade-in-from-top h-screen'>
+      <div className='container mx-auto fade-in-from-top h-[50vh]'>
         <EmptyState
-          className='h-2/3'
+          className='h-full'
           bordered={true}
           icon={ImageOff}
           title={`There's nothing here`}
@@ -35,7 +35,7 @@ export function CollectionGrid({
   }
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+    <div className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
       {collections.map((collection, index) => (
         <CollectionCard
           className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
