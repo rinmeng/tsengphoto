@@ -149,24 +149,35 @@ Heading variants: `hd-xxl` → `hd-xs` (responsive, bold, semantic HTML auto-app
 Body variants: `bd-xxl` → `bd-xs` (responsive)
 Special: `caption`, `label`, `muted`, `muted-sm`
 
-### Loading States — Use Global Context
+### Loading States — Prefer TanStack Query, Fall Back to Global Context
 
-Never use local `useState(false)` for loading. Always use the global `LoadingContext`.
+**Prefer TanStack Query's built-in loading states** (`isPending`, `isLoading`, `isSuccess`) whenever the async operation is a query or mutation. Only reach for `useLoading()` when the operation falls outside TanStack Query (e.g. a one-off imperative action with no query/mutation).
 
 ```tsx
-// ❌ Never
-const [loading, setLoading] = useState(false);
+// ✅ Prefer — TanStack Query mutation loading
+const deleteMutation = useMutation({ ... });
 
-// ✅ Always
+<Button disabled={deleteMutation.isPending}>
+  {deleteMutation.isPending ? <><Spinner /> Deleting...</> : 'Delete'}
+</Button>
+
+// ✅ Prefer — TanStack Query query loading
+const { data, isLoading } = useQuery({ ... });
+
+{isLoading ? <Skeleton className='h-4 w-32' /> : <span>{data.count} items</span>}
+
+// ✅ Fallback — use LoadingContext only when no TanStack Query is involved
 const { setLoading, isLoading } = useLoading();
 
-// Use namespaced keys and always clean up in finally
 setLoading('user:save', true);
 try {
-  await saveUser();
+  await someImperativeAction();
 } finally {
   setLoading('user:save', false);
 }
+
+// ❌ Never use local useState for loading under any circumstance
+const [loading, setLoading] = useState(false);
 ```
 
 Context from `@/context/LoadingContext.tsx` provides: `setLoading(key, value)`, `isLoading(key)`, `isAnyLoading()`, `loadingStates`.
@@ -174,23 +185,18 @@ Context from `@/context/LoadingContext.tsx` provides: `setLoading(key, value)`, 
 **Skeleton** for data-dependent content (text, cards, images):
 
 ```tsx
-{
-  isLoading('data:fetch') ? (
-    <Skeleton className='h-4 w-32' />
-  ) : (
-    <span>{count} items</span>
-  );
-}
+// From TanStack Query
+const { isLoading } = useQuery({ ... });
+{isLoading ? <Skeleton className='h-4 w-32' /> : <span>{count} items</span>}
 ```
 
 **Spinner** for action-based operations (buttons, form submissions):
 
 ```tsx
-<Button disabled={isLoading('form:submit')}>
-  {isLoading('form:submit') ? (
-    <>
-      <Spinner /> Saving...
-    </>
+// From TanStack Query mutation
+<Button disabled={mutation.isPending || mutation.isSuccess}>
+  {mutation.isPending || mutation.isSuccess ? (
+    <><Spinner /> Saving...</>
   ) : (
     'Save'
   )}
@@ -239,6 +245,139 @@ Icons go directly inside `<Button>` — no extra wrappers or spacing classes nee
 ---
 
 ## Best Practices
+
+### TanStack Query (React Query)
+
+#### Queries vs Mutations
+
+- **Queries** (`useQuery`) → reading/fetching data
+- **Mutations** (`useMutation`) → any server-side action (create, update, delete, auth)
+
+#### Query Keys
+
+Always define query keys as constants — never inline. This makes cache invalidation reliable and refactoring safe:
+
+```typescript
+// ✅ Centralized query keys
+export const queryKeys = {
+  uploads: ['uploads'] as const,
+  upload: (id: string) => ['uploads', id] as const,
+  bookings: ['bookings'] as const,
+};
+
+// ✅ Usage
+const { data, isLoading } = useQuery({
+  queryKey: queryKeys.uploads,
+  queryFn: () => fetchUploads(),
+});
+
+// ❌ Inline keys — impossible to invalidate reliably
+useQuery({ queryKey: ['uploads'], queryFn: ... });
+```
+
+#### Mutations
+
+Always handle three things in every mutation:
+
+1. `mutationFn` — the async action
+2. `onSuccess` — redirect, toast, cache invalidation
+3. `onError` — toast, form error
+
+```typescript
+const deleteMutation = useMutation({
+  mutationFn: async (id: string) => {
+    const result = await deleteUpload(id);
+    if (result.error) throw new Error('Something went wrong.');
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.uploads });
+    toast.success('Deleted successfully');
+  },
+  onError: (error: Error) => {
+    toast.error(error.message);
+  },
+});
+```
+
+#### Always Throw in `mutationFn` — Never Return Errors
+
+`onError` only fires when `mutationFn` throws. Supabase returns `{ error }` instead of throwing, so you must bridge the gap manually:
+
+```typescript
+// ❌ onError will never fire — React Query sees this as a success
+mutationFn: async () => {
+  const result = await signInWithEmail(email, password);
+  return result;
+}
+
+// ✅ Throw to trigger onError
+mutationFn: async () => {
+  const result = await signInWithEmail(email, password);
+  if (result.error) throw new Error('Invalid credentials.');
+}
+```
+
+#### Loading & Success States
+
+Use `isPending` for in-flight state. For auth/navigation mutations, also include `isSuccess` to prevent the button flashing back to idle before the page navigates away:
+
+```tsx
+// ✅ Stays locked in loading state through navigation
+<Button disabled={mutation.isPending || mutation.isSuccess}>
+  {mutation.isPending || mutation.isSuccess ? (
+    <><Spinner /> Signing In...</>
+  ) : (
+    <>Sign In <LogIn /></>
+  )}
+</Button>
+
+// ❌ Flashes back to idle briefly before navigation completes
+<Button disabled={mutation.isPending}>
+```
+
+Never use the deprecated `isLoading` on mutations — use `isPending`.
+
+#### Cache Invalidation
+
+Always invalidate related queries after mutations that change data:
+
+```typescript
+const queryClient = useQueryClient();
+
+onSuccess: () => {
+  queryClient.invalidateQueries({ queryKey: queryKeys.uploads });
+}
+```
+
+#### Integration with React Hook Form
+
+Wire `onError` to both a toast and `setError('root')` for inline form feedback:
+
+```typescript
+onError: (error: Error) => {
+  form.setError('root', { message: error.message });
+  toast.error('Action failed', { description: error.message });
+},
+```
+
+Display root errors below your fields:
+
+```tsx
+{form.formState.errors.root && (
+  <div className='text-sm text-destructive'>
+    {form.formState.errors.root.message}
+  </div>
+)}
+```
+
+#### General Rules
+
+- Never use `useMutation` or `useQuery` inside service files — they belong in components or hooks only
+- Never use local `useState` for loading when a TanStack Query mutation or query is available
+- Never call `useQueryClient()` inside service files — only in components
+- Prefer `useMutation` over manual `useState` + `try/catch` for any async action in components
+
+---
 
 ### Security & Error Handling
 
@@ -368,4 +507,4 @@ After completing any code changes, **always** verify the following:
 4. **Review imports** — Ensure all imports are valid and paths are correct
 5. **Check console** — Verify no unexpected warnings or errors appear in browser or terminal
 
-Don't mark changes as complete until these checks pass.
+Don't mark changes as complete until these checks pass
