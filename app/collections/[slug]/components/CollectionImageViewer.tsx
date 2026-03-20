@@ -132,7 +132,7 @@ export function CollectionImageViewer({
                 variant='destructive'
                 size='sm'
                 onClick={handleBulkDelete}
-                disabled={isBulkDeleting || isDeletingImage}
+                disabled={isBulkDeleting}
               >
                 {isBulkDeleting ? (
                   <>
