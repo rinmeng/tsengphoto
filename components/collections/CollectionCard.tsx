@@ -13,7 +13,16 @@ import {
   TooltipContent,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
-import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit } from 'lucide-react';
+import {
+  Calendar,
+  Globe,
+  MapPin,
+  Trash2,
+  GlobeLock,
+  Edit,
+  ImageIcon,
+  ImageOff,
+} from 'lucide-react';
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
 
@@ -81,7 +90,11 @@ export function CollectionCard({
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
             />
           ) : (
-            <div className='flex h-full items-center justify-center'>
+            <div
+              className='flex h-full flex-col items-center justify-center gap-2
+                text-center'
+            >
+              <ImageOff className='w-12 h-12 text-muted-foreground' />
               <Text variant='muted'>No cover image</Text>
             </div>
           )}
