@@ -58,40 +58,56 @@ This project follows a strict 3-layer architecture:
 ### 1. UI Layer (Components)
 
 - React components in `/components/` and `/app/`
-- No business logic, no direct Supabase calls
-- Use service layer for all data operations
+- No business logic, no direct Supabase calls, no API calls to service layer
+- Call API routes for all data operations
 - Handle loading/error states via toast notifications
 
 ### 2. Service Layer (`/services/*.service.ts`)
 
-- All business logic and data operations live here
+- Pure business logic only (validation, transformations, calculations)
+- No direct database/Supabase calls
+- Acts as a bridge between API routes and data operations
 - Returns structured responses: `{ success: boolean, data?: T, error?: string }`
-- Logs errors with prefix: `[ServiceName] Error: ...`
-- Never returns raw Supabase errors to callers
+- Never exposes raw errors to callers
 
 ```typescript
 // services/uploads.service.ts
-export async function fetchUploads(): Promise<Upload[] | null> {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase.from('uploads').select('*');
-    if (error) {
-      console.error('[UploadService] Error fetching uploads:', error);
-      return null;
-    }
-    return data;
-  } catch (error) {
-    console.error('[UploadService] Unexpected error:', error);
-    return null;
-  }
+export async function processUploadData(upload: Upload): Upload {
+  // Business logic: transform, validate, calculate
+  return {
+    ...upload,
+    file_size_mb: upload.file_size / 1024 / 1024,
+  };
 }
 ```
 
 ### 3. API / Route Layer (`/app/api/`)
 
 - Authentication + input validation
-- Calls service layer
+- Direct Supabase/database calls
+- Calls service layer for business logic
 - Returns safe, sanitized responses
+- Uses Logger for server-side error logging
+
+```typescript
+// app/api/v1/uploads/route.ts
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('uploads').select('*');
+    
+    if (error) {
+      Logger.error('Error fetching uploads:', error);
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ data }, { status: 200 });
+  } catch (error) {
+    Logger.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+  }
+}
+```
 
 ---
 

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchCollectionBySlug } from '@/services/collections.service';
 import { createClient } from '@/utils/supabase/server';
 import { Logger } from '@/lib/logger';
 
@@ -23,10 +22,28 @@ export async function GET(
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
     }
 
-    const collection = await fetchCollectionBySlug(slug, !!user);
+    let query = supabase
+      .from('collections')
+      .select(
+        `
+        *,
+        images:collection_image(*)
+      `
+      )
+      .eq('slug', slug);
 
-    if (!collection) {
-      return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
+    if (!user) {
+      query = query.eq('is_published', true);
+    }
+
+    const { data: collection, error } = await query.single();
+
+    if (error) {
+      Logger.error('Error fetching collection by slug:', error);
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
+      }
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
     }
 
     return NextResponse.json({ data: collection }, { status: 200 });

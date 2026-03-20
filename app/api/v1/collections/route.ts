@@ -1,10 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  fetchAllCollections,
-  createCollection,
-  updateCollection,
-  deleteCollection,
-} from '@/services/collections.service';
 import { createClient } from '@/utils/supabase/server';
 import { Logger } from '@/lib/logger';
 
@@ -19,13 +13,28 @@ export async function GET() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const collections = await fetchAllCollections(!!user);
+    let query = supabase
+      .from('collections')
+      .select(
+        `
+        *,
+        images:collection_image(*)
+      `
+      )
+      .order('created_at', { ascending: false });
 
-    if (!collections) {
-      return NextResponse.json({ error: 'Failed to fetch collections' }, { status: 500 });
+    if (!user) {
+      query = query.eq('is_published', true);
     }
 
-    return NextResponse.json({ data: collections }, { status: 200 });
+    const { data: collections, error } = await query;
+
+    if (error) {
+      Logger.error('Error fetching collections:', error);
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ data: collections || [] }, { status: 200 });
   } catch (error) {
     Logger.error('Error in GET /api/v1/collections:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
@@ -48,13 +57,26 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const result = await createCollection(body);
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+    const { data: collection, error } = await supabase
+      .from('collections')
+      .insert(body)
+      .select()
+      .single();
+
+    if (error) {
+      Logger.error('Error creating collection:', error);
+      // Check for unique constraint violation (PostgreSQL error code 23505)
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { error: 'A collection with this slug already exists.' },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 400 });
     }
 
-    return NextResponse.json({ data: result.data }, { status: 201 });
+    return NextResponse.json({ data: collection }, { status: 201 });
   } catch (error) {
     Logger.error('Error in POST /api/v1/collections:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
@@ -82,13 +104,29 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
     }
 
-    const result = await updateCollection(id, updates);
+    const { data: collection, error } = await supabase
+      .from('collections')
+      .update({
+        ...updates,
+        modified_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+    if (error) {
+      Logger.error('Error updating collection:', error);
+      // Check for unique constraint violation (PostgreSQL error code 23505)
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { error: 'A collection with this slug already exists.' },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 400 });
     }
 
-    return NextResponse.json({ data: result.data }, { status: 200 });
+    return NextResponse.json({ data: collection }, { status: 200 });
   } catch (error) {
     Logger.error('Error in PATCH /api/v1/collections:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
@@ -116,10 +154,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
     }
 
-    const result = await deleteCollection(id);
+    const { error } = await supabase.from('collections').delete().eq('id', id);
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+    if (error) {
+      Logger.error('Error deleting collection:', error);
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 400 });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
