@@ -109,7 +109,7 @@ export function ImageUploader({
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
     },
-    maxFiles: 50,
+    maxFiles: 100,
     maxSize: 16 * 1024 * 1024, // 16MB per file
   });
 
