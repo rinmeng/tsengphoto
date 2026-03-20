@@ -106,7 +106,6 @@ export function CollectionImageViewer({
     if (selectedIds.size === 0 || !onBulkDelete) return;
     const selectedImages = sortedImages.filter((img) => selectedIds.has(img.id));
     onBulkDelete(selectedImages);
-    setSelectedIds(new Set());
   };
 
   return (
@@ -128,12 +127,12 @@ export function CollectionImageViewer({
               </Checkbox>
               <Text variant='bd-sm'>Select All</Text>
             </label>
-            {selectedIds.size > 0 && (
+            {(selectedIds.size > 0 || isBulkDeleting) && (
               <Button
                 variant='destructive'
                 size='sm'
                 onClick={handleBulkDelete}
-                disabled={isBulkDeleting}
+                disabled={isBulkDeleting || isDeletingImage}
               >
                 {isBulkDeleting ? (
                   <>
@@ -187,6 +186,7 @@ export function CollectionImageViewer({
                           }
                           disabled={isBulkDeleting}
                           variant='overlay'
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <CheckboxIndicator />
                         </Checkbox>
