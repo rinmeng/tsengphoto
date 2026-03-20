@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getCollectionBySlug } from '@/lib/placeholder/collections';
+import { createClient } from '@/utils/supabase/server';
 
 interface CollectionLayoutProps {
   children: React.ReactNode;
@@ -11,7 +11,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
+
+  // Fetch collection from database
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let query = supabase.from('collections').select('*').eq('slug', slug);
+
+  // Only filter by is_published for non-authenticated users
+  if (!user) {
+    query = query.eq('is_published', true);
+  }
+
+  const { data: collection } = await query.single();
 
   if (!collection) {
     return {
