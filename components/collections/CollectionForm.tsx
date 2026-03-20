@@ -227,7 +227,7 @@ export function CollectionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[70vh] sm:max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>
             {mode === 'add' ? 'Add Collection' : 'Edit Collection'}
