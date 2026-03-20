@@ -11,8 +11,9 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploaderProps {
-  onUploadComplete?: () => void;
+  onUploadComplete?: (uploadedUrls?: string[]) => void;
   onUploadError?: (error: Error) => void;
+  className?: string;
 }
 
 type FileStatus = 'pending' | 'uploading' | 'success' | 'error';
@@ -24,7 +25,11 @@ interface FileWithStatus {
   error?: string;
 }
 
-export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploaderProps) {
+export function ImageUploader({
+  onUploadComplete,
+  onUploadError,
+  className,
+}: ImageUploaderProps) {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const currentFileIndexRef = useRef<number>(-1);
@@ -113,6 +118,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
     setIsUploading(true);
 
     let hasErrors = false;
+    const uploadedUrls: string[] = [];
 
     // Upload files sequentially
     for (let i = 0; i < files.length; i++) {
@@ -124,7 +130,10 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
       );
 
       try {
-        await startUpload([files[i].file]);
+        const result = await startUpload([files[i].file]);
+        if (result && result[0]?.url) {
+          uploadedUrls.push(result[0].url);
+        }
         setFiles((prev) =>
           prev.map((f, idx) =>
             idx === i ? { ...f, status: 'success' as FileStatus, progress: 100 } : f
@@ -146,7 +155,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
 
     // Only clear and call success if no errors
     if (!hasErrors) {
-      onUploadComplete?.();
+      onUploadComplete?.(uploadedUrls);
       // Brief delay to show success state, then clear
       setTimeout(() => {
         setFiles([]);
@@ -166,7 +175,7 @@ export function ImageUploader({ onUploadComplete, onUploadError }: ImageUploader
   };
 
   return (
-    <div className='space-y-4'>
+    <div className={cn('space-y-4', className)}>
       {/* Dropzone */}
       <div
         {...getRootProps()}
