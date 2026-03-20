@@ -23,7 +23,7 @@ import {
 
 import { signInWithEmail } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { useLoading } from '@/hooks/use-loading';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { Text } from '@/components/Text';
 import { LogIn } from 'lucide-react';
@@ -38,7 +38,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { toast } = useToast();
-  const { setLoading, isLoading } = useLoading();
   const router = useRouter();
 
   const loginForm = useForm<LoginFormValues>({
@@ -49,33 +48,33 @@ export default function LoginPage() {
     },
   });
 
-  const onLoginSubmit = async (data: LoginFormValues) => {
-    setLoading('auth:login', true);
-    try {
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginFormValues) => {
       const { email, password } = data;
-      const { error } = await signInWithEmail(email, password);
-      if (error) {
-        loginForm.setError('root', {
-          message: 'Invalid email or password',
-        });
-        toast.error('Login failed', {
-          description: 'Please check your credentials and try again.',
-        });
-        setLoading('auth:login', false);
-      } else {
-        router.push('/admin');
-        toast.success('Login successful', {
-          description: 'You are now signed in as ' + email.split('@')[0],
-        });
-        setLoading('auth:login', false);
+      const result = await signInWithEmail(email, password);
+      if (result.error) {
+        throw new Error('Invalid email or password');
       }
-    } catch (err) {
-      toast.error('Login failed', {
-        description: 'Unexpected error occurred.',
+      return { email };
+    },
+    onSuccess: (data) => {
+      router.push('/admin');
+      toast.success('Login successful', {
+        description: 'You are now signed in as ' + data.email.split('@')[0],
       });
-      setLoading('auth:login', false);
-      throw err;
-    }
+    },
+    onError: (error: Error) => {
+      loginForm.setError('root', {
+        message: error.message,
+      });
+      toast.error('Login failed', {
+        description: 'Please check your credentials and try again.',
+      });
+    },
+  });
+
+  const onLoginSubmit = (data: LoginFormValues) => {
+    loginMutation.mutate(data);
   };
 
   return (
@@ -173,9 +172,9 @@ export default function LoginPage() {
                 <Button
                   type='submit'
                   className={`w-full fade-in-from-top ${getDelayClass(8)}`}
-                  disabled={isLoading('auth:login')}
+                  disabled={loginMutation.isPending}
                 >
-                  {isLoading('auth:login') ? (
+                  {loginMutation.isPending ? (
                     <>
                       <Spinner /> Signing In...
                     </>

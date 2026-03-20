@@ -23,7 +23,7 @@ applyTo: '**/*'
 ```
 app/                    # Next.js App Router pages and API routes
   ├── api/v1/          # API endpoints (versioned)
-  ├── admin/           # Protected admin pages
+  ├── admin/           # Protected admin pages (still in testing...)
   └── ...              # Public pages
 
 components/
@@ -355,3 +355,17 @@ Logger.debug('Payload', payload);
 - Caller name is auto-detected — never pass a prefix like `[ServiceName]` manually
 - Use `Logger.error` for caught exceptions, always pass the error object as a second arg
 - Remove any existing `console.*` calls when touching a file
+
+---
+
+## Completion Checklist
+
+After completing any code changes, **always** verify the following:
+
+1. **Check for TypeScript errors** — Use `get_errors` tool or run `pnpm tsc --noEmit` to ensure no type errors
+2. **Check for runtime errors** — Start the dev server and verify the changed functionality works as expected
+3. **Test the user flow** — Navigate to the affected pages/components and interact with them
+4. **Review imports** — Ensure all imports are valid and paths are correct
+5. **Check console** — Verify no unexpected warnings or errors appear in browser or terminal
+
+Don't mark changes as complete until these checks pass.
