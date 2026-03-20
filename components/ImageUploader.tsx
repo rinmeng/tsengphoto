@@ -93,7 +93,7 @@ export function ImageUploader({
           } else if (error.code === 'file-too-large') {
             toast.error(`"${file.name}" is too large. Maximum file size is 16MB.`);
           } else if (error.code === 'too-many-files') {
-            toast.error('Too many files selected. Maximum is 10 files at a time.');
+            toast.error('Too many files selected. Maximum is 100 files at a time.');
           } else {
             toast.error(`Error with "${file.name}": ${error.message}`);
           }
@@ -109,7 +109,7 @@ export function ImageUploader({
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
     },
-    maxFiles: 10,
+    maxFiles: 50,
     maxSize: 16 * 1024 * 1024, // 16MB per file
   });
 
