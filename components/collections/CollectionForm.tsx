@@ -103,6 +103,12 @@ export function CollectionForm({
         },
   });
 
+  // Watch cover_image_id at component level
+  const coverImageId = useWatch({
+    control: form.control,
+    name: 'cover_image_id',
+  });
+
   const mutation = useMutation({
     mutationFn: async (values: CollectionFormValues) => {
       const payload = {
@@ -376,33 +382,27 @@ export function CollectionForm({
             <FormField
               control={form.control}
               name='cover_image'
-              render={({ field }) => {
-                const coverImageId = useWatch({
-                  control: form.control,
-                  name: 'cover_image_id',
-                });
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <CoverImageUploader
-                        value={field.value}
-                        uploadId={coverImageId}
-                        onChange={(data) => {
-                          form.setValue('cover_image', data.url);
-                          if (data.uploadId) {
-                            form.setValue('cover_image_id', data.uploadId);
-                          }
-                        }}
-                        onRemove={() => {
-                          form.setValue('cover_image', '');
-                          form.setValue('cover_image_id', '');
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <CoverImageUploader
+                      value={field.value}
+                      uploadId={coverImageId}
+                      onChange={(data) => {
+                        form.setValue('cover_image', data.url);
+                        if (data.uploadId) {
+                          form.setValue('cover_image_id', data.uploadId);
+                        }
+                      }}
+                      onRemove={() => {
+                        form.setValue('cover_image', '');
+                        form.setValue('cover_image_id', '');
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             {/* Published */}
