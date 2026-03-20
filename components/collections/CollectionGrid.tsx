@@ -6,9 +6,17 @@ import { ArrowLeft, ImageOff } from 'lucide-react';
 
 interface CollectionGridProps {
   collections: CollectionWithImages[];
+  isAuthenticated?: boolean;
+  onEdit?: (collection: CollectionWithImages) => void;
+  onDelete?: (collectionId: string) => void;
 }
 
-export function CollectionGrid({ collections }: CollectionGridProps) {
+export function CollectionGrid({
+  collections,
+  isAuthenticated = false,
+  onEdit,
+  onDelete,
+}: CollectionGridProps) {
   if (collections.length === 0) {
     return (
       <div className='container mx-auto fade-in-from-top h-screen'>
@@ -31,6 +39,9 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
           className={`fade-in-from-bottom ${getDelayClass(index)}`}
           key={collection.id}
           collection={collection}
+          isAuthenticated={isAuthenticated}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>

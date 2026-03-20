@@ -10,15 +10,25 @@ import {
   CardTitle,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib';
+import { Button } from '@/components/animate-ui/components/button';
 
 interface CollectionCardProps {
   collection: CollectionWithImages;
   className?: string;
+  isAuthenticated?: boolean;
+  onEdit?: (collection: CollectionWithImages) => void;
+  onDelete?: (collectionId: string) => void;
 }
 
-export function CollectionCard({ collection, className }: CollectionCardProps) {
+export function CollectionCard({
+  collection,
+  className,
+  isAuthenticated = false,
+  onEdit,
+  onDelete,
+}: CollectionCardProps) {
   const imageCount = collection.images.length;
   const formattedDate = collection.date
     ? new Date(collection.date).toLocaleDateString('en-US', {
@@ -28,12 +38,25 @@ export function CollectionCard({ collection, className }: CollectionCardProps) {
       })
     : null;
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit?.(collection);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete?.(collection.id);
+  };
+
   return (
     <Link href={`/collections/${collection.slug}`} className='group block h-full'>
       <Card
         className={cn(
           `h-full flex flex-col overflow-hidden transition-all hover:shadow-lg
           hover:-translate-y-1 pt-0`,
+          !collection.is_published && 'opacity-70',
           className
         )}
       >
@@ -52,20 +75,51 @@ export function CollectionCard({ collection, className }: CollectionCardProps) {
               <Text variant='muted'>No cover image</Text>
             </div>
           )}
-          {/* Image count badge */}
-          <Badge className='absolute top-3 right-3 bg-primary/50 backdrop-blur-sm'>
-            <Text variant='bd-sm' className='font-medium'>
-              {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
-            </Text>
-          </Badge>
+
+          {/* Admin Actions - Top Left */}
+          {isAuthenticated && (
+            <div className='absolute top-3 left-3 flex gap-2'>
+              <Button
+                variant='secondary'
+                size='icon'
+                className='h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-background'
+                onClick={handleEdit}
+              >
+                <Pencil className='h-4 w-4' />
+              </Button>
+              <Button
+                variant='destructive'
+                size='icon'
+                className='h-8 w-8 bg-destructive/80 backdrop-blur-sm
+                  hover:bg-destructive'
+                onClick={handleDelete}
+              >
+                <Trash2 className='h-4 w-4' />
+              </Button>
+            </div>
+          )}
+
+          {/* Badges - Top Right */}
+          <div className='absolute top-3 right-3 flex flex-col gap-2 items-end'>
+            <Badge>
+              <Text variant='bd-sm' className='font-medium'>
+                {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
+              </Text>
+            </Badge>
+            {!collection.is_published && (
+              <Badge variant='secondary'>
+                <Text variant='bd-sm' className='font-medium'>
+                  Not Published
+                </Text>
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Card Content */}
         <CardHeader>
           <CardTitle>{collection.title || collection.name}</CardTitle>
-          <CardDescription>
-            {collection.description || 'No description available'}
-          </CardDescription>
+          <CardDescription>{collection.description}</CardDescription>
         </CardHeader>
 
         <CardContent className='space-y-2'>

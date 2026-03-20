@@ -5,8 +5,9 @@ import { Button } from '@/components/animate-ui/components/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Text } from '@/components/Text';
+import { EmptyState } from '@/components/EmptyState';
 import { getDelayClass } from '@/utils/animations';
-import { X } from 'lucide-react';
+import { X, ImageOff } from 'lucide-react';
 
 interface CollectionImage {
   id: string;
@@ -85,9 +86,12 @@ export function CollectionImageViewer({
             ))}
           </div>
         ) : (
-          <div className='text-center py-12'>
-            <Text variant='muted'>No images in this collection</Text>
-          </div>
+          <EmptyState
+            bordered={true}
+            icon={ImageOff}
+            title='No images yet'
+            description='This collection has no images. Check back later!'
+          />
         )}
       </div>
 

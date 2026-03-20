@@ -1,7 +1,6 @@
 'use client';
 
 import { notFound, useParams } from 'next/navigation';
-import { getCollectionBySlug } from '@/lib/placeholder/collections';
 import { Text } from '@/components/Text';
 import { Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -11,19 +10,22 @@ import { getDelayClass } from '@/utils/animations';
 import { CollectionImageViewer } from './components/CollectionImageViewer';
 import { useQuery } from '@tanstack/react-query';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function CollectionPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const { user } = useAuth();
 
   const { data: collection, isLoading } = useQuery({
-    queryKey: collectionsQueryKeys.bySlug(slug),
+    queryKey: [...collectionsQueryKeys.bySlug(slug), { includeUnpublished: !!user }],
     queryFn: async () => {
-      const result = getCollectionBySlug(slug);
-      if (!result) {
+      const response = await fetch(`/api/v1/collections/${slug}`);
+      if (!response.ok) {
         throw new Error('Collection not found');
       }
-      return result;
+      const result = await response.json();
+      return result.data;
     },
   });
 
@@ -78,8 +80,8 @@ export default function CollectionPage() {
 
   return (
     <section
-      className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding
-        min-h-screen'
+      className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
+        flex-col min-h-screen'
     >
       {/* Back Button */}
       <div className={`sticky top-20 mb-6 z-50 fade-in-from-top ${getDelayClass(0)}`}>
