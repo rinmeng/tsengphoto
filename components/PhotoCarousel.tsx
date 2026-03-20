@@ -93,7 +93,10 @@ export function PhotoCarousel({
         {dotsLocation !== 'below-carousel' && btnLocation !== 'mb' && <CarouselDots />}
         {/* Middle-bottom grouped navigation */}
         {btnLocation === 'mb' && (
-          <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3'>
+          <div
+            className='absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center
+              gap-3'
+          >
             <CarouselPrevious className='hidden sm:flex' />
             {dotsLocation !== 'below-carousel' && (
               <CarouselDots className='static! translate-x-0!' />

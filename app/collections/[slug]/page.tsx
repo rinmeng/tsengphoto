@@ -188,12 +188,12 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
-          <div className='flex items-center gap-2'>
+          <Badge variant='outline' className='flex items-center gap-2'>
             <Text variant='bd-md'>
               {collection.images.length}{' '}
               {collection.images.length === 1 ? 'photo' : 'photos'}
             </Text>
-          </div>
+          </Badge>
         </div>
       </div>
 
