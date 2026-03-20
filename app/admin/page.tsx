@@ -22,7 +22,7 @@ export default function Admin() {
   return (
     <section
       className={`container nb-padding mx-auto pb-4 px-4 fade-in-from-top border-x-2
-        border-dashed ${getDelayClass(0)}`}
+        min-h-screen border-dashed ${getDelayClass(0)}`}
     >
       <Card className={`fade-in-from-top ${getDelayClass(1)}`}>
         <CardHeader>
