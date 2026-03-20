@@ -32,6 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib';
+import { CoverImageUploader } from '@/components/CoverImageUploader';
 
 import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { Collection } from '@/lib/types';
@@ -369,9 +370,12 @@ export function CollectionForm({
               name='cover_image'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cover Image URL (optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder='https://...' type='url' />
+                    <CoverImageUploader
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange('')}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
