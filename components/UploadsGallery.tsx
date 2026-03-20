@@ -45,14 +45,15 @@ export function UploadsGallery({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: uploads = [], isLoading } = useQuery({
+  const { data: uploads = [], isLoading } = useQuery<Upload[]>({
     queryKey: queryKeys.uploads,
     queryFn: async () => {
-      const data = await UploadService.fetchUploads();
-      if (!data) {
+      const response = await fetch('/api/v1/uploads');
+      if (!response.ok) {
         throw new Error('Failed to load uploads');
       }
-      return data;
+      const result = await response.json();
+      return result.data || [];
     },
   });
 

@@ -17,7 +17,11 @@ export default function CollectionPage() {
   const slug = params.slug as string;
   const { user } = useAuth();
 
-  const { data: collection, isLoading } = useQuery({
+  const {
+    data: collection,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: [...collectionsQueryKeys.bySlug(slug), { includeUnpublished: !!user }],
     queryFn: async () => {
       const response = await fetch(`/api/v1/collections/${slug}`);
@@ -29,44 +33,31 @@ export default function CollectionPage() {
     },
   });
 
+  // Show loading skeleton
   if (isLoading) {
     return (
       <section
-        className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding
-          min-h-screen'
+        className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
+          flex-col min-h-screen'
       >
-        <div className='sticky top-20 mb-6 z-50'>
-          <Link href='/collections'>
-            <Button variant='default'>
-              <ArrowLeft />
-              Back to Collections
-            </Button>
-          </Link>
+        <div className='mb-6'>
+          <Skeleton className='h-10 w-48' />
         </div>
-
         <div className='mb-12 space-y-6'>
-          <div className='space-y-2'>
-            <Skeleton className='h-6 w-20' />
-            <Skeleton className='h-12 w-96' />
-          </div>
+          <Skeleton className='h-6 w-24' />
+          <Skeleton className='h-12 w-96' />
           <Skeleton className='h-20 w-full max-w-3xl' />
-          <div className='flex flex-wrap gap-6'>
-            <Skeleton className='h-6 w-32' />
-            <Skeleton className='h-6 w-32' />
-            <Skeleton className='h-6 w-24' />
+          <div className='flex gap-6'>
+            <Skeleton className='h-5 w-32' />
+            <Skeleton className='h-5 w-32' />
           </div>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className='h-60 w-full' />
-          ))}
         </div>
       </section>
     );
   }
 
-  if (!collection) {
+  // Only call notFound after loading is complete and data is missing
+  if (!isLoading && (isError || !collection)) {
     notFound();
   }
 

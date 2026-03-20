@@ -1,9 +1,42 @@
 import { createAdminClient } from '@/utils/supabase/admin';
+import { createClient } from '@/utils/supabase/server';
 import { UTApi } from 'uploadthing/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { Logger } from '@/lib/logger';
 
 const utapi = new UTApi();
+
+/**
+ * GET /api/v1/uploads
+ * Fetches all uploads for the authenticated user
+ */
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    const { data: uploads, error } = await supabase
+      .from('uploads')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      Logger.error('Error fetching uploads:', error);
+      return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ data: uploads || [] }, { status: 200 });
+  } catch (error) {
+    Logger.error('Error in GET /api/v1/uploads:', error);
+    return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+  }
+}
 
 export async function DELETE(req: NextRequest) {
   try {
