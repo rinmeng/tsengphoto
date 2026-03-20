@@ -497,6 +497,102 @@ Logger.debug('Payload', payload);
 
 ---
 
+## CMS / Admin UI Patterns
+
+### Action Placement
+
+**Global actions** (e.g. "Add New") belong at the **top of the page**. **Item-specific actions** (edit, delete) belong **on each card** — never at the top.
+
+```tsx
+// ✅ Correct
+<div>
+  <Button onClick={openAddDialog}>Add New Collection</Button>
+  
+  {collections.map(collection => (
+    <Card key={collection.id}>
+      {/* ... */}
+      <Button onClick={() => openEditDialog(collection)}>Edit</Button>
+      <Button onClick={() => confirmDelete(collection.id)}>Delete</Button>
+    </Card>
+  ))}
+</div>
+
+// ❌ Wrong — item actions at the top
+<div>
+  <Button>Edit Collection</Button>
+  <Button>Delete Collection</Button>
+</div>
+```
+
+### Add / Edit Forms — Single Shared Component
+
+When add and edit forms are identical or near-identical, use **one shared component** with a `mode` prop. Never duplicate the form. The `mode` prop controls the title, submit label, and default values. Use `mode='add'` for new records and `mode='edit'` with the existing record passed in as a prop.
+
+```typescript
+interface CollectionFormProps {
+  mode: 'add' | 'edit';
+  collection?: Collection;
+  onSuccess?: () => void;
+}
+
+export function CollectionForm({ mode, collection, onSuccess }: CollectionFormProps) {
+  const form = useForm({
+    defaultValues: collection || { /* empty defaults */ },
+  });
+  
+  return (
+    <Form>
+      <DialogTitle>{mode === 'add' ? 'Add Collection' : 'Edit Collection'}</DialogTitle>
+      {/* form fields */}
+      <Button type="submit">
+        {mode === 'add' ? 'Create' : 'Update'}
+      </Button>
+    </Form>
+  );
+}
+```
+
+### Add / Edit — Use Dialog or Sheet
+
+Spawn add/edit forms in a **Dialog** (simple forms) or **Sheet** (longer forms) — never navigate to a separate page unless the form is very complex.
+
+```tsx
+// ✅ Use Dialog for simple forms
+<Dialog open={isOpen} onOpenChange={setIsOpen}>
+  <DialogContent>
+    <CollectionForm mode="add" onSuccess={() => setIsOpen(false)} />
+  </DialogContent>
+</Dialog>
+
+// ❌ Don't navigate to separate pages for simple CRUD
+router.push('/collections/new');
+```
+
+### Delete — Always Confirm
+
+Never delete on a single click. Always wrap the delete action in a confirmation **AlertDialog**. The mutation should only fire after the user confirms.
+
+```tsx
+<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This action cannot be undone. This will permanently delete the collection.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction onClick={() => deleteMutation.mutate(collectionId)}>
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+---
+
 ## Completion Checklist
 
 After completing any code changes, **always** verify the following:
