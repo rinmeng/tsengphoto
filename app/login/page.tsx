@@ -172,9 +172,9 @@ export default function LoginPage() {
                 <Button
                   type='submit'
                   className={`w-full fade-in-from-top ${getDelayClass(8)}`}
-                  disabled={loginMutation.isPending}
+                  disabled={loginMutation.isPending || loginMutation.isSuccess}
                 >
-                  {loginMutation.isPending ? (
+                  {loginMutation.isPending || loginMutation.isSuccess ? (
                     <>
                       <Spinner /> Signing In...
                     </>
