@@ -150,7 +150,7 @@ export default function CollectionsPage() {
   return (
     <div className='pt-18'>
       <div
-        className='container mx-auto border-x-2 border-dashed text-center space-y-4 py-4'
+        className='container mx-auto border-x-2 border-dashed text-center space-y-4 py-8'
       >
         <Text variant='hd-xxl' className={`fade-in-from-bottom ${getDelayClass(0)}`}>
           Collections

@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -184,21 +184,23 @@ export function CollectionForm({
             location: collection.location || '',
             description: collection.description || '',
             cover_image: collection.cover_image || '',
+            cover_image_id: collection.cover_image_id || '',
             is_published: collection.is_published,
           }
         : {
             title: '',
             slug: '',
-            type: 'event' as const,
+            type: defaultType,
             date: undefined,
             location: '',
             description: '',
             cover_image: '',
+            cover_image_id: '',
             is_published: false,
           };
       form.reset(defaultValues);
     }
-  }, [open, collection, form]);
+  }, [open, collection, defaultType, form]);
 
   // Auto-generate slug from title
   const handleTitleChange = (value: string) => {
@@ -375,7 +377,10 @@ export function CollectionForm({
               control={form.control}
               name='cover_image'
               render={({ field }) => {
-                const coverImageId = form.watch('cover_image_id');
+                const coverImageId = useWatch({
+                  control: form.control,
+                  name: 'cover_image_id',
+                });
                 return (
                   <FormItem>
                     <FormControl>

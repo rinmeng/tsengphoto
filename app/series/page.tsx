@@ -23,6 +23,7 @@ import {
 import { toast } from 'sonner';
 import type { CollectionWithImages } from '@/lib/types';
 import CollectionsLoading from '@/app/collections/loading';
+import { Separator } from '@/components/ui';
 
 export default function SeriesPage() {
   const { user } = useAuth();
@@ -80,7 +81,9 @@ export default function SeriesPage() {
 
   const publishMutation = useMutation({
     mutationFn: async (collectionId: string) => {
-      const collection = collections.find((c) => c.id === collectionId);
+      const collection = collections.find(
+        (c: CollectionWithImages) => c.id === collectionId
+      );
       if (!collection) {
         throw new Error('Series not found');
       }
@@ -143,9 +146,10 @@ export default function SeriesPage() {
   }
 
   return (
-    <div className='container mx-auto px-4 pb-4 nb-padding min-h-screen'>
-      {/* Page Header */}
-      <div className='mb-12 text-center space-y-4'>
+    <div className='pt-18'>
+      <div
+        className='container mx-auto border-x-2 border-dashed text-center space-y-4 py-8'
+      >
         <Text variant='hd-xxl' className={`fade-in-from-bottom ${getDelayClass(0)}`}>
           Series
         </Text>
@@ -158,64 +162,68 @@ export default function SeriesPage() {
           to urban landscapes, each series tells a unique visual story.
         </Text>
       </div>
+      <Separator className='border' />
+      <div className='container mx-auto px-4 py-4 border-dashed border-x-2'>
+        {/* Add Button - Only for authenticated users */}
+        {user && (
+          <div
+            className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}
+          >
+            <Button onClick={() => setAddDialogOpen(true)}>
+              <Plus />
+              Add New Series
+            </Button>
+          </div>
+        )}
 
-      {/* Add Button - Only for authenticated users */}
-      {user && (
-        <div className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}>
-          <Button onClick={() => setAddDialogOpen(true)}>
-            <Plus />
-            Add New Series
-          </Button>
-        </div>
-      )}
-
-      <CollectionGrid
-        collections={collections}
-        isAuthenticated={!!user}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onPublish={handlePublish}
-      />
-
-      {/* Add Dialog */}
-      <CollectionForm
-        mode='add'
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        defaultType='series'
-      />
-
-      {/* Edit Dialog */}
-      {selectedCollection && (
-        <CollectionForm
-          mode='edit'
-          collection={selectedCollection}
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
+        <CollectionGrid
+          collections={collections}
+          isAuthenticated={!!user}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onPublish={handlePublish}
         />
-      )}
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the series and
-              all associated images.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className='bg-destructive hover:bg-destructive/90'
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* Add Dialog */}
+        <CollectionForm
+          mode='add'
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          defaultType='series'
+        />
+
+        {/* Edit Dialog */}
+        {selectedCollection && (
+          <CollectionForm
+            mode='edit'
+            collection={selectedCollection}
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+          />
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the series and
+                all associated images.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className='bg-destructive hover:bg-destructive/90'
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
