@@ -123,7 +123,9 @@ export default function CollectionsPage() {
       {isLoading ? (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className='h-80 w-full' />
+            <div key={i} className={`fade-in-from-bottom ${getDelayClass(i)}`}>
+              <Skeleton className='h-80 w-full rounded-xl' />
+            </div>
           ))}
         </div>
       ) : (
