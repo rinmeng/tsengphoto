@@ -118,14 +118,14 @@ export async function GET() {
 Always use Next.js `<Link>` for internal navigation. Only use `<a>` for external URLs.
 
 ```tsx
-// ✅ Internal navigation
+//  Internal navigation
 import Link from 'next/link';
 <Link href='/admin'>Dashboard</Link>
 
-// ✅ External links only
+//  External links only
 <a href='https://example.com' target='_blank' rel='noopener noreferrer'>External</a>
 
-// ❌ Never use <a> for internal routes
+//  Never use <a> for internal routes
 <a href='/admin'>Dashboard</a>
 ```
 
@@ -136,13 +136,13 @@ import Link from 'next/link';
 3. **Custom** — only when neither option exists
 
 ```tsx
-// ✅ Prefer animate-ui
+//  Prefer animate-ui
 import { Button, Dialog, Checkbox } from '@/components/animate-ui/components';
 
-// ✅ Shadcn fallback
+//  Shadcn fallback
 import { Card, Input, Skeleton } from '@/components/ui';
 
-// ❌ Never build custom when a component already exists
+//  Never build custom when a component already exists
 ```
 
 ### Typography — Always Use `<Text>`
@@ -169,20 +169,59 @@ Special: `caption`, `label`, `muted`, `muted-sm`
 
 **Prefer TanStack Query's built-in loading states** (`isPending`, `isLoading`, `isSuccess`) whenever the async operation is a query or mutation. Only reach for `useLoading()` when the operation falls outside TanStack Query (e.g. a one-off imperative action with no query/mutation).
 
+#### Client Component Loading - Use `loading.tsx`
+
+For pages with client-side TanStack Query data fetching, create a `loading.tsx` file and reuse it in the component's `isLoading` state. Never duplicate the skeleton markup.
+
 ```tsx
-// ✅ Prefer — TanStack Query mutation loading
+//  app/collections/[slug]/loading.tsx
+export default function CollectionLoading() {
+  return (
+    <section className='container mx-auto px-4 pb-4 nb-padding'>
+      <Skeleton className='h-10 w-40 mb-8' />
+      <div className='mb-12 space-y-6'>
+        <Skeleton className='h-6 w-20' />
+        <Skeleton className='h-12 w-96' />
+      </div>
+    </section>
+  );
+}
+
+//  app/collections/[slug]/page.tsx - Reuse the loading component
+import CollectionLoading from './loading';
+
+export default function CollectionPage() {
+  const { data, isLoading } = useQuery({ ... });
+  
+  if (isLoading) {
+    return <CollectionLoading />;
+  }
+  
+  // render page with data...
+}
+
+//  Don't duplicate skeleton markup inline
+if (isLoading) {
+  return <Skeleton className='h-10 w-40 mb-8' />;  // Don't duplicate
+}
+```
+
+#### Mutation and Query Loading
+
+```tsx
+//  TanStack Query mutation loading
 const deleteMutation = useMutation({ ... });
 
 <Button disabled={deleteMutation.isPending}>
   {deleteMutation.isPending ? <><Spinner /> Deleting...</> : 'Delete'}
 </Button>
 
-// ✅ Prefer — TanStack Query query loading
+//  TanStack Query query loading
 const { data, isLoading } = useQuery({ ... });
 
 {isLoading ? <Skeleton className='h-4 w-32' /> : <span>{data.count} items</span>}
 
-// ✅ Fallback — use LoadingContext only when no TanStack Query is involved
+//  Fallback — use LoadingContext only when no TanStack Query is involved
 const { setLoading, isLoading } = useLoading();
 
 setLoading('user:save', true);
@@ -192,7 +231,7 @@ try {
   setLoading('user:save', false);
 }
 
-// ❌ Never use local useState for loading under any circumstance
+//  Never use local useState for loading under any circumstance
 const [loading, setLoading] = useState(false);
 ```
 
@@ -204,6 +243,14 @@ Context from `@/context/LoadingContext.tsx` provides: `setLoading(key, value)`, 
 // From TanStack Query
 const { isLoading } = useQuery({ ... });
 {isLoading ? <Skeleton className='h-4 w-32' /> : <span>{count} items</span>}
+
+//  For staggered animations, wrap Skeleton in a container div
+<div className={`fade-in-from-bottom ${getDelayClass(i)}`}>
+  <Skeleton className='h-80 w-full rounded-xl' />
+</div>
+
+//  Don't apply animation classes directly to Skeleton (conflicts with pulse)
+<Skeleton className={`h-80 w-full fade-in-from-bottom ${getDelayClass(i)}`} />
 ```
 
 **Spinner** for action-based operations (buttons, form submissions):
@@ -274,20 +321,20 @@ Icons go directly inside `<Button>` — no extra wrappers or spacing classes nee
 Always define query keys as constants — never inline. This makes cache invalidation reliable and refactoring safe:
 
 ```typescript
-// ✅ Centralized query keys
+//  Centralized query keys
 export const queryKeys = {
   uploads: ['uploads'] as const,
   upload: (id: string) => ['uploads', id] as const,
   bookings: ['bookings'] as const,
 };
 
-// ✅ Usage
+//  Usage
 const { data, isLoading } = useQuery({
   queryKey: queryKeys.uploads,
   queryFn: () => fetchUploads(),
 });
 
-// ❌ Inline keys — impossible to invalidate reliably
+//  Inline keys — impossible to invalidate reliably
 useQuery({ queryKey: ['uploads'], queryFn: ... });
 ```
 
@@ -320,13 +367,13 @@ const deleteMutation = useMutation({
 `onError` only fires when `mutationFn` throws. Supabase returns `{ error }` instead of throwing, so you must bridge the gap manually:
 
 ```typescript
-// ❌ onError will never fire — React Query sees this as a success
+//  onError will never fire — React Query sees this as a success
 mutationFn: async () => {
   const result = await signInWithEmail(email, password);
   return result;
 }
 
-// ✅ Throw to trigger onError
+//  Throw to trigger onError
 mutationFn: async () => {
   const result = await signInWithEmail(email, password);
   if (result.error) throw new Error('Invalid credentials.');
@@ -338,7 +385,7 @@ mutationFn: async () => {
 Use `isPending` for in-flight state. For auth/navigation mutations, also include `isSuccess` to prevent the button flashing back to idle before the page navigates away:
 
 ```tsx
-// ✅ Stays locked in loading state through navigation
+//  Stays locked in loading state through navigation
 <Button disabled={mutation.isPending || mutation.isSuccess}>
   {mutation.isPending || mutation.isSuccess ? (
     <><Spinner /> Signing In...</>
@@ -347,7 +394,7 @@ Use `isPending` for in-flight state. For auth/navigation mutations, also include
   )}
 </Button>
 
-// ❌ Flashes back to idle briefly before navigation completes
+//  Flashes back to idle briefly before navigation completes
 <Button disabled={mutation.isPending}>
 ```
 
@@ -432,17 +479,17 @@ if (error) {
 ### Logging
 
 ```typescript
-// ❌ Remove verbose success logs
+//  Remove verbose success logs
 console.log('[API] Request received');
 
-// ✅ Keep error logs with context
+//  Keep error logs with context
 console.error('[UploadService] Database error:', error);
 
-// ❌ Obvious comments
+//  Obvious comments
 // Create a new user
 const user = await createUser();
 
-// ✅ Explain non-obvious behavior
+//  Explain non-obvious behavior
 // Skip auth check for callbacks — they don't have user session cookies
 ```
 
@@ -520,7 +567,7 @@ Logger.debug('Payload', payload);
 **Global actions** (e.g. "Add New") belong at the **top of the page**. **Item-specific actions** (edit, delete) belong **on each card** — never at the top.
 
 ```tsx
-// ✅ Correct
+//  Correct
 <div>
   <Button onClick={openAddDialog}>Add New Collection</Button>
   
@@ -533,7 +580,7 @@ Logger.debug('Payload', payload);
   ))}
 </div>
 
-// ❌ Wrong — item actions at the top
+//  Wrong — item actions at the top
 <div>
   <Button>Edit Collection</Button>
   <Button>Delete Collection</Button>
@@ -573,14 +620,14 @@ export function CollectionForm({ mode, collection, onSuccess }: CollectionFormPr
 Spawn add/edit forms in a **Dialog** (simple forms) or **Sheet** (longer forms) — never navigate to a separate page unless the form is very complex.
 
 ```tsx
-// ✅ Use Dialog for simple forms
+//  Use Dialog for simple forms
 <Dialog open={isOpen} onOpenChange={setIsOpen}>
   <DialogContent>
     <CollectionForm mode="add" onSuccess={() => setIsOpen(false)} />
   </DialogContent>
 </Dialog>
 
-// ❌ Don't navigate to separate pages for simple CRUD
+//  Don't navigate to separate pages for simple CRUD
 router.push('/collections/new');
 ```
 

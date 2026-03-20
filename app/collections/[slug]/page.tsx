@@ -5,12 +5,13 @@ import { Text } from '@/components/Text';
 import { Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
-import { Badge, Skeleton } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
 import { CollectionImageViewer } from './components/CollectionImageViewer';
 import { useQuery } from '@tanstack/react-query';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
 import { useAuth } from '@/hooks/use-auth';
+import CollectionLoading from './loading';
 
 export default function CollectionPage() {
   const params = useParams();
@@ -35,25 +36,7 @@ export default function CollectionPage() {
 
   // Show loading skeleton
   if (isLoading) {
-    return (
-      <section
-        className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
-          flex-col min-h-screen'
-      >
-        <div className='mb-6'>
-          <Skeleton className='h-10 w-48' />
-        </div>
-        <div className='mb-12 space-y-6'>
-          <Skeleton className='h-6 w-24' />
-          <Skeleton className='h-12 w-96' />
-          <Skeleton className='h-20 w-full max-w-3xl' />
-          <div className='flex gap-6'>
-            <Skeleton className='h-5 w-32' />
-            <Skeleton className='h-5 w-32' />
-          </div>
-        </div>
-      </section>
-    );
+    return <CollectionLoading />;
   }
 
   // Only call notFound after loading is complete and data is missing

@@ -7,7 +7,6 @@ import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
-import { Skeleton } from '@/components/ui';
 import { Button } from '@/components/animate-ui/components/button';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -23,6 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import type { CollectionWithImages } from '@/lib/types';
+import CollectionsLoading from './loading';
 
 export default function CollectionsPage() {
   const { user } = useAuth();
@@ -93,6 +93,10 @@ export default function CollectionsPage() {
     }
   };
 
+  if (isLoading) {
+    return <CollectionsLoading />;
+  }
+
   return (
     <div className='container mx-auto px-4 pb-4 nb-padding min-h-screen'>
       {/* Page Header */}
@@ -120,22 +124,12 @@ export default function CollectionsPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className={`fade-in-from-bottom ${getDelayClass(i)}`}>
-              <Skeleton className='h-80 w-full rounded-xl' />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <CollectionGrid
-          collections={collections}
-          isAuthenticated={!!user}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      )}
+      <CollectionGrid
+        collections={collections}
+        isAuthenticated={!!user}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       {/* Add Dialog */}
       <CollectionForm mode='add' open={addDialogOpen} onOpenChange={setAddDialogOpen} />
