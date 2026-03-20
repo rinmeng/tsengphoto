@@ -20,9 +20,8 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${collection.title || collection.name} | Tseng Photography`;
-  const description =
-    collection.description || `View ${collection.title || collection.name} collection`;
+  const title = `${collection.title} | Tseng Photography`;
+  const description = collection.description || `View ${collection.title} collection`;
   const imageUrl = collection.cover_image || '/landing/carousel/carousel_1.jpg';
   const url = `https://tsengphoto.vercel.app/collections/${slug}`;
 
@@ -31,7 +30,7 @@ export async function generateMetadata({
     title,
     description,
     keywords: [
-      collection.title || collection.name,
+      collection.title,
       collection.type,
       'photography collection',
       'event photography',
@@ -52,7 +51,7 @@ export async function generateMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: collection.title || collection.name,
+          alt: collection.title,
         },
       ],
     },

@@ -12,10 +12,9 @@ export interface Upload {
 
 export interface Collection {
   id: string;
-  name: string;
   slug: string; // URL-friendly identifier
   type: string; // 'event', 'video', 'series', etc.
-  title: string | null;
+  title: string;
   date: string | null;
   location: string | null;
   description: string | null;

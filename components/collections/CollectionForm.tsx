@@ -39,13 +39,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui';
 const COLLECTION_TYPES = ['event', 'video', 'series'] as const;
 
 const collectionSchema = z.object({
-  name: z.string().min(1, 'Name is required.'),
+  title: z.string().min(1, 'Title is required.'),
   slug: z
     .string()
     .min(1, 'Slug is required.')
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only.'),
   type: z.enum(COLLECTION_TYPES, { message: 'Type is required.' }),
-  title: z.string().optional(),
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
@@ -74,10 +73,9 @@ export function CollectionForm({
     resolver: zodResolver(collectionSchema),
     defaultValues: collection
       ? {
-          name: collection.name,
+          title: collection.title,
           slug: collection.slug,
           type: collection.type as (typeof COLLECTION_TYPES)[number],
-          title: collection.title || '',
           date: collection.date ? new Date(collection.date) : undefined,
           location: collection.location || '',
           description: collection.description || '',
@@ -85,10 +83,9 @@ export function CollectionForm({
           is_published: collection.is_published,
         }
       : {
-          name: '',
+          title: '',
           slug: '',
           type: 'event',
-          title: '',
           date: undefined,
           location: '',
           description: '',
@@ -101,7 +98,6 @@ export function CollectionForm({
     mutationFn: async (values: CollectionFormValues) => {
       const payload = {
         ...values,
-        title: values.title || null,
         date: values.date ? values.date.toISOString() : null,
         location: values.location || null,
         description: values.description || null,
@@ -162,10 +158,9 @@ export function CollectionForm({
     if (open) {
       const defaultValues = collection
         ? {
-            name: collection.name,
+            title: collection.title,
             slug: collection.slug,
             type: collection.type as (typeof COLLECTION_TYPES)[number],
-            title: collection.title || '',
             date: collection.date ? new Date(collection.date) : undefined,
             location: collection.location || '',
             description: collection.description || '',
@@ -173,10 +168,9 @@ export function CollectionForm({
             is_published: collection.is_published,
           }
         : {
-            name: '',
+            title: '',
             slug: '',
             type: 'event' as const,
-            title: '',
             date: undefined,
             location: '',
             description: '',
@@ -187,8 +181,8 @@ export function CollectionForm({
     }
   }, [open, collection, form]);
 
-  // Auto-generate slug from name
-  const handleNameChange = (value: string) => {
+  // Auto-generate slug from title
+  const handleTitleChange = (value: string) => {
     if (mode === 'add') {
       const slug = value
         .toLowerCase()
@@ -215,21 +209,21 @@ export function CollectionForm({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            {/* Name */}
+            {/* Title */}
             <FormField
               control={form.control}
-              name='name'
+              name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        handleNameChange(e.target.value);
+                        handleTitleChange(e.target.value);
                       }}
-                      placeholder='A memorable event name'
+                      placeholder='A memorable event title'
                     />
                   </FormControl>
                   <FormMessage />
@@ -250,7 +244,7 @@ export function CollectionForm({
                         <Info className='size-4 text-muted-foreground' />
                       </TooltipTrigger>
                       <TooltipContent>
-                        A URL-friendly version of the collection name. It should be
+                        A URL-friendly version of the collection title. It should be
                         lowercase, with words separated by hyphens.
                       </TooltipContent>
                     </Tooltip>
@@ -282,21 +276,6 @@ export function CollectionForm({
                       <SelectItem value='series'>Series</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Title */}
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title (optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='A memorable event title' />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

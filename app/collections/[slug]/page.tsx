@@ -74,7 +74,7 @@ export default function CollectionPage() {
             <Text variant='bd-xs'>{collection.type}</Text>
           </Badge>
           <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(2)}`}>
-            {collection.title || collection.name}
+            {collection.title}
           </Text>
         </div>
 
@@ -117,7 +117,7 @@ export default function CollectionPage() {
       {/* Image Gallery with Viewer */}
       <CollectionImageViewer
         images={collection.images}
-        collectionTitle={collection.title || collection.name}
+        collectionTitle={collection.title}
       />
     </section>
   );

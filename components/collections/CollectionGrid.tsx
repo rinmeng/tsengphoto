@@ -33,10 +33,10 @@ export function CollectionGrid({
   }
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
       {collections.map((collection, index) => (
         <CollectionCard
-          className={`fade-in-from-bottom ${getDelayClass(index)}`}
+          className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
           key={collection.id}
           collection={collection}
           isAuthenticated={isAuthenticated}

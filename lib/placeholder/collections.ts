@@ -3,7 +3,6 @@ import { CollectionWithImages } from '@/lib/types/database';
 export const placeholderCollections: CollectionWithImages[] = [
   {
     id: '1',
-    name: 'Summer Wedding 2025',
     slug: 'summer-wedding-2025',
     type: 'event',
     title: 'Emily & James - Summer Wedding',
@@ -48,7 +47,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '2',
-    name: 'Corporate Gala 2025',
     slug: 'corporate-gala-2025',
     type: 'event',
     title: 'Tech Innovation Gala',
@@ -79,7 +77,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '3',
-    name: 'Mountain Adventure Series',
     slug: 'mountain-adventure-series',
     type: 'series',
     title: 'Exploring BC Mountains',
@@ -124,7 +121,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '4',
-    name: 'Urban Nights',
     slug: 'urban-nights',
     type: 'series',
     title: 'City Life After Dark',
@@ -155,7 +151,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '5',
-    name: 'Fall Family Portraits',
     slug: 'fall-family-portraits',
     type: 'event',
     title: 'The Anderson Family',
@@ -192,7 +187,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '6',
-    name: 'Product Photography Workshop',
     slug: 'product-photography-workshop',
     type: 'event',
     title: 'Commercial Photography Masterclass',
@@ -223,7 +217,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '7',
-    name: 'Wedding Highlights Reel',
     slug: 'wedding-highlights-reel',
     type: 'video',
     title: 'Sarah & Michael - Wedding Film',
@@ -254,7 +247,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '8',
-    name: 'Real Estate Virtual Tour',
     slug: 'real-estate-virtual-tour',
     type: 'video',
     title: 'Luxury Home Showcase',
@@ -292,7 +284,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '9',
-    name: 'Corporate Promotional Video',
     slug: 'corporate-promotional-video',
     type: 'video',
     title: 'Tech Startup Brand Story',
@@ -323,7 +314,6 @@ export const placeholderCollections: CollectionWithImages[] = [
   },
   {
     id: '10',
-    name: 'Adventure Sports Compilation',
     slug: 'adventure-sports-compilation',
     type: 'video',
     title: 'BC Extreme Sports 2025',

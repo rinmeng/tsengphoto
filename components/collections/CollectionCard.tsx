@@ -65,7 +65,7 @@ export function CollectionCard({
           {collection.cover_image ? (
             <Image
               src={collection.cover_image}
-              alt={collection.title || collection.name}
+              alt={collection.title}
               fill
               className='object-cover transition-transform group-hover:scale-105'
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
@@ -118,26 +118,26 @@ export function CollectionCard({
 
         {/* Card Content */}
         <CardHeader>
-          <CardTitle>{collection.title || collection.name}</CardTitle>
+          <CardTitle>{collection.title}</CardTitle>
           <CardDescription>{collection.description}</CardDescription>
         </CardHeader>
 
         <CardContent className='space-y-2'>
           {/* Date */}
-          {formattedDate && (
-            <div className='flex items-center gap-2 text-muted-foreground'>
-              <Calendar className='size-4' />
-              <Text variant='bd-sm'>{formattedDate}</Text>
-            </div>
-          )}
+          <div className='flex items-center gap-2 text-muted-foreground'>
+            <Calendar className='size-4' />
+            <Text variant='bd-sm'>
+              {formattedDate ? formattedDate : 'No date available'}
+            </Text>
+          </div>
 
           {/* Location */}
-          {collection.location && (
-            <div className='flex items-center gap-2 text-muted-foreground'>
-              <MapPin className='size-4' />
-              <Text variant='bd-sm'>{collection.location}</Text>
-            </div>
-          )}
+          <div className='flex items-center gap-2 text-muted-foreground'>
+            <MapPin className='size-4' />
+            <Text variant='bd-sm'>
+              {collection.location ? collection.location : 'No location available'}
+            </Text>
+          </div>
 
           {/* Type badge */}
           <Badge className='capitalize'>
