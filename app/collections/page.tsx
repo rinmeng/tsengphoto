@@ -94,7 +94,7 @@ export default function CollectionsPage() {
   };
 
   return (
-    <div className='container mx-auto px-4 pb-4 nb-padding'>
+    <div className='container mx-auto px-4 pb-4 nb-padding min-h-screen'>
       {/* Page Header */}
       <div className='mb-12 text-center space-y-4'>
         <Text variant='hd-xxl' className={`fade-in-from-bottom ${getDelayClass(0)}`}>
