@@ -21,13 +21,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useLoading } from '@/hooks/use-loading';
 import { sendContactForm } from '@/services/contact.service';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui';
 import { toast } from 'sonner';
 import { getDelayClass } from '@/utils/animations';
+import { useMutation } from '@tanstack/react-query';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
@@ -81,8 +81,6 @@ function SuccessMessage({ onReset }: { onReset: () => void }) {
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
-  const { setLoading, isLoading } = useLoading();
-  const loading = isLoading('contact:submit');
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -97,18 +95,27 @@ export default function ContactPage() {
     },
   });
 
-  async function onSubmit(values: ContactFormValues) {
-    setLoading('contact:submit', true);
-    try {
+  const contactMutation = useMutation({
+    mutationFn: async (values: ContactFormValues) => {
       await sendContactForm(values);
+    },
+    onSuccess: () => {
       setSubmitted(true);
       toast.success('Message sent', {
         description: 'Your message has been sent successfully.',
       });
-    } finally {
-      setLoading('contact:submit', false);
-    }
-  }
+    },
+    onError: (error: Error) => {
+      form.setError('root', { message: error.message });
+      toast.error('Failed to send message', {
+        description: 'Something went wrong. Please try again.',
+      });
+    },
+  });
+
+  const onSubmit = (values: ContactFormValues) => {
+    contactMutation.mutate(values);
+  };
 
   return (
     <section className='min-h-screen flex flex-col lg:flex-row fade-in-from-bottom'>
@@ -358,8 +365,12 @@ export default function ContactPage() {
 
                   {/* Submit */}
                   <div className={`pt-2 fade-in-from-right ${getDelayClass(9)}`}>
-                    <Button type='submit' disabled={loading} className='w-full h-12'>
-                      {loading ? (
+                    <Button
+                      type='submit'
+                      disabled={contactMutation.isPending}
+                      className='w-full h-12'
+                    >
+                      {contactMutation.isPending ? (
                         <>
                           <Loader2 className='size-4 animate-spin' />
                           Sending...

@@ -1,10 +1,18 @@
+'use client';
+
 import { getAllCollections } from '@/lib/placeholder/collections';
 import { CollectionGrid } from '@/components/collections/CollectionGrid';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
+import { useQuery } from '@tanstack/react-query';
+import { collectionsQueryKeys } from '@/lib/queries/collections';
+import { Skeleton } from '@/components/ui';
 
-export default async function CollectionsPage() {
-  const collections = getAllCollections();
+export default function CollectionsPage() {
+  const { data: collections = [], isLoading } = useQuery({
+    queryKey: collectionsQueryKeys.list(),
+    queryFn: async () => getAllCollections(),
+  });
 
   return (
     <div className='container mx-auto px-4 pb-4 nb-padding'>
@@ -23,7 +31,15 @@ export default async function CollectionsPage() {
         </Text>
       </div>
 
-      <CollectionGrid collections={collections} />
+      {isLoading ? (
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className='h-80 w-full' />
+          ))}
+        </div>
+      ) : (
+        <CollectionGrid collections={collections} />
+      )}
     </div>
   );
 }

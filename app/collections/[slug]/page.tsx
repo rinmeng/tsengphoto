@@ -1,28 +1,68 @@
-import { notFound } from 'next/navigation';
-import { getCollectionBySlug, getAllCollections } from '@/lib/placeholder/collections';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
+import { getCollectionBySlug } from '@/lib/placeholder/collections';
 import { Text } from '@/components/Text';
 import { Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
-import { Badge } from '@/components/ui';
+import { Badge, Skeleton } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
 import { CollectionImageViewer } from './components/CollectionImageViewer';
+import { useQuery } from '@tanstack/react-query';
+import { collectionsQueryKeys } from '@/lib/queries/collections';
 
-interface CollectionPageProps {
-  params: Promise<{ slug: string }>;
-}
+export default function CollectionPage() {
+  const params = useParams();
+  const slug = params.slug as string;
 
-// Generate static params for all collections (optional, for static generation)
-export async function generateStaticParams() {
-  const collections = getAllCollections();
-  return collections.map((collection) => ({
-    slug: collection.slug,
-  }));
-}
+  const { data: collection, isLoading } = useQuery({
+    queryKey: collectionsQueryKeys.bySlug(slug),
+    queryFn: async () => {
+      const result = getCollectionBySlug(slug);
+      if (!result) {
+        throw new Error('Collection not found');
+      }
+      return result;
+    },
+  });
 
-export default async function CollectionPage({ params }: CollectionPageProps) {
-  const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
+  if (isLoading) {
+    return (
+      <section
+        className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding
+          min-h-screen'
+      >
+        <div className='sticky top-20 mb-6 z-50'>
+          <Link href='/collections'>
+            <Button variant='default'>
+              <ArrowLeft />
+              Back to Collections
+            </Button>
+          </Link>
+        </div>
+
+        <div className='mb-12 space-y-6'>
+          <div className='space-y-2'>
+            <Skeleton className='h-6 w-20' />
+            <Skeleton className='h-12 w-96' />
+          </div>
+          <Skeleton className='h-20 w-full max-w-3xl' />
+          <div className='flex flex-wrap gap-6'>
+            <Skeleton className='h-6 w-32' />
+            <Skeleton className='h-6 w-32' />
+            <Skeleton className='h-6 w-24' />
+          </div>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className='h-60 w-full' />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (!collection) {
     notFound();

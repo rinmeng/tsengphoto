@@ -8,16 +8,16 @@ import {
   CardTitle,
 } from '@/components/ui';
 import { ImageUploader } from '@/components/ImageUploader';
-import { UploadsGallery } from '@/components/UploadsGallery';
+import { UploadsGallery, queryKeys } from '@/components/UploadsGallery';
 import { Text } from '@/components/Text';
 import { Info } from 'lucide-react';
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { getDelayClass } from '@/utils/animations';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Admin() {
   const { toast } = useToast();
-  const [galleryKey, setGalleryKey] = useState(0);
+  const queryClient = useQueryClient();
 
   return (
     <section
@@ -40,7 +40,7 @@ export default function Admin() {
           <ImageUploader
             onUploadComplete={() => {
               toast.success('Upload completed successfully!');
-              setGalleryKey((prev) => prev + 1);
+              queryClient.invalidateQueries({ queryKey: queryKeys.uploads });
             }}
             onUploadError={(error: Error) => {
               toast.error(`Upload failed: ${error.message}`);
@@ -50,7 +50,7 @@ export default function Admin() {
       </Card>
 
       <div className={`mt-4 fade-in-from-top ${getDelayClass(2)}`}>
-        <UploadsGallery key={galleryKey} />
+        <UploadsGallery />
       </div>
     </section>
   );

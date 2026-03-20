@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 const SERVICES = ['Events', 'Photoshoot'] as const;
 
-const contactSchema = z.object({
+export const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
   lastName: z.string().min(1, 'Last name is required.'),
   email: z.email('Invalid email format.'),
@@ -12,7 +12,7 @@ const contactSchema = z.object({
   message: z.string().optional(),
 });
 
-type ContactFormValues = z.infer<typeof contactSchema>;
+export type ContactFormValues = z.infer<typeof contactSchema>;
 
 export async function sendContactForm(values: ContactFormValues): Promise<void> {
   const formattedValues = {

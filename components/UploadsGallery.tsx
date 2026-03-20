@@ -16,13 +16,17 @@ import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
 import { Download, ImageOff, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { useLoading } from '@/hooks/use-loading';
 import type { Upload } from '@/lib/types';
 import * as UploadService from '@/services/uploads.service';
 import Link from 'next/link';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+export const queryKeys = {
+  uploads: ['uploads'] as const,
+};
 
 interface UploadsGalleryProps {
   title?: string;
@@ -35,11 +39,22 @@ export function UploadsGallery({
   description,
   onUploadDeleted,
 }: UploadsGalleryProps) {
-  const [uploads, setUploads] = useState<Upload[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
-  const { setLoading, isLoading } = useLoading();
+  const queryClient = useQueryClient();
+
+  const { data: uploads = [], isLoading } = useQuery({
+    queryKey: queryKeys.uploads,
+    queryFn: async () => {
+      const data = await UploadService.fetchUploads();
+      if (!data) {
+        throw new Error('Failed to load uploads');
+      }
+      return data;
+    },
+  });
 
   const handleDownload = async (fileUrl: string, fileName: string) => {
     const response = await fetch(fileUrl);
@@ -52,37 +67,25 @@ export function UploadsGallery({
     URL.revokeObjectURL(url);
   };
 
-  const fetchUploads = async () => {
-    setLoading('uploads:fetch', true);
-    try {
-      const data = await UploadService.fetchUploads();
-
-      if (!data) {
-        toast.error('Failed to load uploads');
-      } else {
-        setUploads(data);
-      }
-    } finally {
-      setLoading('uploads:fetch', false);
-    }
-  };
-
-  const handleDeleteUpload = async (id: string, fileUrl: string) => {
-    setLoading(`uploads:delete:${id}`, true);
-    try {
+  const deleteMutation = useMutation({
+    mutationFn: async ({ id, fileUrl }: { id: string; fileUrl: string }) => {
+      setDeletingId(id);
       const result = await UploadService.deleteUpload(id, fileUrl);
-
-      if (result.success) {
-        toast.success('Upload deleted successfully');
-        setUploads(uploads.filter((upload) => upload.id !== id));
-        onUploadDeleted?.();
-      } else {
-        toast.error(result.error || 'Something went wrong');
+      if (!result.success) {
+        throw new Error(result.error || 'Something went wrong.');
       }
-    } finally {
-      setLoading(`uploads:delete:${id}`, false);
-    }
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.uploads });
+      toast.success('Upload deleted successfully');
+      onUploadDeleted?.();
+      setDeletingId(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+      setDeletingId(null);
+    },
+  });
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -102,17 +105,13 @@ export function UploadsGallery({
     setSelectedIds(newSelected);
   };
 
-  const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (selectedUploads: Upload[]) => {
+      const totalCount = selectedUploads.length;
+      let deletedCount = 0;
 
-    setLoading('uploads:bulkDelete', true);
-    const selectedUploads = uploads.filter((upload) => selectedIds.has(upload.id));
-    const totalCount = selectedUploads.length;
-    let deletedCount = 0;
+      setDeletionProgress({ current: 0, total: totalCount });
 
-    setDeletionProgress({ current: 0, total: totalCount });
-
-    try {
       for (let i = 0; i < selectedUploads.length; i++) {
         const upload = selectedUploads[i];
         setDeletionProgress({ current: i + 1, total: totalCount });
@@ -121,29 +120,37 @@ export function UploadsGallery({
 
         if (result.success) {
           deletedCount++;
-          setUploads((prev) => prev.filter((u) => u.id !== upload.id));
         } else {
           toast.error(`Failed to delete ${upload.file_name}: ${result.error}`);
         }
       }
 
-      if (deletedCount > 0) {
-        toast.success(
-          `Successfully deleted ${deletedCount} image${deletedCount !== 1 ? 's' : ''}`
-        );
-        onUploadDeleted?.();
+      if (deletedCount === 0) {
+        throw new Error('Failed to delete any images');
       }
-    } finally {
-      setLoading('uploads:bulkDelete', false);
+
+      return deletedCount;
+    },
+    onSuccess: (deletedCount) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.uploads });
+      toast.success(
+        `Successfully deleted ${deletedCount} image${deletedCount !== 1 ? 's' : ''}`
+      );
+      onUploadDeleted?.();
       setSelectedIds(new Set());
       setDeletionProgress({ current: 0, total: 0 });
-    }
-  };
+    },
+    onError: () => {
+      setSelectedIds(new Set());
+      setDeletionProgress({ current: 0, total: 0 });
+    },
+  });
 
-  useEffect(() => {
-    fetchUploads();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    const selectedUploads = uploads.filter((upload) => selectedIds.has(upload.id));
+    bulkDeleteMutation.mutate(selectedUploads);
+  };
 
   return (
     <Card>
@@ -151,7 +158,7 @@ export function UploadsGallery({
         <div className='flex flex-col gap-2'>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
-            {isLoading('uploads:fetch') ? (
+            {isLoading ? (
               <Skeleton className='h-4 w-32' />
             ) : (
               description ||
@@ -161,13 +168,13 @@ export function UploadsGallery({
         </div>
       </CardHeader>
       <CardContent>
-        {uploads.length > 0 && !isLoading('uploads:fetch') && (
+        {uploads.length > 0 && !isLoading && (
           <div className='flex items-center justify-between w-full gap-2 mb-2'>
             <label className='flex items-center gap-2 cursor-pointer'>
               <Checkbox
                 checked={selectedIds.size === uploads.length && uploads.length > 0}
                 onCheckedChange={handleSelectAll}
-                disabled={isLoading('uploads:bulkDelete')}
+                disabled={bulkDeleteMutation.isPending}
               >
                 <CheckboxIndicator />
               </Checkbox>
@@ -178,9 +185,9 @@ export function UploadsGallery({
                 variant='destructive'
                 size='sm'
                 onClick={handleBulkDelete}
-                disabled={isLoading('uploads:bulkDelete')}
+                disabled={bulkDeleteMutation.isPending}
               >
-                {isLoading('uploads:bulkDelete') ? (
+                {bulkDeleteMutation.isPending ? (
                   <>
                     <Spinner /> Deleting {deletionProgress.current} of{' '}
                     {deletionProgress.total}...
@@ -194,7 +201,7 @@ export function UploadsGallery({
             )}
           </div>
         )}
-        {isLoading('uploads:fetch') ? (
+        {isLoading ? (
           <div className='text-center py-8'>
             <Spinner className='size-8 mx-auto' />
           </div>
@@ -220,7 +227,7 @@ export function UploadsGallery({
                       onCheckedChange={(checked) =>
                         handleSelectOne(upload.id, checked as boolean)
                       }
-                      disabled={isLoading('uploads:bulkDelete')}
+                      disabled={bulkDeleteMutation.isPending}
                       variant='overlay'
                     >
                       <CheckboxIndicator />
@@ -230,13 +237,12 @@ export function UploadsGallery({
                     <Button
                       variant='destructive'
                       size='icon'
-                      onClick={() => handleDeleteUpload(upload.id, upload.file_url)}
-                      disabled={
-                        isLoading(`uploads:delete:${upload.id}`) ||
-                        isLoading('uploads:bulkDelete')
+                      onClick={() =>
+                        deleteMutation.mutate({ id: upload.id, fileUrl: upload.file_url })
                       }
+                      disabled={deletingId === upload.id || bulkDeleteMutation.isPending}
                     >
-                      {isLoading(`uploads:delete:${upload.id}`) ? (
+                      {deletingId === upload.id ? (
                         <>
                           <Spinner />
                         </>
