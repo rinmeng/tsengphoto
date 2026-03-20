@@ -65,8 +65,7 @@ export function CollectionCard({
     <Link href={`/collections/${collection.slug}`} className='group block h-full'>
       <Card
         className={cn(
-          `h-full flex flex-col overflow-hidden transition-all hover:shadow-lg
-          hover:-translate-y-1 pt-0`,
+          'h-full flex flex-col overflow-hidden transition-all hover:shadow-lg pt-0',
           className
         )}
       >
@@ -92,30 +91,31 @@ export function CollectionCard({
 
           {/* Admin Actions - Top Left */}
           {isAuthenticated && (
-            <div className='absolute top-3 left-3 flex gap-2'>
-              <div className='flex flex-col gap-2'>
+            <div className='absolute top-3 right-3 flex gap-2'>
+              <div className='flex flex-row gap-2'>
                 <Button variant='secondary' size='icon' onClick={handleEdit}>
                   <Edit />
                 </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={collection.is_published ? 'secondary' : 'default'}
+                      size='icon'
+                      onClick={handlePublish}
+                    >
+                      {collection.is_published ? <Globe /> : <GlobeLock />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {collection.is_published
+                      ? 'Collection is published. Click to unpublish.'
+                      : 'Collection is not published. Click to publish.'}
+                  </TooltipContent>
+                </Tooltip>
                 <Button variant='destructive' size='icon' onClick={handleDelete}>
                   <Trash2 />
                 </Button>
               </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={collection.is_published ? 'secondary' : 'default'}
-                    onClick={handlePublish}
-                  >
-                    {collection.is_published ? <Globe /> : <GlobeLock />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {collection.is_published
-                    ? 'Collection is published. Click to unpublish.'
-                    : 'Collection is not published. Click to publish.'}
-                </TooltipContent>
-              </Tooltip>
             </div>
           )}
         </div>

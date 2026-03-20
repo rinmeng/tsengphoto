@@ -104,6 +104,13 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
     }
 
+    // Fetch current collection to check if cover image changed
+    const { data: currentCollection } = await supabase
+      .from('collections')
+      .select('cover_image, cover_image_id')
+      .eq('id', id)
+      .single();
+
     const { data: collection, error } = await supabase
       .from('collections')
       .update({
@@ -124,6 +131,36 @@ export async function PATCH(request: NextRequest) {
         );
       }
       return NextResponse.json({ error: 'Something went wrong.' }, { status: 400 });
+    }
+
+    // Delete old cover image if it was changed or removed
+    const oldCoverImageId = currentCollection?.cover_image_id;
+    const newCoverImageId = updates.cover_image_id;
+
+    if (
+      oldCoverImageId &&
+      oldCoverImageId !== newCoverImageId &&
+      currentCollection?.cover_image
+    ) {
+      try {
+        const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uploadId: oldCoverImageId,
+            fileUrl: currentCollection.cover_image,
+          }),
+        });
+
+        if (!response.ok) {
+          Logger.error('Failed to delete old cover image upload');
+        }
+      } catch (uploadError) {
+        Logger.error('Error deleting old cover image:', uploadError);
+        // Continue anyway - collection is already updated
+      }
     }
 
     return NextResponse.json({ data: collection }, { status: 200 });
@@ -154,11 +191,42 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
     }
 
+    // First, fetch the collection to get cover_image info
+    const { data: collection } = await supabase
+      .from('collections')
+      .select('cover_image, cover_image_id')
+      .eq('id', id)
+      .single();
+
+    // Delete the collection
     const { error } = await supabase.from('collections').delete().eq('id', id);
 
     if (error) {
       Logger.error('Error deleting collection:', error);
       return NextResponse.json({ error: 'Something went wrong.' }, { status: 400 });
+    }
+
+    // If the collection had a cover image, delete it from uploads table and UploadThing
+    if (collection?.cover_image_id && collection?.cover_image) {
+      try {
+        const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uploadId: collection.cover_image_id,
+            fileUrl: collection.cover_image,
+          }),
+        });
+
+        if (!response.ok) {
+          Logger.error('Failed to delete cover image upload');
+        }
+      } catch (uploadError) {
+        Logger.error('Error deleting cover image:', uploadError);
+        // Continue anyway - collection is already deleted
+      }
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

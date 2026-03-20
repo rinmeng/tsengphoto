@@ -12,8 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
 interface CoverImageUploaderProps {
-  value?: string; // Current image URL
-  onChange?: (url: string) => void; // Callback with new URL
+  value?: string; // Current image URL (backward compatible)
+  uploadId?: string; // Current upload ID
+  onChange?: (data: { url: string; uploadId?: string }) => void; // Callback with URL and upload ID
   onRemove?: () => void; // Callback when image is removed
   className?: string;
 }
@@ -29,6 +30,7 @@ interface FileWithStatus {
 
 export function CoverImageUploader({
   value,
+  uploadId,
   onChange,
   onRemove,
   className,
@@ -60,7 +62,13 @@ export function CoverImageUploader({
             setFileState((prev) =>
               prev ? { ...prev, status: 'success', progress: 100 } : null
             );
-            onChange?.(result[0].url);
+
+            // Extract uploadId from serverData
+            const uploadId = result[0].serverData?.uploadId;
+            onChange?.({
+              url: result[0].url,
+              uploadId: uploadId,
+            });
             toast.success('Cover image uploaded successfully');
 
             // Clear file state after successful upload
@@ -116,7 +124,33 @@ export function CoverImageUploader({
     disabled: isUploading || !!value, // Disable if already has image
   });
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    // If there's an upload ID, delete from UploadThing and database
+    if (uploadId && value) {
+      try {
+        const response = await fetch('/api/v1/uploads', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uploadId: uploadId,
+            fileUrl: value,
+          }),
+        });
+
+        if (!response.ok) {
+          toast.error('Failed to delete image from storage');
+          return;
+        }
+
+        toast.success('Cover image deleted successfully');
+      } catch {
+        toast.error('Something went wrong while deleting the image');
+        return;
+      }
+    }
+
     setFileState(null);
     onRemove?.();
   };

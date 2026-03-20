@@ -38,7 +38,7 @@ export const ourFileRouter = {
       try {
         const supabase = createAdminClient();
 
-        const { error } = await supabase
+        const { data: upload, error } = await supabase
           .from('uploads')
           .insert({
             user_id: metadata.userId,
@@ -59,7 +59,12 @@ export const ourFileRouter = {
           };
         }
 
-        return { uploadedBy: metadata.userId, url: file.ufsUrl, success: true };
+        return {
+          uploadedBy: metadata.userId,
+          url: file.ufsUrl,
+          uploadId: upload.id,
+          success: true,
+        };
       } catch (error) {
         Logger.error('Callback error:', error);
         return {

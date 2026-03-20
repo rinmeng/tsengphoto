@@ -51,6 +51,7 @@ const collectionSchema = z.object({
   location: z.string().optional(),
   description: z.string().optional(),
   cover_image: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
+  cover_image_id: z.string().uuid().optional().or(z.literal('')),
   is_published: z.boolean(),
 });
 
@@ -84,6 +85,7 @@ export function CollectionForm({
           location: collection.location || '',
           description: collection.description || '',
           cover_image: collection.cover_image || '',
+          cover_image_id: collection.cover_image_id || '',
           is_published: collection.is_published,
         }
       : {
@@ -94,6 +96,7 @@ export function CollectionForm({
           location: '',
           description: '',
           cover_image: '',
+          cover_image_id: '',
           is_published: false,
         },
   });
@@ -106,6 +109,7 @@ export function CollectionForm({
         location: values.location || null,
         description: values.description || null,
         cover_image: values.cover_image || null,
+        cover_image_id: values.cover_image_id || null,
       };
 
       if (mode === 'add') {
@@ -368,18 +372,30 @@ export function CollectionForm({
             <FormField
               control={form.control}
               name='cover_image'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <CoverImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                      onRemove={() => field.onChange('')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const coverImageId = form.watch('cover_image_id');
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <CoverImageUploader
+                        value={field.value}
+                        uploadId={coverImageId}
+                        onChange={(data) => {
+                          form.setValue('cover_image', data.url);
+                          if (data.uploadId) {
+                            form.setValue('cover_image_id', data.uploadId);
+                          }
+                        }}
+                        onRemove={() => {
+                          form.setValue('cover_image', '');
+                          form.setValue('cover_image_id', '');
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {/* Published */}

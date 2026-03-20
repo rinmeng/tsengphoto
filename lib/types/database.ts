@@ -19,6 +19,7 @@ export interface Collection {
   location: string | null;
   description: string | null;
   cover_image: string | null;
+  cover_image_id: string | null; // FK to uploads.id
   is_published: boolean;
   created_at: string;
   modified_at: string | null;
