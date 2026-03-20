@@ -77,6 +77,49 @@ export default function CollectionsPage() {
     },
   });
 
+  const publishMutation = useMutation({
+    mutationFn: async (collectionId: string) => {
+      const collection = collections.find((c) => c.id === collectionId);
+      if (!collection) {
+        throw new Error('Collection not found');
+      }
+
+      const response = await fetch('/api/v1/collections', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: collectionId,
+          is_published: !collection.is_published,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update collection');
+      }
+
+      return !collection.is_published;
+    },
+    onSuccess: (newPublishedState) => {
+      queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
+      toast.success(
+        newPublishedState ? 'Collection published' : 'Collection unpublished',
+        {
+          description: newPublishedState
+            ? 'Collection is now visible to everyone.'
+            : 'Collection is now hidden from public view.',
+        }
+      );
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to update collection', {
+        description: error.message,
+      });
+    },
+  });
+
   const handleEdit = (collection: CollectionWithImages) => {
     setSelectedCollection(collection);
     setEditDialogOpen(true);
@@ -85,6 +128,10 @@ export default function CollectionsPage() {
   const handleDelete = (collectionId: string) => {
     setCollectionToDelete(collectionId);
     setDeleteDialogOpen(true);
+  };
+
+  const handlePublish = (collectionId: string) => {
+    publishMutation.mutate(collectionId);
   };
 
   const confirmDelete = () => {
@@ -116,7 +163,7 @@ export default function CollectionsPage() {
 
       {/* Add Button - Only for authenticated users */}
       {user && (
-        <div className={`mb-6 flex justify-end fade-in-from-top ${getDelayClass(2)}`}>
+        <div className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}>
           <Button onClick={() => setAddDialogOpen(true)}>
             <Plus />
             Add New Collection
@@ -129,6 +176,7 @@ export default function CollectionsPage() {
         isAuthenticated={!!user}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onPublish={handlePublish}
       />
 
       {/* Add Dialog */}

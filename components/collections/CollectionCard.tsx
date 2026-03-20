@@ -8,9 +8,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit } from 'lucide-react';
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
 
@@ -20,6 +23,7 @@ interface CollectionCardProps {
   isAuthenticated?: boolean;
   onEdit?: (collection: CollectionWithImages) => void;
   onDelete?: (collectionId: string) => void;
+  onPublish?: (collectionId: string) => void;
 }
 
 export function CollectionCard({
@@ -28,6 +32,7 @@ export function CollectionCard({
   isAuthenticated = false,
   onEdit,
   onDelete,
+  onPublish,
 }: CollectionCardProps) {
   const imageCount = collection.images.length;
   const formattedDate = collection.date
@@ -50,13 +55,18 @@ export function CollectionCard({
     onDelete?.(collection.id);
   };
 
+  const handlePublish = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onPublish?.(collection.id);
+  };
+
   return (
     <Link href={`/collections/${collection.slug}`} className='group block h-full'>
       <Card
         className={cn(
           `h-full flex flex-col overflow-hidden transition-all hover:shadow-lg
           hover:-translate-y-1 pt-0`,
-          !collection.is_published && 'opacity-70',
           className
         )}
       >
@@ -79,23 +89,29 @@ export function CollectionCard({
           {/* Admin Actions - Top Left */}
           {isAuthenticated && (
             <div className='absolute top-3 left-3 flex gap-2'>
-              <Button
-                variant='secondary'
-                size='icon'
-                className='h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-background'
-                onClick={handleEdit}
-              >
-                <Pencil className='h-4 w-4' />
-              </Button>
-              <Button
-                variant='destructive'
-                size='icon'
-                className='h-8 w-8 bg-destructive/80 backdrop-blur-sm
-                  hover:bg-destructive'
-                onClick={handleDelete}
-              >
-                <Trash2 className='h-4 w-4' />
-              </Button>
+              <div className='flex flex-col gap-2'>
+                <Button variant='secondary' size='icon' onClick={handleEdit}>
+                  <Edit />
+                </Button>
+                <Button variant='destructive' size='icon' onClick={handleDelete}>
+                  <Trash2 />
+                </Button>
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={collection.is_published ? 'secondary' : 'default'}
+                    onClick={handlePublish}
+                  >
+                    {collection.is_published ? <Globe /> : <GlobeLock />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {collection.is_published
+                    ? 'Collection is published. Click to unpublish.'
+                    : 'Collection is not published. Click to publish.'}
+                </TooltipContent>
+              </Tooltip>
             </div>
           )}
 
@@ -106,13 +122,6 @@ export function CollectionCard({
                 {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
               </Text>
             </Badge>
-            {!collection.is_published && (
-              <Badge variant='secondary'>
-                <Text variant='bd-sm' className='font-medium'>
-                  Not Published
-                </Text>
-              </Badge>
-            )}
           </div>
         </div>
 

@@ -9,6 +9,7 @@ interface CollectionGridProps {
   isAuthenticated?: boolean;
   onEdit?: (collection: CollectionWithImages) => void;
   onDelete?: (collectionId: string) => void;
+  onPublish?: (collectionId: string) => void;
 }
 
 export function CollectionGrid({
@@ -16,6 +17,7 @@ export function CollectionGrid({
   isAuthenticated = false,
   onEdit,
   onDelete,
+  onPublish,
 }: CollectionGridProps) {
   if (collections.length === 0) {
     return (
@@ -42,6 +44,7 @@ export function CollectionGrid({
           isAuthenticated={isAuthenticated}
           onEdit={onEdit}
           onDelete={onDelete}
+          onPublish={onPublish}
         />
       ))}
     </div>
