@@ -100,37 +100,30 @@ export function CollectionCard({
 
           {/* Admin Actions - Top Left */}
           {isAuthenticated && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className='absolute top-3 right-3 flex gap-4 items-center border
-                rounded-full py-2 px-6 bg-secondary/20 backdrop-blur-sm'
-            >
-              <ShieldCheck className='size-8 text-green-400' />
-              <div className='flex gap-2'>
-                <div className='flex flex-row gap-2'>
-                  <Button variant='secondary' size='icon' onClick={handleEdit}>
-                    <Edit />
-                  </Button>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={collection.is_published ? 'secondary' : 'default'}
-                        size='icon'
-                        onClick={handlePublish}
-                      >
-                        {collection.is_published ? <Globe /> : <GlobeLock />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {collection.is_published
-                        ? 'Collection is published. Click to unpublish.'
-                        : 'Collection is not published. Click to publish.'}
-                    </TooltipContent>
-                  </Tooltip>
-                  <Button variant='destructive' size='icon' onClick={handleDelete}>
-                    <Trash2 />
-                  </Button>
-                </div>
+            <div className='absolute top-3 right-3 flex gap-2'>
+              <div className='flex flex-row gap-2'>
+                <Button variant='secondary' size='icon' onClick={handleEdit}>
+                  <Edit />
+                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={collection.is_published ? 'secondary' : 'default'}
+                      size='icon'
+                      onClick={handlePublish}
+                    >
+                      {collection.is_published ? <Globe /> : <GlobeLock />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {collection.is_published
+                      ? 'Collection is published. Click to unpublish.'
+                      : 'Collection is not published. Click to publish.'}
+                  </TooltipContent>
+                </Tooltip>
+                <Button variant='destructive' size='icon' onClick={handleDelete}>
+                  <Trash2 />
+                </Button>
               </div>
             </div>
           )}
