@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { Button } from '@/components/animate-ui/components/button';
+import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -371,14 +372,15 @@ export function CollectionForm({
               control={form.control}
               name='is_published'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
+                <FormItem className='flex flex-row items-center'>
                   <FormControl>
-                    <input
-                      type='checkbox'
+                    <Checkbox
                       checked={field.value}
-                      onChange={field.onChange}
-                      className='h-4 w-4 rounded border-gray-300'
-                    />
+                      onCheckedChange={field.onChange}
+                      className='rounded'
+                    >
+                      <CheckboxIndicator />
+                    </Checkbox>
                   </FormControl>
                   <div className='space-y-1 leading-none'>
                     <FormLabel>Published</FormLabel>
