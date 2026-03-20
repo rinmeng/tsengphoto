@@ -111,10 +111,13 @@ export function CollectionImageViewer({
   return (
     <>
       {/* Image Gallery Grid */}
-      <div className='space-y-6'>
+      <div className='flex flex-col space-y-6 min-h-[70vh]'>
         {/* Bulk Actions Bar */}
         {sortedImages.length > 0 && isAuthenticated && (
-          <div className='flex items-center justify-between w-full gap-2'>
+          <div
+            className={`flex items-center justify-between w-full gap-2 fade-in-from-top
+            ${getDelayClass(4)}`}
+          >
             <label className='flex items-center gap-2 cursor-pointer'>
               <Checkbox
                 checked={
@@ -209,6 +212,7 @@ export function CollectionImageViewer({
           </div>
         ) : (
           <EmptyState
+            className='h-full'
             bordered={true}
             icon={ImageOff}
             title='No images yet'

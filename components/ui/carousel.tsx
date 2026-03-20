@@ -197,7 +197,7 @@ function CarouselPrevious({
       className={cn(
         'size-8 rounded-full',
         btnLocation === 'mb'
-          ? 'absolute bottom-4 left-1/2 -translate-x-24'
+          ? 'relative'
           : btnLocation === 'below-carousel'
             ? 'relative'
             : orientation === 'horizontal'
@@ -234,7 +234,7 @@ function CarouselNext({
       className={cn(
         'size-8 rounded-full',
         btnLocation === 'mb'
-          ? 'absolute bottom-4 left-1/2 translate-x-16'
+          ? 'relative'
           : btnLocation === 'below-carousel'
             ? 'relative'
             : orientation === 'horizontal'
