@@ -1,5 +1,4 @@
 'use client';
-import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Text } from '@/components/Text';
@@ -24,7 +23,7 @@ export function DriveImages({
   return (
     <div className='space-y-6'>
       {/* Section Header */}
-      <Text variant='hd-lg' className='fade-in-from-bottom'>
+      <Text variant='hd-lg' className='fade-in-from-top'>
         {startIndex > 0 ? 'More Images from' : 'Images from'}{' '}
         <Link
           href={driveLink || 'https://drive.google.com'}

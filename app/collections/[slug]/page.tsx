@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import CollectionLoading from './loading';
 import { useState, useMemo } from 'react';
 import type { CollectionImage } from '@/lib/types';
+import { EmptyState } from '@/components/EmptyState';
 
 export default function CollectionPage() {
   const params = useParams();
@@ -73,7 +74,7 @@ export default function CollectionPage() {
   });
 
   // Convert Drive images to CollectionImage format
-  const formattedDriveImages = useMemo<CollectionImage[]>(() => {
+  const formattedDriveImages: CollectionImage[] = useMemo(() => {
     return driveImages.map(
       (
         img: { id: string; name: string; thumbnailUrl: string; fullQualityUrl: string },
@@ -89,7 +90,7 @@ export default function CollectionPage() {
   }, [driveImages, collection?.id]);
 
   // Full quality URLs for viewer
-  const driveFullQualityUrls = useMemo(() => {
+  const driveFullQualityUrls: string[] = useMemo(() => {
     return driveImages.map(
       (img: { id: string; name: string; thumbnailUrl: string; fullQualityUrl: string }) =>
         img.fullQualityUrl
@@ -97,7 +98,7 @@ export default function CollectionPage() {
   }, [driveImages]);
 
   // Combine all images for viewer
-  const sortedImages = useMemo(
+  const sortedImages: CollectionImage[] = useMemo(
     () =>
       (collection?.images || []).sort(
         (a: CollectionImage, b: CollectionImage) => (a.order || 0) - (b.order || 0)
@@ -105,7 +106,7 @@ export default function CollectionPage() {
     [collection?.images]
   );
 
-  const allImageUrls = useMemo(() => {
+  const allImageUrls: string[] = useMemo(() => {
     const uploaded = sortedImages
       .map((img: CollectionImage) => img.image_url)
       .filter(Boolean) as string[];
@@ -114,7 +115,7 @@ export default function CollectionPage() {
   }, [sortedImages, driveFullQualityUrls]);
 
   // Rotate images for viewer
-  const rotatedImageUrls = useMemo(
+  const rotatedImageUrls: string[] = useMemo(
     () => [
       ...allImageUrls.slice(selectedImageIndex),
       ...allImageUrls.slice(0, selectedImageIndex),
@@ -295,6 +296,21 @@ export default function CollectionPage() {
 
       {/* Image Gallery */}
       <div className='flex flex-col space-y-6 min-h-[70vh]'>
+        {/* Empty State */}
+        {sortedImages.length === 0 && formattedDriveImages.length === 0 && (
+          <div className='flex h-full items-center justify-center'>
+            <EmptyState
+              bordered={true}
+              icon={ImageIcon}
+              title='No images in this collection yet.'
+              description={
+                user
+                  ? 'Start by uploading some photos or linking a Google Drive folder to this collection via editing the collection on the previous page.'
+                  : 'Please check back later!'
+              }
+            />
+          </div>
+        )}
         {/* User Uploaded Images */}
         {sortedImages.length > 0 && (
           <UserUploadedImages
@@ -320,13 +336,6 @@ export default function CollectionPage() {
               onImageClick={handleImageClick}
               startIndex={sortedImages.length}
             />
-          </div>
-        )}
-
-        {/* Empty State */}
-        {sortedImages.length === 0 && formattedDriveImages.length === 0 && (
-          <div className='flex h-full items-center justify-center'>
-            <Text variant='muted'>No images in this collection yet.</Text>
           </div>
         )}
       </div>
