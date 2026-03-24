@@ -2,6 +2,8 @@
 import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -12,6 +14,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui';
+import { Text } from '@/components/Text';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -40,6 +43,21 @@ export function PhotoCarousel({
   showDots = true,
   objectFit = 'cover',
 }: PhotoCarouselProps) {
+  const [loadingImages, setLoadingImages] = useState<Record<number, boolean>>(() => {
+    // Initialize all images as loading
+    return images.reduce(
+      (acc, _, index) => {
+        acc[index] = true;
+        return acc;
+      },
+      {} as Record<number, boolean>
+    );
+  });
+
+  const handleImageLoad = (index: number) => {
+    setLoadingImages((prev) => ({ ...prev, [index]: false }));
+  };
+
   const itemBasisClass =
     itemsToShow === 1
       ? 'basis-full'
@@ -80,12 +98,27 @@ export function PhotoCarousel({
                     containerClassName
                   )}
                 >
+                  {loadingImages[index] && (
+                    <div
+                      className='absolute inset-0 flex flex-col items-center
+                        justify-center z-10 bg-black/80 backdrop-blur-sm'
+                    >
+                      <Loader2 className='size-8 animate-spin text-primary mb-3' />
+                      <Text variant='bd-md' className='text-white'>
+                        We&apos;re fetching the highest quality possible...
+                      </Text>
+                      <Text variant='muted-sm' className='text-white/70'>
+                        Please wait...
+                      </Text>
+                    </div>
+                  )}
                   <Image
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
                     style={{ objectPosition: 'center' }}
+                    onLoad={() => handleImageLoad(index)}
                   />
                 </div>
               ) : (
@@ -96,6 +129,20 @@ export function PhotoCarousel({
                       containerClassName
                     )}
                   >
+                    {loadingImages[index] && (
+                      <div
+                        className='absolute inset-0 flex flex-col items-center
+                          justify-center z-10 bg-black/80 backdrop-blur-sm'
+                      >
+                        <Loader2 className='size-8 animate-spin text-primary mb-3' />
+                        <Text variant='bd-md' className='text-white'>
+                          We&apos;re fetching the highest quality possible...
+                        </Text>
+                        <Text variant='muted-sm' className='text-white/70'>
+                          Please wait...
+                        </Text>
+                      </div>
+                    )}
                     <Image
                       src={src}
                       alt={`Image ${index + 1}`}
@@ -104,6 +151,7 @@ export function PhotoCarousel({
                         objectFit === 'cover' ? 'object-cover' : 'object-contain'
                       }
                       style={{ objectPosition: 'center' }}
+                      onLoad={() => handleImageLoad(index)}
                     />
                   </CardContent>
                 </Card>
