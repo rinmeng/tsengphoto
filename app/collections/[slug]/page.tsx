@@ -45,7 +45,7 @@ export default function CollectionPage() {
 
   const {
     data: collection,
-    isLoading,
+    isLoading: isLoadingCollection,
     isError,
   } = useQuery({
     queryKey: [...collectionsQueryKeys.bySlug(slug), { includeUnpublished: !!user }],
@@ -60,7 +60,7 @@ export default function CollectionPage() {
   });
 
   // Fetch Google Drive images if collection has a drive_link
-  const { data: driveImages = [] } = useQuery({
+  const { data: driveImages = [], isLoading: isDriveImagesLoading } = useQuery({
     queryKey: ['driveImages', slug],
     queryFn: async () => {
       const response = await fetch(`/api/v1/collections/${slug}/drive-images`);
@@ -207,12 +207,12 @@ export default function CollectionPage() {
   });
 
   // Show loading skeleton
-  if (isLoading) {
+  if (isLoadingCollection) {
     return <CollectionLoading />;
   }
 
   // Only call notFound after loading is complete and data is missing
-  if (!isLoading && (isError || !collection)) {
+  if (!isLoadingCollection && (isError || !collection)) {
     notFound();
   }
 
@@ -223,6 +223,12 @@ export default function CollectionPage() {
         day: 'numeric',
       })
     : null;
+
+  const isEmpty =
+    !isDriveImagesLoading &&
+    !isLoadingCollection &&
+    sortedImages.length === 0 &&
+    formattedDriveImages.length === 0;
 
   return (
     <section
@@ -290,7 +296,7 @@ export default function CollectionPage() {
 
       {/* Image Gallery */}
       <div className='flex flex-col space-y-6 min-h-[70vh]'>
-        {sortedImages.length === 0 && formattedDriveImages.length === 0 && (
+        {isEmpty && (
           <div className='flex h-full items-center justify-center'>
             <EmptyState
               className='min-h-[70vh]'
@@ -320,8 +326,7 @@ export default function CollectionPage() {
           />
         )}
 
-        {/* Google Drive Images */}
-        {formattedDriveImages.length > 0 && (
+        {!isDriveImagesLoading && formattedDriveImages.length > 0 && (
           <div className={sortedImages.length > 0 ? 'mt-12' : ''}>
             <DriveImages
               images={formattedDriveImages}
