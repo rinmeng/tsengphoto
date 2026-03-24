@@ -36,7 +36,7 @@ export default function CollectionsPage() {
     useState<CollectionWithImages | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
-  const { data: collections = [], isLoading } = useQuery({
+  const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: !!user }],
     queryFn: async () => {
       const response = await fetch('/api/v1/collections');
@@ -171,7 +171,7 @@ export default function CollectionsPage() {
         {/* Add Button - Only for authenticated users */}
         {user && (
           <div
-            className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}
+            className={`mb-6 flex justify-center fade-in-from-bottom ${getDelayClass(2)}`}
           >
             <Button onClick={() => setAddDialogOpen(true)}>
               <Plus />

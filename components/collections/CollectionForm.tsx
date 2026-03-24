@@ -52,6 +52,7 @@ const collectionSchema = z.object({
   description: z.string().optional(),
   cover_image: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   cover_image_id: z.string().uuid().optional().or(z.literal('')),
+  drive_link: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   is_published: z.boolean(),
 });
 
@@ -88,6 +89,7 @@ export function CollectionForm({
           description: collection.description || '',
           cover_image: collection.cover_image || '',
           cover_image_id: collection.cover_image_id || '',
+          drive_link: collection.drive_link || '',
           is_published: collection.is_published,
         }
       : {
@@ -99,6 +101,7 @@ export function CollectionForm({
           description: '',
           cover_image: '',
           cover_image_id: '',
+          drive_link: '',
           is_published: false,
         },
   });
@@ -118,6 +121,7 @@ export function CollectionForm({
         description: values.description || null,
         cover_image: values.cover_image || null,
         cover_image_id: values.cover_image_id || null,
+        drive_link: values.drive_link || null,
       };
 
       if (mode === 'add') {
@@ -191,6 +195,7 @@ export function CollectionForm({
             description: collection.description || '',
             cover_image: collection.cover_image || '',
             cover_image_id: collection.cover_image_id || '',
+            drive_link: collection.drive_link || '',
             is_published: collection.is_published,
           }
         : {
@@ -202,6 +207,7 @@ export function CollectionForm({
             description: '',
             cover_image: '',
             cover_image_id: '',
+            drive_link: '',
             is_published: false,
           };
       form.reset(defaultValues);
@@ -371,6 +377,34 @@ export function CollectionForm({
                       {...field}
                       placeholder='A memorable event description...'
                       rows={3}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Google Drive Link */}
+            <FormField
+              control={form.control}
+              name='drive_link'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Google Drive Folder (optional)
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className='size-4 text-muted-foreground' />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Link to a Google Drive folder to display additional images
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder='https://drive.google.com/drive/folders/...'
                     />
                   </FormControl>
                   <FormMessage />

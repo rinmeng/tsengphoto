@@ -137,11 +137,6 @@ export function CollectionCard({
           <CardDescription>
             <Text variant='caption'>{collection.description}</Text>
           </CardDescription>
-          <Badge variant='outline'>
-            <Text variant='bd-sm'>
-              {imageCount} {imageCount === 1 ? 'photo' : 'photos'}
-            </Text>
-          </Badge>
         </CardHeader>
 
         <CardContent className='space-y-2'>

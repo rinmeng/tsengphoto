@@ -17,24 +17,28 @@ interface PhotoCarouselProps {
   images: string[];
   autoplayDelay?: number;
   className?: string;
-  itemClassName?: string;
+  containerClassName?: string;
   itemsToShow?: 1 | 2 | 3;
   btnVariant?: 'default' | 'outline' | 'ghost';
   btnLocation?: 'default' | 'mb' | 'below-carousel';
   fullWidth?: boolean;
   dotsLocation?: 'absolute' | 'below-carousel';
+  showDots?: boolean;
+  objectFit?: 'cover' | 'contain';
 }
 
 export function PhotoCarousel({
   images,
   autoplayDelay = 3000,
   className,
-  itemClassName,
+  containerClassName,
   itemsToShow = 3,
-  btnVariant = 'outline',
+  btnVariant = 'ghost',
   btnLocation = 'default',
   fullWidth = false,
   dotsLocation = 'absolute',
+  showDots = true,
+  objectFit = 'cover',
 }: PhotoCarouselProps) {
   const itemBasisClass =
     itemsToShow === 1
@@ -57,30 +61,53 @@ export function PhotoCarousel({
       <Carousel
         btnVariant={btnVariant}
         btnLocation={btnLocation}
-        showDots={true}
+        showDots={showDots}
         dotsLocation={dotsLocation}
         className='w-full'
         opts={carouselOpts}
         plugins={plugins}
       >
-        <CarouselContent className='-ml-2 md:-ml-4'>
+        <CarouselContent className={itemsToShow === 1 ? 'ml-0!' : '-ml-2 md:-ml-4'}>
           {images.map((src, index) => (
-            <CarouselItem key={index} className={cn('pl-2 md:pl-4', itemBasisClass)}>
-              <Card className='p-0'>
-                <CardContent
+            <CarouselItem
+              key={index}
+              className={cn(itemsToShow === 1 ? 'pl-0!' : 'pl-2 md:pl-4', itemBasisClass)}
+            >
+              {itemsToShow === 1 ? (
+                <div
                   className={cn(
-                    'flex items-center justify-center p-0 relative',
-                    itemClassName
+                    'flex items-center justify-center relative bg-black w-full',
+                    containerClassName
                   )}
                 >
                   <Image
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
-                    className='object-cover'
+                    className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
+                    style={{ objectPosition: 'center' }}
                   />
-                </CardContent>
-              </Card>
+                </div>
+              ) : (
+                <Card className='p-0 bg-black'>
+                  <CardContent
+                    className={cn(
+                      'flex items-center justify-center p-0 relative bg-black',
+                      containerClassName
+                    )}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Image ${index + 1}`}
+                      fill
+                      className={
+                        objectFit === 'cover' ? 'object-cover' : 'object-contain'
+                      }
+                      style={{ objectPosition: 'center' }}
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -90,7 +117,9 @@ export function PhotoCarousel({
             <CarouselNext className='hidden sm:flex' />
           </>
         )}
-        {dotsLocation !== 'below-carousel' && btnLocation !== 'mb' && <CarouselDots />}
+        {dotsLocation !== 'below-carousel' && btnLocation !== 'mb' && showDots && (
+          <CarouselDots />
+        )}
         {/* Middle-bottom grouped navigation */}
         {btnLocation === 'mb' && (
           <div
@@ -98,7 +127,7 @@ export function PhotoCarousel({
               gap-3'
           >
             <CarouselPrevious className='hidden sm:flex' />
-            {dotsLocation !== 'below-carousel' && (
+            {dotsLocation !== 'below-carousel' && showDots && (
               <CarouselDots className='static! translate-x-0!' />
             )}
             <CarouselNext className='hidden sm:flex' />
@@ -110,7 +139,7 @@ export function PhotoCarousel({
             {btnLocation === 'below-carousel' && (
               <CarouselPrevious className='hidden sm:flex' />
             )}
-            {dotsLocation === 'below-carousel' && <CarouselDots />}
+            {dotsLocation === 'below-carousel' && showDots && <CarouselDots />}
             {btnLocation === 'below-carousel' && (
               <CarouselNext className='hidden sm:flex' />
             )}
