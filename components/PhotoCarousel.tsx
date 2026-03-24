@@ -75,7 +75,13 @@ export function PhotoCarousel({
   const plugins = autoplayDelay > 0 ? [Autoplay({ delay: autoplayDelay })] : [];
 
   return (
-    <section className={cn(!fullWidth && 'container mx-auto', className)}>
+    <section
+      className={cn(
+        !fullWidth && 'container mx-auto',
+        itemsToShow === 1 && 'bg-transparent',
+        className
+      )}
+    >
       <Carousel
         btnVariant={btnVariant}
         btnLocation={btnLocation}
@@ -85,16 +91,21 @@ export function PhotoCarousel({
         opts={carouselOpts}
         plugins={plugins}
       >
-        <CarouselContent className={itemsToShow === 1 ? 'ml-0!' : '-ml-2 md:-ml-4'}>
+        <CarouselContent
+          className={itemsToShow === 1 ? 'ml-0! bg-transparent' : '-ml-2 md:-ml-4'}
+        >
           {images.map((src, index) => (
             <CarouselItem
               key={index}
-              className={cn(itemsToShow === 1 ? 'pl-0!' : 'pl-2 md:pl-4', itemBasisClass)}
+              className={cn(
+                itemsToShow === 1 ? 'pl-0! bg-transparent border-0' : 'pl-2 md:pl-4',
+                itemBasisClass
+              )}
             >
               {itemsToShow === 1 ? (
                 <div
                   className={cn(
-                    'flex items-center justify-center relative bg-black w-full',
+                    'flex items-center justify-center relative bg-transparent w-full',
                     containerClassName
                   )}
                 >
