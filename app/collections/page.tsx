@@ -171,7 +171,7 @@ export default function CollectionsPage() {
         {/* Add Button - Only for authenticated users */}
         {user && (
           <div
-            className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}
+            className={`mb-6 flex justify-center fade-in-from-bottom ${getDelayClass(2)}`}
           >
             <Button onClick={() => setAddDialogOpen(true)}>
               <Plus />
