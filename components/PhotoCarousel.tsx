@@ -15,6 +15,7 @@ import {
   CardContent,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
+import { getDelayClass } from '@/utils/animations';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -112,13 +113,22 @@ export function PhotoCarousel({
                   {loadingImages[index] && (
                     <div
                       className='absolute inset-0 flex flex-col items-center
-                        justify-center z-10 bg-black/80 backdrop-blur-sm'
+                        justify-center z-10 bg-black/50 backdrop-blur-md'
                     >
-                      <Loader2 className='size-8 animate-spin text-primary mb-3' />
-                      <Text variant='bd-md' className='text-white'>
+                      <Loader2
+                        className={`size-8 animate-spin text-primary mb-3
+                          fade-in-from-bottom ${getDelayClass(1)}`}
+                      />
+                      <Text
+                        variant='bd-md'
+                        className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
+                      >
                         We&apos;re fetching the highest quality possible...
                       </Text>
-                      <Text variant='muted-sm' className='text-white/70'>
+                      <Text
+                        variant='muted-sm'
+                        className={`text-white/70 fade-in-from-bottom ${getDelayClass(3)}`}
+                      >
                         Please wait...
                       </Text>
                     </div>
@@ -145,11 +155,21 @@ export function PhotoCarousel({
                         className='absolute inset-0 flex flex-col items-center
                           justify-center z-10 bg-black/80 backdrop-blur-sm'
                       >
-                        <Loader2 className='size-8 animate-spin text-primary mb-3' />
-                        <Text variant='bd-md' className='text-white'>
+                        <Loader2
+                          className={`size-8 animate-spin text-primary mb-3
+                            fade-in-from-bottom ${getDelayClass(1)}`}
+                        />
+                        <Text
+                          variant='bd-md'
+                          className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
+                        >
                           We&apos;re fetching the highest quality possible...
                         </Text>
-                        <Text variant='muted-sm' className='text-white/70'>
+                        <Text
+                          variant='muted-sm'
+                          className={`text-white/70 fade-in-from-bottom
+                            ${getDelayClass(3)}`}
+                        >
                           Please wait...
                         </Text>
                       </div>
