@@ -125,12 +125,6 @@ export function PhotoCarousel({
                       >
                         We&apos;re fetching the highest quality possible...
                       </Text>
-                      <Text
-                        variant='muted-sm'
-                        className={`text-white/70 fade-in-from-bottom ${getDelayClass(3)}`}
-                      >
-                        Please wait...
-                      </Text>
                     </div>
                   )}
                   <Image
@@ -164,13 +158,6 @@ export function PhotoCarousel({
                           className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
                         >
                           We&apos;re fetching the highest quality possible...
-                        </Text>
-                        <Text
-                          variant='muted-sm'
-                          className={`text-white/70 fade-in-from-bottom
-                            ${getDelayClass(3)}`}
-                        >
-                          Please wait...
                         </Text>
                       </div>
                     )}
