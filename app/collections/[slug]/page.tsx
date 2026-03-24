@@ -34,7 +34,7 @@ import { EmptyState } from '@/components/EmptyState';
 export default function CollectionPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -57,6 +57,7 @@ export default function CollectionPage() {
       const result = await response.json();
       return result.data;
     },
+    enabled: !authLoading,
   });
 
   // Fetch Google Drive images if collection has a drive_link
@@ -206,13 +207,13 @@ export default function CollectionPage() {
     },
   });
 
-  // Show loading skeleton
-  if (isLoadingCollection) {
+  // Show loading skeleton (including auth loading)
+  if (authLoading || isLoadingCollection) {
     return <CollectionLoading />;
   }
 
   // Only call notFound after loading is complete and data is missing
-  if (!isLoadingCollection && (isError || !collection)) {
+  if (!authLoading && !isLoadingCollection && (isError || !collection)) {
     notFound();
   }
 
