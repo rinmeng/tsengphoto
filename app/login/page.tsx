@@ -58,7 +58,7 @@ export default function LoginPage() {
       return { email };
     },
     onSuccess: (data) => {
-      router.push('/admin');
+      router.push('/');
       toast.success('Login successful', {
         description: 'You are now signed in as ' + data.email.split('@')[0],
       });

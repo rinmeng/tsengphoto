@@ -228,7 +228,7 @@ export function Navbar() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              {user && (
+              {/* {user && (
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     asChild
@@ -243,7 +243,7 @@ export function Navbar() {
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
-              )}
+              )} */}
             </NavigationMenuList>
           </NavigationMenu>
 
@@ -326,8 +326,7 @@ export function Navbar() {
                       Contact
                     </Link>
                   </Button>
-
-                  {user && (
+                  {/* {user && (
                     <Button
                       variant={isActive('/admin') ? 'default' : 'ghost'}
                       className='w-1/2'
@@ -337,7 +336,7 @@ export function Navbar() {
                         Admin
                       </Link>
                     </Button>
-                  )}
+                  )} */}
 
                   {user ? (
                     <LogoutButton user={user} onClose={() => setOpen(false)} />
