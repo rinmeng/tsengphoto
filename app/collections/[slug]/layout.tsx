@@ -36,7 +36,6 @@ export async function generateMetadata({
 
   const title = `${collection.title} | Tseng Photography`;
   const description = collection.description || `View ${collection.title} collection`;
-  const imageUrl = collection.cover_image || '/landing/carousel/carousel_1.jpg';
   const url = `https://tsengphoto.vercel.app/collections/${slug}`;
 
   return {
@@ -60,20 +59,13 @@ export async function generateMetadata({
       siteName: 'Tseng Photography',
       type: 'website',
       locale: 'en_CA',
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: collection.title,
-        },
-      ],
+      // Images handled by opengraph-image.tsx for proper cropping
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
+      // Images handled by opengraph-image.tsx for proper cropping
     },
     alternates: {
       canonical: `/collections/${slug}`,
