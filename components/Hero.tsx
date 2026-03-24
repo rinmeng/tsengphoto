@@ -16,7 +16,7 @@ export function Hero({ className }: { className?: string }) {
       images={images}
       autoplayDelay={3000}
       className={cn('w-screen', className)}
-      itemClassName='h-screen'
+      containerClassName='h-screen'
       itemsToShow={1}
       btnVariant='ghost'
       btnLocation='mb'

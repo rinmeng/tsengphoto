@@ -151,7 +151,7 @@ export default function Home() {
         </div>
         <PhotoCarousel
           className='mt-8'
-          itemClassName='aspect-video'
+          containerClassName='aspect-video'
           itemsToShow={2}
           dotsLocation='below-carousel'
           btnLocation='below-carousel'
@@ -179,7 +179,7 @@ export default function Home() {
         </div>
         <PhotoCarousel
           className='mt-8'
-          itemClassName='aspect-square'
+          containerClassName='aspect-square'
           itemsToShow={3}
           dotsLocation='below-carousel'
           btnLocation='below-carousel'

@@ -20,6 +20,7 @@ export interface Collection {
   description: string | null;
   cover_image: string | null;
   cover_image_id: string | null; // FK to uploads.id
+  drive_link: string | null; // Optional Google Drive folder URL
   is_published: boolean;
   created_at: string;
   modified_at: string | null;

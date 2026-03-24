@@ -241,3 +241,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .t200e {
+    @apply transition duration-200 ease-in-out;
+  }
+}

@@ -24,6 +24,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.squarespace-cdn.com',
         pathname: '/**',
       },
+      // allow Google Drive images
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

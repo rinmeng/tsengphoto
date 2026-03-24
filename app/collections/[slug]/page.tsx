@@ -2,19 +2,32 @@
 
 import { notFound, useParams } from 'next/navigation';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Upload } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { Badge } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
-import { CollectionImageViewer } from './components/CollectionImageViewer';
+import { UserUploadedImages } from './components/UserUploadedImages';
+import { DriveImages } from './components/DriveImages';
+import { ImageViewer } from './components/ImageViewer';
 import { CollectionUploadDialog } from '@/components/collections/CollectionUploadDialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import CollectionLoading from './loading';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { CollectionImage } from '@/lib/types';
 
 export default function CollectionPage() {
@@ -25,6 +38,9 @@ export default function CollectionPage() {
   const queryClient = useQueryClient();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
 
   const {
     data: collection,
@@ -41,6 +57,86 @@ export default function CollectionPage() {
       return result.data;
     },
   });
+
+  // Fetch Google Drive images if collection has a drive_link
+  const { data: driveImages = [] } = useQuery({
+    queryKey: ['driveImages', slug],
+    queryFn: async () => {
+      const response = await fetch(`/api/v1/collections/${slug}/drive-images`);
+      if (!response.ok) {
+        return [];
+      }
+      const result = await response.json();
+      return result.data || [];
+    },
+    enabled: !!collection?.drive_link, // Only fetch if drive_link exists
+  });
+
+  // Convert Drive images to CollectionImage format
+  const formattedDriveImages = useMemo<CollectionImage[]>(() => {
+    return driveImages.map(
+      (
+        img: { id: string; name: string; thumbnailUrl: string; fullQualityUrl: string },
+        index: number
+      ) => ({
+        id: `drive-${img.id}`,
+        collection_id: collection?.id || '',
+        image_url: img.thumbnailUrl, // Use thumbnail for grid display
+        order: index,
+        created_at: new Date().toISOString(),
+      })
+    );
+  }, [driveImages, collection?.id]);
+
+  // Full quality URLs for viewer
+  const driveFullQualityUrls = useMemo(() => {
+    return driveImages.map(
+      (img: { id: string; name: string; thumbnailUrl: string; fullQualityUrl: string }) =>
+        img.fullQualityUrl
+    );
+  }, [driveImages]);
+
+  // Combine all images for viewer
+  const sortedImages = useMemo(
+    () =>
+      (collection?.images || []).sort(
+        (a: CollectionImage, b: CollectionImage) => (a.order || 0) - (b.order || 0)
+      ),
+    [collection?.images]
+  );
+
+  const allImageUrls = useMemo(() => {
+    const uploaded = sortedImages
+      .map((img: CollectionImage) => img.image_url)
+      .filter(Boolean) as string[];
+    // Use full quality URLs for viewer
+    return [...uploaded, ...driveFullQualityUrls];
+  }, [sortedImages, driveFullQualityUrls]);
+
+  // Rotate images for viewer
+  const rotatedImageUrls = useMemo(
+    () => [
+      ...allImageUrls.slice(selectedImageIndex),
+      ...allImageUrls.slice(0, selectedImageIndex),
+    ],
+    [allImageUrls, selectedImageIndex]
+  );
+
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsViewerOpen(true);
+  };
+
+  const handleDeleteClick = (imageId: string) => {
+    setImageToDelete(imageId);
+  };
+
+  const confirmDelete = () => {
+    if (imageToDelete) {
+      deleteImageMutation.mutate(imageToDelete);
+      setImageToDelete(null);
+    }
+  };
 
   // Mutation to delete collection image
   const deleteImageMutation = useMutation({
@@ -151,7 +247,7 @@ export default function CollectionPage() {
       </div>
 
       {/* Collection Header */}
-      <div className='mb-12 space-y-6 fade-in-from-top'>
+      <div className='mb-4 space-y-6 fade-in-from-top'>
         <div className='space-y-2'>
           <Badge className={`fade-in-from-top capitalize ${getDelayClass(1)}`}>
             <Text variant='bd-xs'>{collection.type}</Text>
@@ -188,26 +284,94 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
-          <Badge variant='outline' className='flex items-center gap-2'>
-            <Text variant='bd-md'>
-              {collection.images.length}{' '}
-              {collection.images.length === 1 ? 'photo' : 'photos'}
+          <Badge variant='outline'>
+            <Text variant='bd-md' className='flex gap-2 items-center justify-center'>
+              <ImageIcon className='size-5' />
+              {collection.images.length + formattedDriveImages.length}
             </Text>
           </Badge>
         </div>
       </div>
 
-      {/* Image Gallery with Viewer */}
-      <CollectionImageViewer
-        images={collection.images}
-        collectionTitle={collection.title}
-        isAuthenticated={!!user}
-        onDeleteImage={deleteImageMutation.mutate}
-        isDeletingImage={deleteImageMutation.isPending}
-        onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
-        isBulkDeleting={bulkDeleteMutation.isPending}
-        deletionProgress={deletionProgress}
+      {/* Image Gallery */}
+      <div className='flex flex-col space-y-6 min-h-[70vh]'>
+        {/* User Uploaded Images */}
+        {sortedImages.length > 0 && (
+          <UserUploadedImages
+            images={sortedImages}
+            collectionTitle={collection.title}
+            isAuthenticated={!!user}
+            onImageClick={handleImageClick}
+            onDeleteImage={handleDeleteClick}
+            isDeletingImage={deleteImageMutation.isPending}
+            onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
+            isBulkDeleting={bulkDeleteMutation.isPending}
+            deletionProgress={deletionProgress}
+          />
+        )}
+
+        {/* Google Drive Images */}
+        {formattedDriveImages.length > 0 && (
+          <div className={sortedImages.length > 0 ? 'mt-12' : ''}>
+            <DriveImages
+              images={formattedDriveImages}
+              driveLink={collection.drive_link}
+              collectionTitle={collection.title}
+              onImageClick={handleImageClick}
+              startIndex={sortedImages.length}
+            />
+          </div>
+        )}
+
+        {/* Empty State */}
+        {sortedImages.length === 0 && formattedDriveImages.length === 0 && (
+          <div className='flex h-full items-center justify-center'>
+            <Text variant='muted'>No images in this collection yet.</Text>
+          </div>
+        )}
+      </div>
+
+      {/* Image Viewer */}
+      <ImageViewer
+        images={rotatedImageUrls}
+        isOpen={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!imageToDelete}
+        onOpenChange={(open) => !open && setImageToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove image from collection?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently remove the image from
+              this collection.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteImageMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteImageMutation.isPending}
+              className='bg-destructive text-white hover:bg-destructive/90'
+            >
+              {deleteImageMutation.isPending ? (
+                <>
+                  <Loader2 className='animate-spin' />
+                  Removing...
+                </>
+              ) : (
+                'Remove'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Upload Dialog */}
       {user && (

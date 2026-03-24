@@ -36,7 +36,7 @@ export default function CollectionsPage() {
     useState<CollectionWithImages | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
-  const { data: collections = [], isLoading } = useQuery({
+  const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: !!user }],
     queryFn: async () => {
       const response = await fetch('/api/v1/collections');
