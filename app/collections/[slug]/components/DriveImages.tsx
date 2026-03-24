@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Text } from '@/components/Text';
@@ -28,7 +29,8 @@ export function DriveImages({
         <Link
           href={driveLink || 'https://drive.google.com'}
           target='_blank'
-          className='underline hover:text-primary hover:no-underline transition-all duration-200'
+          className='underline hover:text-primary hover:no-underline transition-all
+            duration-200'
           rel='noopener noreferrer'
         >
           Google Drive
@@ -43,7 +45,7 @@ export function DriveImages({
             <div
               key={image.id}
               className={`group relative overflow-hidden rounded bg-muted cursor-pointer
-                fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
+              fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
               onClick={() => onImageClick(globalIndex)}
             >
               <div className='relative aspect-16/10 overflow-hidden bg-muted'>
@@ -52,8 +54,9 @@ export function DriveImages({
                     src={image.image_url}
                     alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
                     fill
-                    className='object-cover hover:scale-105 transition-transform duration-300'
-                    loading='lazy'
+                    className='object-cover hover:scale-105 transition-transform
+                      duration-300'
+                    loading='eager'
                     sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                   />
                 ) : (
