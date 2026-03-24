@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/animate-ui/components/button';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -76,6 +76,7 @@ export function CollectionForm({
   defaultType = 'event',
 }: CollectionFormProps) {
   const queryClient = useQueryClient();
+  const [isCoverImageUploading, setIsCoverImageUploading] = useState(false);
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
@@ -231,8 +232,17 @@ export function CollectionForm({
     mutation.mutate(values);
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    // Prevent closing dialog while cover image is uploading
+    if (!newOpen && isCoverImageUploading) {
+      toast.error('Please wait for the cover image to finish uploading');
+      return;
+    }
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className='max-h-[70vh] sm:max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>
@@ -432,6 +442,7 @@ export function CollectionForm({
                         form.setValue('cover_image', '');
                         form.setValue('cover_image_id', '');
                       }}
+                      onUploadingChange={setIsCoverImageUploading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -473,16 +484,26 @@ export function CollectionForm({
               <Button
                 type='button'
                 variant='outline'
-                onClick={() => onOpenChange(false)}
-                disabled={mutation.isPending}
+                onClick={() => handleOpenChange(false)}
+                disabled={mutation.isPending || isCoverImageUploading}
               >
                 Cancel
               </Button>
-              <Button type='submit' disabled={mutation.isPending || mutation.isSuccess}>
+              <Button
+                type='submit'
+                disabled={
+                  mutation.isPending || mutation.isSuccess || isCoverImageUploading
+                }
+              >
                 {mutation.isPending || mutation.isSuccess ? (
                   <>
                     <Spinner />
                     {mode === 'add' ? 'Creating...' : 'Updating...'}
+                  </>
+                ) : isCoverImageUploading ? (
+                  <>
+                    <Spinner />
+                    Uploading cover...
                   </>
                 ) : mode === 'add' ? (
                   'Create'

@@ -16,6 +16,7 @@ interface CoverImageUploaderProps {
   uploadId?: string; // Current upload ID
   onChange?: (data: { url: string; uploadId?: string }) => void; // Callback with URL and upload ID
   onRemove?: () => void; // Callback when image is removed
+  onUploadingChange?: (isUploading: boolean) => void; // Callback when upload state changes
   className?: string;
 }
 
@@ -33,6 +34,7 @@ export function CoverImageUploader({
   uploadId,
   onChange,
   onRemove,
+  onUploadingChange,
   className,
 }: CoverImageUploaderProps) {
   const [fileState, setFileState] = useState<FileWithStatus | null>(null);
@@ -55,6 +57,7 @@ export function CoverImageUploader({
           progress: 0,
         });
         setIsUploading(true);
+        onUploadingChange?.(true);
 
         try {
           const result = await startUpload([file]);
@@ -75,6 +78,7 @@ export function CoverImageUploader({
             setTimeout(() => {
               setFileState(null);
               setIsUploading(false);
+              onUploadingChange?.(false);
             }, 500);
           } else {
             throw new Error('Upload failed');
@@ -86,10 +90,11 @@ export function CoverImageUploader({
           );
           toast.error(errorMessage);
           setIsUploading(false);
+          onUploadingChange?.(false);
         }
       }
     },
-    [startUpload, onChange, toast]
+    [startUpload, onChange, onUploadingChange, toast]
   );
 
   const onDropRejected = useCallback(
