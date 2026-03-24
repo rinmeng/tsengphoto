@@ -207,13 +207,16 @@ export default function CollectionPage() {
     },
   });
 
-  // Show loading skeleton (including auth loading)
-  if (authLoading || isLoadingCollection) {
+  // Show loading skeleton while auth is loading or collection is loading
+  // Also show loading if collection hasn't loaded yet (even if query is disabled)
+  const isLoading = authLoading || isLoadingCollection || (!collection && !isError);
+
+  if (isLoading) {
     return <CollectionLoading />;
   }
 
   // Only call notFound after loading is complete and data is missing
-  if (!authLoading && !isLoadingCollection && (isError || !collection)) {
+  if (isError || !collection) {
     notFound();
   }
 
