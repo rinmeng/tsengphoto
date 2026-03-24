@@ -23,7 +23,7 @@ export function DriveImages({
   return (
     <div className='space-y-6'>
       {/* Section Header */}
-      <Text variant='hd-lg' className='fade-in-from-top'>
+      <Text variant='hd-lg' className={`fade-in-from-top ${getDelayClass(5)}`}>
         {startIndex > 0 ? 'More Images from' : 'Images from'}{' '}
         <Link
           href={driveLink || 'https://drive.google.com'}
@@ -44,7 +44,7 @@ export function DriveImages({
             <div
               key={image.id}
               className={`group relative overflow-hidden rounded bg-muted cursor-pointer
-              fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
+              fade-in-from-top ${getDelayClass(globalIndex + 6)}`}
               onClick={() => onImageClick(globalIndex)}
             >
               <div className='relative aspect-16/10 overflow-hidden bg-muted'>
