@@ -285,21 +285,15 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
-          <Badge variant='outline'>
-            <Text variant='bd-md' className='flex gap-2 items-center justify-center'>
-              <ImageIcon className='size-5' />
-              {collection.images.length + formattedDriveImages.length}
-            </Text>
-          </Badge>
         </div>
       </div>
 
       {/* Image Gallery */}
       <div className='flex flex-col space-y-6 min-h-[70vh]'>
-        {/* Empty State */}
         {sortedImages.length === 0 && formattedDriveImages.length === 0 && (
           <div className='flex h-full items-center justify-center'>
             <EmptyState
+              className='min-h-[70vh]'
               bordered={true}
               icon={ImageIcon}
               title='No images in this collection yet.'
