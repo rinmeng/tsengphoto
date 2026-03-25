@@ -19,13 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -34,87 +27,76 @@ import { format } from 'date-fns';
 import { cn } from '@/lib';
 import { CoverImageUploader } from '@/components/CoverImageUploader';
 
-import { collectionsQueryKeys } from '@/lib/queries/collections';
-import type { Collection } from '@/lib/types';
+import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
+import type { VideoCollection } from '@/lib/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui';
 
-const COLLECTION_TYPES = ['event', 'video', 'series'] as const;
-
-const collectionSchema = z.object({
+const videoCollectionSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   slug: z
     .string()
     .min(1, 'Slug is required.')
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only.'),
-  type: z.enum(COLLECTION_TYPES, { message: 'Type is required.' }),
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
   cover_image: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   cover_image_id: z.string().uuid().optional().or(z.literal('')),
-  drive_link: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   is_published: z.boolean(),
 });
 
-type CollectionFormValues = z.infer<typeof collectionSchema>;
+type VideoCollectionFormValues = z.infer<typeof videoCollectionSchema>;
 
-interface CollectionFormProps {
+interface VideoCollectionFormProps {
   mode: 'add' | 'edit';
-  collection?: Collection;
+  videoCollection?: VideoCollection;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (updatedSlug?: string) => void;
-  defaultType?: 'event' | 'video' | 'series';
 }
 
-export function CollectionForm({
+export function VideoCollectionForm({
   mode,
-  collection,
+  videoCollection,
   open,
   onOpenChange,
   onSuccess,
-  defaultType = 'event',
-}: CollectionFormProps) {
+}: VideoCollectionFormProps) {
   const queryClient = useQueryClient();
   const [isCoverImageUploading, setIsCoverImageUploading] = useState(false);
 
-  const form = useForm<CollectionFormValues>({
-    resolver: zodResolver(collectionSchema),
-    defaultValues: collection
+  const form = useForm<VideoCollectionFormValues>({
+    resolver: zodResolver(videoCollectionSchema),
+    defaultValues: videoCollection
       ? {
-          title: collection.title,
-          slug: collection.slug,
-          type: collection.type as (typeof COLLECTION_TYPES)[number],
-          date: collection.date ? new Date(collection.date) : undefined,
-          location: collection.location || '',
-          description: collection.description || '',
-          cover_image: collection.cover_image || '',
-          cover_image_id: collection.cover_image_id || '',
-          drive_link: collection.drive_link || '',
-          is_published: collection.is_published,
+          title: videoCollection.title,
+          slug: videoCollection.slug,
+          date: videoCollection.date ? new Date(videoCollection.date) : undefined,
+          location: videoCollection.location || '',
+          description: videoCollection.description || '',
+          cover_image: videoCollection.cover_image || '',
+          cover_image_id: videoCollection.cover_image_id || '',
+          is_published: videoCollection.is_published,
         }
       : {
           title: '',
           slug: '',
-          type: defaultType,
           date: undefined,
           location: '',
           description: '',
           cover_image: '',
           cover_image_id: '',
-          drive_link: '',
           is_published: false,
         },
   });
 
-  // Watch cover_image_id at component level
   const coverImageId = useWatch({
     control: form.control,
     name: 'cover_image_id',
   });
 
   const mutation = useMutation({
-    mutationFn: async (values: CollectionFormValues) => {
+    mutationFn: async (values: VideoCollectionFormValues) => {
       const payload = {
         ...values,
         date: values.date ? values.date.toISOString() : null,
@@ -122,11 +104,10 @@ export function CollectionForm({
         description: values.description || null,
         cover_image: values.cover_image || null,
         cover_image_id: values.cover_image_id || null,
-        drive_link: values.drive_link || null,
       };
 
       if (mode === 'add') {
-        const response = await fetch('/api/v1/collections', {
+        const response = await fetch('/api/v1/video-collections', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -136,23 +117,23 @@ export function CollectionForm({
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.error || 'Failed to create collection');
+          throw new Error(error.error || 'Failed to create video collection');
         }
 
         const result = await response.json();
         return { slug: result.data?.slug || values.slug };
       } else {
-        const response = await fetch('/api/v1/collections', {
+        const response = await fetch('/api/v1/video-collections', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ id: collection!.id, ...payload }),
+          body: JSON.stringify({ id: videoCollection!.id, ...payload }),
         });
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.error || 'Failed to update collection');
+          throw new Error(error.error || 'Failed to update video collection');
         }
 
         const result = await response.json();
@@ -160,22 +141,26 @@ export function CollectionForm({
       }
     },
     onSuccess: async (data: { slug: string }) => {
-      await queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
-      await queryClient.refetchQueries({ queryKey: collectionsQueryKeys.all });
-      toast.success(mode === 'add' ? 'Collection created' : 'Collection updated', {
-        description: `Collection has been ${mode === 'add' ? 'created' : 'updated'} successfully.`,
-      });
+      await queryClient.invalidateQueries({ queryKey: videoCollectionsQueryKeys.all });
+      await queryClient.refetchQueries({ queryKey: videoCollectionsQueryKeys.all });
+      toast.success(
+        mode === 'add' ? 'Video collection created' : 'Video collection updated',
+        {
+          description: `Video collection has been ${mode === 'add' ? 'created' : 'updated'} successfully.`,
+        }
+      );
       onOpenChange(false);
       form.reset();
       mutation.reset();
 
-      // Call onSuccess callback with the slug (for potential redirect)
       onSuccess?.(data.slug);
     },
     onError: (error: Error) => {
       form.setError('root', { message: error.message });
       toast.error(
-        mode === 'add' ? 'Failed to create collection' : 'Failed to update collection',
+        mode === 'add'
+          ? 'Failed to create video collection'
+          : 'Failed to update video collection',
         {
           description: error.message,
         }
@@ -183,39 +168,33 @@ export function CollectionForm({
     },
   });
 
-  // Reset form when dialog opens or collection changes
   useEffect(() => {
     if (open) {
-      const defaultValues = collection
+      const defaultValues = videoCollection
         ? {
-            title: collection.title,
-            slug: collection.slug,
-            type: collection.type as (typeof COLLECTION_TYPES)[number],
-            date: collection.date ? new Date(collection.date) : undefined,
-            location: collection.location || '',
-            description: collection.description || '',
-            cover_image: collection.cover_image || '',
-            cover_image_id: collection.cover_image_id || '',
-            drive_link: collection.drive_link || '',
-            is_published: collection.is_published,
+            title: videoCollection.title,
+            slug: videoCollection.slug,
+            date: videoCollection.date ? new Date(videoCollection.date) : undefined,
+            location: videoCollection.location || '',
+            description: videoCollection.description || '',
+            cover_image: videoCollection.cover_image || '',
+            cover_image_id: videoCollection.cover_image_id || '',
+            is_published: videoCollection.is_published,
           }
         : {
             title: '',
             slug: '',
-            type: defaultType,
             date: undefined,
             location: '',
             description: '',
             cover_image: '',
             cover_image_id: '',
-            drive_link: '',
             is_published: false,
           };
       form.reset(defaultValues);
     }
-  }, [open, collection, defaultType, form]);
+  }, [open, videoCollection, form]);
 
-  // Auto-generate slug from title
   const handleTitleChange = (value: string) => {
     if (mode === 'add') {
       const slug = value
@@ -228,12 +207,11 @@ export function CollectionForm({
     }
   };
 
-  const onSubmit = (values: CollectionFormValues) => {
+  const onSubmit = (values: VideoCollectionFormValues) => {
     mutation.mutate(values);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    // Prevent closing dialog while cover image is uploading
     if (!newOpen && isCoverImageUploading) {
       toast.error('Please wait for the cover image to finish uploading');
       return;
@@ -246,13 +224,12 @@ export function CollectionForm({
       <DialogContent className='max-h-[70vh] sm:max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>
-            {mode === 'add' ? 'Add Collection' : 'Edit Collection'}
+            {mode === 'add' ? 'Add Video Collection' : 'Edit Video Collection'}
           </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            {/* Title */}
             <FormField
               control={form.control}
               name='title'
@@ -266,7 +243,7 @@ export function CollectionForm({
                         field.onChange(e);
                         handleTitleChange(e.target.value);
                       }}
-                      placeholder='A memorable event title'
+                      placeholder='A memorable collection title'
                     />
                   </FormControl>
                   <FormMessage />
@@ -274,7 +251,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Slug */}
             <FormField
               control={form.control}
               name='slug'
@@ -300,31 +276,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Type */}
-            <FormField
-              control={form.control}
-              name='type'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select type' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='event'>Event</SelectItem>
-                      <SelectItem value='video'>Video</SelectItem>
-                      <SelectItem value='series'>Series</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Date */}
             <FormField
               control={form.control}
               name='date'
@@ -360,7 +311,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Location */}
             <FormField
               control={form.control}
               name='location'
@@ -375,7 +325,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Description */}
             <FormField
               control={form.control}
               name='description'
@@ -385,7 +334,7 @@ export function CollectionForm({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder='A memorable event description...'
+                      placeholder='A memorable collection description...'
                       rows={3}
                       className='max-h-50'
                     />
@@ -395,35 +344,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Google Drive Link */}
-            <FormField
-              control={form.control}
-              name='drive_link'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Google Drive Folder (optional)
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className='size-4 text-muted-foreground' />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Link to a Google Drive folder to display additional images
-                      </TooltipContent>
-                    </Tooltip>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder='https://drive.google.com/drive/folders/...'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Cover Image */}
             <FormField
               control={form.control}
               name='cover_image'
@@ -451,7 +371,6 @@ export function CollectionForm({
               )}
             />
 
-            {/* Published */}
             <FormField
               control={form.control}
               name='is_published'
@@ -473,14 +392,12 @@ export function CollectionForm({
               )}
             />
 
-            {/* Root Error */}
             {form.formState.errors.root && (
               <div className='text-sm text-destructive'>
                 {form.formState.errors.root.message}
               </div>
             )}
 
-            {/* Buttons */}
             <div className='flex gap-2 justify-end'>
               <Button
                 type='button'
@@ -500,11 +417,6 @@ export function CollectionForm({
                   <>
                     <Spinner />
                     {mode === 'add' ? 'Creating...' : 'Updating...'}
-                  </>
-                ) : isCoverImageUploading ? (
-                  <>
-                    <Spinner />
-                    Uploading cover...
                   </>
                 ) : mode === 'add' ? (
                   'Create'

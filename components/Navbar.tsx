@@ -130,9 +130,9 @@ const portfolioLinks = [
     description: 'View galleries from clubs, concerts, and special occasions.',
   },
   {
-    href: '/videos',
+    href: '/video-collections',
     label: 'Videos',
-    description: 'Watch videos filmed and edited by me.',
+    description: 'Watch curated collections of videos.',
   },
 ];
 
@@ -176,7 +176,7 @@ export function Navbar() {
                             href={link.href}
                             data-active={isActive(link.href)}
                             aria-current={isActive(link.href) ? 'page' : undefined}
-                            className='block select-none space-y-1 rounded-md p-3
+                            className='block select-none space-y-1 rounded-md p-3 h-full
                               leading-none no-underline outline-none transition-colors
                               hover:bg-accent hover:text-accent-foreground focus:bg-accent
                               focus:text-accent-foreground'
