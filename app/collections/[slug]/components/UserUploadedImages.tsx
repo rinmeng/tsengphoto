@@ -287,8 +287,8 @@ export function UserUploadedImages({
               key={image.id}
               className={`group relative overflow-hidden rounded bg-muted ${
                 isMobile ? '' : 'cursor-pointer'
-              }
-              fade-in-from-top ${getDelayClass(index + 5)}`}
+              } fade-in-from-top ${getDelayClass(index +
+              5)}`}
               onClick={isMobile ? undefined : () => onImageClick(index)}
             >
               <div className='relative aspect-16/10 overflow-hidden bg-muted'>
