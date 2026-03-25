@@ -9,7 +9,7 @@ import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface CoverImageUploaderProps {
   value?: string; // Current image URL (backward compatible)
@@ -170,7 +170,7 @@ export function CoverImageUploader({
         <div
           className='relative w-full aspect-video rounded-lg overflow-hidden border group'
         >
-          <Image
+          <OptimizedImage
             src={value}
             alt='Cover image'
             fill

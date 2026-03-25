@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { CollectionWithImages } from '@/lib/types/database';
 import {
   Badge,
@@ -13,18 +12,10 @@ import {
   TooltipContent,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
-import {
-  Calendar,
-  Globe,
-  MapPin,
-  Trash2,
-  GlobeLock,
-  Edit,
-  ImageOff,
-  ShieldCheck,
-} from 'lucide-react';
+import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'lucide-react';
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface CollectionCardProps {
   collection: CollectionWithImages;
@@ -43,7 +34,6 @@ export function CollectionCard({
   onDelete,
   onPublish,
 }: CollectionCardProps) {
-  const imageCount = collection.images.length;
   const formattedDate = collection.date
     ? new Date(collection.date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -81,7 +71,7 @@ export function CollectionCard({
         {/* Cover Image */}
         <div className='relative aspect-4/3 overflow-hidden bg-muted'>
           {collection.cover_image ? (
-            <Image
+            <OptimizedImage
               src={collection.cover_image}
               alt={collection.title}
               fill

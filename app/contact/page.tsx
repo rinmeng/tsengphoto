@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { sendContactForm } from '@/services/contact.service';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui';
 import { toast } from 'sonner';
@@ -124,7 +124,7 @@ export default function ContactPage() {
         className='relative h-[50vh] lg:sticky lg:top-0 lg:h-screen w-full lg:w-[65%]
           overflow-hidden shrink-0'
       >
-        <Image
+        <OptimizedImage
           src={PHOTO_URL}
           alt='Crowd celebrating at a welcome center event'
           className='w-full h-full object-cover'

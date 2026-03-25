@@ -1,6 +1,6 @@
 'use client';
 import { Text } from '@/components/Text';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Separator } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
 
@@ -21,7 +21,7 @@ export default function AboutPage() {
             className={`relative w-full aspect-video rounded overflow-hidden
               fade-in-from-top ${getDelayClass(1)}`}
           >
-            <Image
+            <OptimizedImage
               src='/about/about.jpg'
               alt='Young man with glasses sitting on the edge of a blue sports car with gullwing doors open, another person standing beside him holding a camera.'
               fill

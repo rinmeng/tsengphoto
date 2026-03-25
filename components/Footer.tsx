@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Separator } from './ui';
 import { getDelayClass } from '@/utils/animations';
 
@@ -22,7 +22,7 @@ export function Footer() {
             className={`flex items-center gap-2 hover:opacity-70 transition-opacity
               fade-in-from-bottom ${getDelayClass(2)}`}
           >
-            <Image
+            <OptimizedImage
               src='/icons/instagram-svgrepo-com.svg'
               alt='Instagram'
               width={24}

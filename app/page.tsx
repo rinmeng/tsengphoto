@@ -7,7 +7,7 @@ import { SendHorizonal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/animate-ui/components/button';
 
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 const learnMore = [
   '/landing/sections/learn_more_1.jpg',
@@ -75,7 +75,7 @@ export default function Home() {
             border-x-2 justify-center gap-4 p-4'
         >
           <div className='relative w-full md:w-1/2 aspect-4/3'>
-            <Image
+            <OptimizedImage
               src={learnMore[0]}
               fill
               alt='event picture with many people having fun'
@@ -104,7 +104,7 @@ export default function Home() {
             border-x-2 items-center justify-center gap-4 p-4'
         >
           <div className='relative w-full md:w-1/2 aspect-4/3'>
-            <Image
+            <OptimizedImage
               src={learnMore[1]}
               fill
               alt='event picture with many people having fun'

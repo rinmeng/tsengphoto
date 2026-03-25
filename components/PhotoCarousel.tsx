@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -16,6 +15,7 @@ import {
 } from '@/components/ui';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -127,7 +127,7 @@ export function PhotoCarousel({
                       </Text>
                     </div>
                   )}
-                  <Image
+                  <OptimizedImage
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
@@ -161,7 +161,7 @@ export function PhotoCarousel({
                         </Text>
                       </div>
                     )}
-                    <Image
+                    <OptimizedImage
                       src={src}
                       alt={`Image ${index + 1}`}
                       fill

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { cn } from '@/lib/utils';
@@ -19,7 +19,7 @@ export function Logo({ className, iconSize = 40, showText = true, onClick }: Log
           className={cn('flex items-center gap-2', className)}
           onClick={onClick}
         >
-          <Image
+          <OptimizedImage
             src='/favicon.ico'
             alt='Logo'
             width={iconSize}
