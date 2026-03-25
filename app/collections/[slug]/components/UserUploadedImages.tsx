@@ -44,6 +44,7 @@ export function UserUploadedImages({
 }: UserUploadedImagesProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadComplete, setDownloadComplete] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
 
@@ -97,6 +98,7 @@ export function UserUploadedImages({
     if (selectedIds.size === 0) return;
 
     setIsDownloading(true);
+    setDownloadComplete(false);
     const selectedImages = images.filter((img) => selectedIds.has(img.id));
     setDownloadProgress({ current: 0, total: selectedImages.length });
 
@@ -159,8 +161,17 @@ export function UserUploadedImages({
       toast.error('Failed to download images');
     } finally {
       setIsDownloading(false);
-      setSelectedIds(new Set());
+      if (selectedImages.length > 1) {
+        setDownloadComplete(true);
+      } else {
+        setSelectedIds(new Set());
+      }
     }
+  };
+
+  const handleCloseDialog = () => {
+    setDownloadComplete(false);
+    setSelectedIds(new Set());
   };
 
   const progressPercentage =
@@ -171,12 +182,19 @@ export function UserUploadedImages({
   return (
     <>
       {/* Download Progress Dialog */}
-      <Dialog open={isDownloading && downloadProgress.total > 1} onOpenChange={() => {}}>
+      <Dialog
+        open={(isDownloading || downloadComplete) && downloadProgress.total > 1}
+        onOpenChange={() => {}}
+      >
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>
-            <DialogTitle>Downloading Images</DialogTitle>
+            <DialogTitle>
+              {downloadComplete ? 'Download Complete' : 'Downloading Images'}
+            </DialogTitle>
             <DialogDescription>
-              Please do not navigate away or close this tab while downloading.
+              {downloadComplete
+                ? 'Your images have been downloaded successfully.'
+                : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close this page."}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
@@ -189,6 +207,11 @@ export function UserUploadedImages({
               </div>
               <Progress value={progressPercentage} className='w-full' />
             </div>
+            {downloadComplete && (
+              <div className='flex justify-end pt-2'>
+                <Button onClick={handleCloseDialog}>Close</Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
