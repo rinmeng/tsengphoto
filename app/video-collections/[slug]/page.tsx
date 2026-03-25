@@ -17,7 +17,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/animate-ui/components/alert-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
 import { useAuth } from '@/hooks/use-auth';
@@ -193,7 +193,7 @@ export default function VideoCollectionPage() {
           flex-col min-h-screen'
       >
         {/* Back Button */}
-        <div className={`sticky top-20 mb-6 z-50 fade-in-from-top ${getDelayClass(0)}`}>
+        <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
           <div className='flex items-center gap-4'>
             <Link href='/video-collections'>
               <Button variant='default'>

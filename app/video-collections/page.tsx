@@ -19,7 +19,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/animate-ui/components/alert-dialog';
 import { toast } from 'sonner';
 import type { VideoCollectionWithVideos } from '@/lib/types';
 import VideoCollectionsLoading from './loading';

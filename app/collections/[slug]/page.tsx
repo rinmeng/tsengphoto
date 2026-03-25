@@ -20,7 +20,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/animate-ui/components/alert-dialog';
 import { Loader2 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
@@ -240,7 +240,7 @@ export default function CollectionPage() {
         flex-col min-h-screen'
     >
       {/* Back Button & Upload */}
-      <div className={`sticky top-20 mb-6 z-50 fade-in-from-top ${getDelayClass(0)}`}>
+      <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
         <div className='flex items-center gap-4 flex-wrap'>
           <Link href='/collections'>
             <Button variant='default'>
