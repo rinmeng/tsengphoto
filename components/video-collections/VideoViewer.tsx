@@ -3,8 +3,6 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Video as VideoType } from '@/lib/types';
 import { generateYouTubeEmbedUrl } from '@/services/videos.service';
-import { Button, DialogClose } from '../animate-ui/components';
-import { X } from 'lucide-react';
 
 interface VideoViewerProps {
   video: VideoType | null;
