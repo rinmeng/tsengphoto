@@ -202,10 +202,10 @@ export function UserUploadedImages({
       >
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className={`fade-in-from-bottom ${getDelayClass(1)}`}>
               {downloadComplete ? 'Download Complete' : 'Downloading Images'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className={`fade-in-from-bottom ${getDelayClass(2)}`}>
               {downloadComplete
                 ? 'Your images have been downloaded successfully.'
                 : isZipping
@@ -218,7 +218,10 @@ export function UserUploadedImages({
               <div className='space-y-2'>
                 {isZipping ? (
                   <>
-                    <div className='flex justify-between text-sm'>
+                    <div
+                      className={`flex justify-between text-sm fade-in-from-bottom
+                        ${getDelayClass(3)}`}
+                    >
                       <Text variant='bd-sm'>Zipping files</Text>
                       <Text variant='bd-sm'>
                         {Math.round(zippingProgress) >= 100
@@ -226,23 +229,34 @@ export function UserUploadedImages({
                           : `${Math.round(zippingProgress)}%`}
                       </Text>
                     </div>
-                    <Progress value={zippingProgress} className='w-full' />
+                    <Progress
+                      value={zippingProgress}
+                      className={`w-full fade-in-from-bottom ${getDelayClass(4)}`}
+                    />
                   </>
                 ) : (
                   <>
-                    <div className='flex justify-between text-sm'>
+                    <div
+                      className={`flex justify-between text-sm fade-in-from-bottom
+                        ${getDelayClass(3)}`}
+                    >
                       <Text variant='bd-sm'>
                         {downloadProgress.current} of {downloadProgress.total} images
                       </Text>
                       <Text variant='bd-sm'>{progressPercentage}%</Text>
                     </div>
-                    <Progress value={progressPercentage} className='w-full' />
+                    <Progress
+                      value={progressPercentage}
+                      className={`w-full fade-in-from-bottom ${getDelayClass(4)}`}
+                    />
                   </>
                 )}
               </div>
             )}
             {downloadComplete && (
-              <div className='flex justify-end pt-2'>
+              <div
+                className={`flex justify-end pt-2 fade-in-from-bottom ${getDelayClass(3)}`}
+              >
                 <Button onClick={handleCloseDialog}>Close</Button>
               </div>
             )}
