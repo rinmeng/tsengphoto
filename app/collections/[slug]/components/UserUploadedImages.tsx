@@ -203,11 +203,7 @@ export function UserUploadedImages({
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>
-              {downloadComplete
-                ? 'Download Complete'
-                : isZipping
-                  ? 'Creating Zip File'
-                  : 'Downloading Images'}
+              {downloadComplete ? 'Download Complete' : 'Downloading Images'}
             </DialogTitle>
             <DialogDescription>
               {downloadComplete
@@ -218,31 +214,33 @@ export function UserUploadedImages({
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
-            <div className='space-y-2'>
-              {isZipping ? (
-                <>
-                  <div className='flex justify-between text-sm'>
-                    <Text variant='bd-sm'>Zipping files</Text>
-                    <Text variant='bd-sm'>
-                      {Math.round(zippingProgress) >= 100
-                        ? 'Completed'
-                        : `${Math.round(zippingProgress)}%`}
-                    </Text>
-                  </div>
-                  <Progress value={zippingProgress} className='w-full' />
-                </>
-              ) : (
-                <>
-                  <div className='flex justify-between text-sm'>
-                    <Text variant='bd-sm'>
-                      {downloadProgress.current} of {downloadProgress.total} images
-                    </Text>
-                    <Text variant='bd-sm'>{progressPercentage}%</Text>
-                  </div>
-                  <Progress value={progressPercentage} className='w-full' />
-                </>
-              )}
-            </div>
+            {!downloadComplete && (
+              <div className='space-y-2'>
+                {isZipping ? (
+                  <>
+                    <div className='flex justify-between text-sm'>
+                      <Text variant='bd-sm'>Zipping files</Text>
+                      <Text variant='bd-sm'>
+                        {Math.round(zippingProgress) >= 100
+                          ? 'Completed'
+                          : `${Math.round(zippingProgress)}%`}
+                      </Text>
+                    </div>
+                    <Progress value={zippingProgress} className='w-full' />
+                  </>
+                ) : (
+                  <>
+                    <div className='flex justify-between text-sm'>
+                      <Text variant='bd-sm'>
+                        {downloadProgress.current} of {downloadProgress.total} images
+                      </Text>
+                      <Text variant='bd-sm'>{progressPercentage}%</Text>
+                    </div>
+                    <Progress value={progressPercentage} className='w-full' />
+                  </>
+                )}
+              </div>
+            )}
             {downloadComplete && (
               <div className='flex justify-end pt-2'>
                 <Button onClick={handleCloseDialog}>Close</Button>
