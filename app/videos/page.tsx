@@ -185,7 +185,6 @@ export default function VideosPage() {
           onPublish={handlePublish}
         />
 
-        {/* Add Dialog */}
         <CollectionForm
           mode='add'
           open={addDialogOpen}
@@ -193,7 +192,6 @@ export default function VideosPage() {
           defaultType='video'
         />
 
-        {/* Edit Dialog */}
         {selectedCollection && (
           <CollectionForm
             mode='edit'
@@ -203,7 +201,6 @@ export default function VideosPage() {
           />
         )}
 
-        {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>

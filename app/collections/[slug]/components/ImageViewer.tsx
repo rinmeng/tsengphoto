@@ -1,6 +1,10 @@
 'use client';
 import { Button } from '@/components/animate-ui/components/button';
-import { Dialog, DialogClose, DialogContent } from '@/components/ui';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+} from '@/components/animate-ui/components/dialog';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { X } from 'lucide-react';
 

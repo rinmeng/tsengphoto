@@ -184,7 +184,6 @@ export default function SeriesPage() {
           onPublish={handlePublish}
         />
 
-        {/* Add Dialog */}
         <CollectionForm
           mode='add'
           open={addDialogOpen}
@@ -192,7 +191,6 @@ export default function SeriesPage() {
           defaultType='series'
         />
 
-        {/* Edit Dialog */}
         {selectedCollection && (
           <CollectionForm
             mode='edit'
@@ -202,7 +200,6 @@ export default function SeriesPage() {
           />
         )}
 
-        {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>

@@ -351,7 +351,6 @@ export default function CollectionPage() {
         onOpenChange={setIsViewerOpen}
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={!!imageToDelete}
         onOpenChange={(open) => !open && setImageToDelete(null)}
@@ -386,7 +385,6 @@ export default function CollectionPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Upload Dialog */}
       {user && (
         <CollectionUploadDialog
           open={uploadDialogOpen}

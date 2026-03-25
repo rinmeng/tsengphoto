@@ -199,7 +199,6 @@ export function DriveImages({
 
   return (
     <>
-      {/* Download Progress Dialog */}
       <Dialog open={dialogOpen && downloadProgress.total > 1} onOpenChange={() => {}}>
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>

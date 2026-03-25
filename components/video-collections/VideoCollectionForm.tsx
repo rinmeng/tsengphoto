@@ -8,7 +8,12 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/animate-ui/components/button';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/animate-ui/components/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {

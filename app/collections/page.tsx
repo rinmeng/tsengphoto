@@ -188,10 +188,8 @@ export default function CollectionsPage() {
           onPublish={handlePublish}
         />
 
-        {/* Add Dialog */}
         <CollectionForm mode='add' open={addDialogOpen} onOpenChange={setAddDialogOpen} />
 
-        {/* Edit Dialog */}
         {selectedCollection && (
           <CollectionForm
             mode='edit'

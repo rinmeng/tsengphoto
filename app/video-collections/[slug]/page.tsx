@@ -326,7 +326,6 @@ export default function VideoCollectionPage() {
         )}
       </section>
 
-      {/* Video Upload Dialog */}
       {user && (
         <VideoUploadDialog
           videoCollectionId={videoCollection.id}
@@ -336,14 +335,12 @@ export default function VideoCollectionPage() {
         />
       )}
 
-      {/* Video Viewer */}
       <VideoViewer
         video={selectedVideo}
         open={isViewerOpen}
         onOpenChange={setIsViewerOpen}
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!videoToDelete} onOpenChange={() => setVideoToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -190,14 +190,12 @@ export default function VideoCollectionsPage() {
           onPublish={handlePublish}
         />
 
-        {/* Add Dialog */}
         <VideoCollectionForm
           mode='add'
           open={addDialogOpen}
           onOpenChange={setAddDialogOpen}
         />
 
-        {/* Edit Dialog */}
         {selectedVideoCollection && (
           <VideoCollectionForm
             mode='edit'
