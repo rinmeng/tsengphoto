@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
 
 interface PhotoCarouselProps {
@@ -109,7 +110,7 @@ export function PhotoCarousel({
                       containerClassName
                     )}
                   >
-                    <OptimizedImageWithLoading
+                    <OptimizedImage
                       src={src}
                       alt={`Image ${index + 1}`}
                       fill

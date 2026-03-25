@@ -40,7 +40,7 @@ export function OptimizedImageWithLoading(props: ImageProps) {
             ${getDelayClass(2)}`}
           />
           <Text
-            variant='bd-md'
+            variant='bd-xs'
             className={`text-center text-white fade-in-from-bottom ${getDelayClass(3)}`}
           >
             We&apos;re fetching the highest quality possible...
