@@ -131,20 +131,20 @@ export function CollectionCard({
 
         <CardContent className='space-y-2'>
           {/* Date */}
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <Calendar className='size-4' />
-            <Text variant='bd-sm'>
-              {formattedDate ? formattedDate : 'No date available'}
-            </Text>
-          </div>
+          {formattedDate && (
+            <div className='flex items-center gap-2 text-muted-foreground'>
+              <Calendar className='size-4' />
+              <Text variant='bd-sm'>{formattedDate}</Text>
+            </div>
+          )}
 
           {/* Location */}
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <MapPin className='size-4' />
-            <Text variant='bd-sm'>
-              {collection.location ? collection.location : 'No location available'}
-            </Text>
-          </div>
+          {collection.location && (
+            <div className='flex items-center gap-2 text-muted-foreground'>
+              <MapPin className='size-4' />
+              <Text variant='bd-sm'>{collection.location}</Text>
+            </div>
+          )}
 
           {/* Type badge */}
           <Badge className='capitalize'>

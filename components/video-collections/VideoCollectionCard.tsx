@@ -143,22 +143,20 @@ export function VideoCollectionCard({
 
         <CardContent className='space-y-2'>
           {/* Date */}
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <Calendar className='size-4' />
-            <Text variant='bd-sm'>
-              {formattedDate ? formattedDate : 'No date available'}
-            </Text>
-          </div>
+          {formattedDate && (
+            <div className='flex items-center gap-2 text-muted-foreground'>
+              <Calendar className='size-4' />
+              <Text variant='bd-sm'>{formattedDate}</Text>
+            </div>
+          )}
 
           {/* Location */}
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <MapPin className='size-4' />
-            <Text variant='bd-sm'>
-              {videoCollection.location
-                ? videoCollection.location
-                : 'No location available'}
-            </Text>
-          </div>
+          {videoCollection.location && (
+            <div className='flex items-center gap-2 text-muted-foreground'>
+              <MapPin className='size-4' />
+              <Text variant='bd-sm'>{videoCollection.location}</Text>
+            </div>
+          )}
 
           {/* Type badge */}
           <Badge className='capitalize'>
