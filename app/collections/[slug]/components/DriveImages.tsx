@@ -160,7 +160,6 @@ export function DriveImages({
     } finally {
       setIsDownloading(false);
       setSelectedIds(new Set());
-      setDownloadProgress({ current: 0, total: 0 });
     }
   };
 
