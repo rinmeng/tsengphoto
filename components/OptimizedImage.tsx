@@ -52,7 +52,7 @@ export function OptimizedImage(props: ImageProps) {
   };
 
   return (
-    <>
+    <div className='relative'>
       {isLoading && (
         <div
           className='absolute inset-0 z-10 bg-black/50 backdrop-blur-md flex flex-col
@@ -85,6 +85,6 @@ export function OptimizedImage(props: ImageProps) {
         onError={handleError}
         onLoad={handleLoad}
       />
-    </>
+    </div>
   );
 }
