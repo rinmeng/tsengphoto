@@ -17,6 +17,7 @@ import { getDelayClass } from '@/utils/animations';
 import type { CollectionImage } from '@/lib/types';
 import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import JSZip from 'jszip';
 
 interface DriveImagesProps {
@@ -41,6 +42,7 @@ export function DriveImages({
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleImageError = (imageId: string) => {
     setFailedImages((prev) => new Set(prev).add(imageId));
@@ -267,9 +269,11 @@ export function DriveImages({
             return (
               <div
                 key={image.id}
-                className={`group relative overflow-hidden rounded bg-muted cursor-pointer
+                className={`group relative overflow-hidden rounded bg-muted ${
+                  isMobile ? '' : 'cursor-pointer'
+                }
                 fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
-                onClick={() => onImageClick(globalIndex)}
+                onClick={isMobile ? undefined : () => onImageClick(globalIndex)}
               >
                 <div className='relative aspect-16/10 overflow-hidden bg-muted'>
                   {hasFailed ? (

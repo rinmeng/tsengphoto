@@ -17,6 +17,7 @@ import { getDelayClass } from '@/utils/animations';
 import { Trash2, Download } from 'lucide-react';
 import type { CollectionImage } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import JSZip from 'jszip';
 
 interface UserUploadedImagesProps {
@@ -47,6 +48,7 @@ export function UserUploadedImages({
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -283,9 +285,11 @@ export function UserUploadedImages({
           {images.map((image, index) => (
             <div
               key={image.id}
-              className={`group relative overflow-hidden rounded bg-muted cursor-pointer
+              className={`group relative overflow-hidden rounded bg-muted ${
+                isMobile ? '' : 'cursor-pointer'
+              }
               fade-in-from-top ${getDelayClass(index + 5)}`}
-              onClick={() => onImageClick(index)}
+              onClick={isMobile ? undefined : () => onImageClick(index)}
             >
               <div className='relative aspect-16/10 overflow-hidden bg-muted'>
                 {image.image_url ? (

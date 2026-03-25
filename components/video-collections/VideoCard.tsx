@@ -43,7 +43,8 @@ export function VideoCard({
   return (
     <Card
       className={cn(
-        'group cursor-pointer overflow-hidden transition-all hover:shadow-lg p-0',
+        'group overflow-hidden transition-all hover:shadow-lg p-0',
+        onClick && 'cursor-pointer',
         className
       )}
       onClick={handleClick}
