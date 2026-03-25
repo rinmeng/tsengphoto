@@ -10,6 +10,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  CardFooter,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
 import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'lucide-react';
@@ -64,7 +65,7 @@ export function CollectionCard({
     <Link href={`/collections/${collection.slug}`} className='group block h-full'>
       <Card
         className={cn(
-          'h-full flex flex-col overflow-hidden transition-all hover:shadow-lg pt-0',
+          'h-full flex flex-col overflow-hidden transition-all hover:shadow-lg pt-0 gap-4',
           className
         )}
       >
@@ -120,7 +121,7 @@ export function CollectionCard({
         </div>
 
         {/* Card Content */}
-        <CardHeader>
+        <CardHeader className='flex flex-col gap-0'>
           <CardTitle>
             <Text variant='bd-sm'>{collection.title}</Text>
           </CardTitle>
@@ -129,7 +130,7 @@ export function CollectionCard({
           </CardDescription>
         </CardHeader>
 
-        <CardContent className='space-y-2'>
+        <CardFooter className='flex flex-col gap-2 justify-end items-start flex-1'>
           {/* Date */}
           {formattedDate && (
             <div className='flex items-center gap-2 text-muted-foreground'>
@@ -150,7 +151,7 @@ export function CollectionCard({
           <Badge className='capitalize'>
             <Text variant='bd-xs'>{collection.type}</Text>
           </Badge>
-        </CardContent>
+        </CardFooter>
       </Card>
     </Link>
   );
