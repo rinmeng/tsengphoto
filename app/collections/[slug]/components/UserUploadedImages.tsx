@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { OptimizedImage } from '@/components/OptimizedImage';
+import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
 import { Button } from '@/components/animate-ui/components/button';
 import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
@@ -114,7 +114,7 @@ export function UserUploadedImages({
           >
             <div className='relative aspect-16/10 overflow-hidden bg-muted'>
               {image.image_url ? (
-                <OptimizedImage
+                <OptimizedImageWithLoading
                   src={image.image_url}
                   alt={`${collectionTitle} - Photo ${index + 1}`}
                   fill

@@ -4,7 +4,7 @@ import { ImageOff } from 'lucide-react';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
 import type { CollectionImage } from '@/lib/types';
-import { OptimizedImage } from '@/components/OptimizedImage';
+import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
 
 interface DriveImagesProps {
   images: CollectionImage[];
@@ -51,7 +51,7 @@ export function DriveImages({
                     <Text variant='muted-sm'>Failed to load</Text>
                   </div>
                 ) : image.image_url ? (
-                  <OptimizedImage
+                  <OptimizedImageWithLoading
                     src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
                     alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
                     fill
