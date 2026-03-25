@@ -144,7 +144,7 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <nav className='fixed z-50 w-full border-b bg-background'>
+    <nav className='fixed z-60 w-full border-b bg-background'>
       <div className='flex pl-10 pr-10 lg:pr-38 items-center justify-between py-4'>
         {/* Logo */}
         <Logo className='text-xl' onClick={() => setOpen(false)} />
