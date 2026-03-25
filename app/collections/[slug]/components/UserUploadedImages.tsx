@@ -45,8 +45,10 @@ export function UserUploadedImages({
 }: UserUploadedImagesProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isZipping, setIsZipping] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
+  const [zippingProgress, setZippingProgress] = useState(0);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -137,8 +139,14 @@ export function UserUploadedImages({
         }
 
         if (successCount > 0) {
-          // Generate zip and download
-          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          // Show zipping phase
+          setIsZipping(true);
+          setZippingProgress(0);
+
+          // Generate zip and download with progress tracking
+          const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
+            setZippingProgress(metadata.percent);
+          });
           const zipUrl = URL.createObjectURL(zipBlob);
           const a = document.createElement('a');
           a.href = zipUrl;
@@ -163,6 +171,8 @@ export function UserUploadedImages({
       toast.error('Failed to download images');
     } finally {
       setIsDownloading(false);
+      setIsZipping(false);
+      setZippingProgress(0);
       if (selectedImages.length > 1) {
         setDownloadComplete(true);
       } else {
@@ -185,29 +195,49 @@ export function UserUploadedImages({
     <>
       {/* Download Progress Dialog */}
       <Dialog
-        open={(isDownloading || downloadComplete) && downloadProgress.total > 1}
+        open={
+          (isDownloading || isZipping || downloadComplete) && downloadProgress.total > 1
+        }
         onOpenChange={() => {}}
       >
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>
-              {downloadComplete ? 'Download Complete' : 'Downloading Images'}
+              {downloadComplete
+                ? 'Download Complete'
+                : isZipping
+                  ? 'Creating Zip File'
+                  : 'Downloading Images'}
             </DialogTitle>
             <DialogDescription>
               {downloadComplete
                 ? 'Your images have been downloaded successfully.'
-                : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close this page."}
+                : isZipping
+                  ? 'Please wait while we package your images into a zip file.'
+                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close this page."}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
             <div className='space-y-2'>
-              <div className='flex justify-between text-sm'>
-                <Text variant='bd-sm'>
-                  {downloadProgress.current} of {downloadProgress.total} images
-                </Text>
-                <Text variant='bd-sm'>{progressPercentage}%</Text>
-              </div>
-              <Progress value={progressPercentage} className='w-full' />
+              {isZipping ? (
+                <>
+                  <div className='flex justify-between text-sm'>
+                    <Text variant='bd-sm'>Zipping files</Text>
+                    <Text variant='bd-sm'>{Math.round(zippingProgress)}%</Text>
+                  </div>
+                  <Progress value={zippingProgress} className='w-full' />
+                </>
+              ) : (
+                <>
+                  <div className='flex justify-between text-sm'>
+                    <Text variant='bd-sm'>
+                      {downloadProgress.current} of {downloadProgress.total} images
+                    </Text>
+                    <Text variant='bd-sm'>{progressPercentage}%</Text>
+                  </div>
+                  <Progress value={progressPercentage} className='w-full' />
+                </>
+              )}
             </div>
             {downloadComplete && (
               <div className='flex justify-end pt-2'>
