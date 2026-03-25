@@ -53,23 +53,28 @@ export function OptimizedImage(props: ImageProps) {
 
   return (
     <>
-      {showLoadingUI && (
+      {isLoading && (
         <div
-          className={`absolute inset-0 flex flex-col items-center justify-center z-10
-          bg-black/50 backdrop-blur-md t200e`}
+          className='absolute inset-0 z-10 bg-black/50 backdrop-blur-md flex flex-col
+            items-center justify-center'
         >
-          <div className={`fade-in-from-bottom ${getDelayClass(1)}`}>
-            <Loader2
-              className={`size-8 animate-spin text-primary mb-3 fade-in-from-bottom
+          {showLoadingUI && (
+            <div
+              className={`flex flex-col justify-center items-center fade-in-from-bottom
               ${getDelayClass(1)}`}
-            />
-            <Text
-              variant='bd-xs'
-              className={`text-white fade-in-from-bottom ${getDelayClass(3)}`}
             >
-              We&apos;re fetching the highest quality possible...
-            </Text>
-          </div>
+              <Loader2
+                className={`size-8 animate-spin text-primary mb-3 fade-in-from-bottom
+                ${getDelayClass(1)}`}
+              />
+              <Text
+                variant='bd-md'
+                className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
+              >
+                We&apos;re fetching the highest quality possible...
+              </Text>
+            </div>
+          )}
         </div>
       )}
       <Image
