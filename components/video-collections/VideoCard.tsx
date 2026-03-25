@@ -7,6 +7,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import { Button } from '@/components/animate-ui/components/button';
 import { Trash2, Play } from 'lucide-react';
 import { cn } from '@/lib';
+import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 
 interface VideoCardProps {
   video: VideoType;
@@ -14,6 +15,9 @@ interface VideoCardProps {
   isAuthenticated?: boolean;
   onDelete?: (videoId: string) => void;
   onClick?: (video: VideoType) => void;
+  isSelected?: boolean;
+  onSelect?: (checked: boolean) => void;
+  isBulkDeleting?: boolean;
 }
 
 export function VideoCard({
@@ -22,6 +26,9 @@ export function VideoCard({
   isAuthenticated = false,
   onDelete,
   onClick,
+  isSelected = false,
+  onSelect,
+  isBulkDeleting = false,
 }: VideoCardProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,6 +71,21 @@ export function VideoCard({
         ) : (
           <div className='flex h-full items-center justify-center'>
             <Play className='w-12 h-12 text-muted-foreground' />
+          </div>
+        )}
+
+        {/* Checkbox for bulk selection */}
+        {isAuthenticated && onSelect && (
+          <div className='absolute top-2 left-2 z-10'>
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelect}
+              disabled={isBulkDeleting}
+              variant='overlay'
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CheckboxIndicator />
+            </Checkbox>
           </div>
         )}
 
