@@ -5,6 +5,14 @@ import { Text } from '@/components/Text';
 import { Button } from '@/components/animate-ui/components/button';
 import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/animate-ui/components/dialog';
+import { Progress } from '@/components/animate-ui/components/radix/progress';
 import { getDelayClass } from '@/utils/animations';
 import type { CollectionImage } from '@/lib/types';
 import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
@@ -156,105 +164,137 @@ export function DriveImages({
     }
   };
 
+  const progressPercentage =
+    downloadProgress.total > 0
+      ? Math.round((downloadProgress.current / downloadProgress.total) * 100)
+      : 0;
+
   return (
-    <div className='space-y-6'>
-      <Text variant='hd-lg' className={`fade-in-from-top ${getDelayClass(1)}`}>
-        {startIndex > 0 ? 'More Images from' : 'Images from'} Google Drive
-      </Text>
+    <>
+      {/* Download Progress Dialog */}
+      <Dialog open={isDownloading && downloadProgress.total > 1} onOpenChange={() => {}}>
+        <DialogContent showCloseButton={false} className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Downloading Images</DialogTitle>
+            <DialogDescription>
+              Please do not navigate away or close this tab while downloading.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <div className='flex justify-between text-sm'>
+                <Text variant='bd-sm'>
+                  {downloadProgress.current} of {downloadProgress.total} images
+                </Text>
+                <Text variant='bd-sm'>{progressPercentage}%</Text>
+              </div>
+              <Progress value={progressPercentage} className='w-full' />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      {/* Bulk Actions Bar - Always visible */}
-      {images.length > 0 && (
-        <div
-          className={`flex items-center justify-between w-full gap-2 fade-in-from-top
-          ${getDelayClass(4)}`}
-        >
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <Checkbox
-              checked={selectedIds.size === images.length && images.length > 0}
-              onCheckedChange={handleSelectAll}
-              disabled={isDownloading}
-            >
-              <CheckboxIndicator />
-            </Checkbox>
-            <Text variant='bd-sm'>Select All</Text>
-          </label>
-          {selectedIds.size > 0 && (
-            <Button
-              variant='default'
-              size='sm'
-              onClick={handleBulkDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <Spinner /> Downloading {downloadProgress.current} of{' '}
-                  {downloadProgress.total}...
-                </>
-              ) : (
-                <>
-                  <Download /> Download Selected ({selectedIds.size})
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      )}
+      <div className='space-y-6'>
+        <Text variant='hd-lg' className={`fade-in-from-top ${getDelayClass(1)}`}>
+          {startIndex > 0 ? 'More Images from' : 'Images from'} Google Drive
+        </Text>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {images.map((image, index) => {
-          const globalIndex = startIndex + index;
-          const hasFailed = failedImages.has(image.id);
-
-          return (
-            <div
-              key={image.id}
-              className={`group relative overflow-hidden rounded bg-muted cursor-pointer
-              fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
-              onClick={() => onImageClick(globalIndex)}
-            >
-              <div className='relative aspect-16/10 overflow-hidden bg-muted'>
-                {hasFailed ? (
-                  <div className='flex h-full flex-col items-center justify-center gap-2'>
-                    <ImageOff className='w-8 h-8 text-muted-foreground' />
-                    <Text variant='muted-sm'>Failed to load</Text>
-                  </div>
-                ) : image.image_url ? (
-                  <OptimizedImageWithLoading
-                    src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
-                    alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
-                    fill
-                    className='object-cover hover:scale-105 transition-transform
-                      duration-300'
-                    sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
-                    loading='lazy'
-                    unoptimized
-                    onError={() => handleImageError(image.id)}
-                  />
+        {/* Bulk Actions Bar - Always visible */}
+        {images.length > 0 && (
+          <div
+            className={`flex items-center justify-between w-full gap-2 fade-in-from-top
+            ${getDelayClass(4)}`}
+          >
+            <label className='flex items-center gap-2 cursor-pointer'>
+              <Checkbox
+                checked={selectedIds.size === images.length && images.length > 0}
+                onCheckedChange={handleSelectAll}
+                disabled={isDownloading}
+              >
+                <CheckboxIndicator />
+              </Checkbox>
+              <Text variant='bd-sm'>Select All</Text>
+            </label>
+            {selectedIds.size > 0 && (
+              <Button
+                variant='default'
+                size='sm'
+                onClick={handleBulkDownload}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <>
+                    <Spinner /> Downloading {downloadProgress.current} of{' '}
+                    {downloadProgress.total}...
+                  </>
                 ) : (
-                  <div className='flex h-full items-center justify-center'>
-                    <Text variant='muted'>No image</Text>
-                  </div>
+                  <>
+                    <Download /> Download Selected ({selectedIds.size})
+                  </>
                 )}
+              </Button>
+            )}
+          </div>
+        )}
 
-                {/* Checkbox - Always visible */}
-                <div className='absolute top-2 left-2 z-10'>
-                  <Checkbox
-                    checked={selectedIds.has(image.id)}
-                    onCheckedChange={(checked) =>
-                      handleSelectOne(image.id, checked as boolean)
-                    }
-                    disabled={isDownloading}
-                    variant='overlay'
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <CheckboxIndicator />
-                  </Checkbox>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {images.map((image, index) => {
+            const globalIndex = startIndex + index;
+            const hasFailed = failedImages.has(image.id);
+
+            return (
+              <div
+                key={image.id}
+                className={`group relative overflow-hidden rounded bg-muted cursor-pointer
+                fade-in-from-top ${getDelayClass(globalIndex + 5)}`}
+                onClick={() => onImageClick(globalIndex)}
+              >
+                <div className='relative aspect-16/10 overflow-hidden bg-muted'>
+                  {hasFailed ? (
+                    <div
+                      className='flex h-full flex-col items-center justify-center gap-2'
+                    >
+                      <ImageOff className='w-8 h-8 text-muted-foreground' />
+                      <Text variant='muted-sm'>Failed to load</Text>
+                    </div>
+                  ) : image.image_url ? (
+                    <OptimizedImageWithLoading
+                      src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
+                      alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
+                      fill
+                      className='object-cover hover:scale-105 transition-transform
+                        duration-300'
+                      sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
+                      loading='lazy'
+                      unoptimized
+                      onError={() => handleImageError(image.id)}
+                    />
+                  ) : (
+                    <div className='flex h-full items-center justify-center'>
+                      <Text variant='muted'>No image</Text>
+                    </div>
+                  )}
+
+                  {/* Checkbox - Always visible */}
+                  <div className='absolute top-2 left-2 z-10'>
+                    <Checkbox
+                      checked={selectedIds.has(image.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectOne(image.id, checked as boolean)
+                      }
+                      disabled={isDownloading}
+                      variant='overlay'
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <CheckboxIndicator />
+                    </Checkbox>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

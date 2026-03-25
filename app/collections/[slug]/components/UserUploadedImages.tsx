@@ -4,6 +4,14 @@ import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoadin
 import { Button } from '@/components/animate-ui/components/button';
 import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/animate-ui/components/dialog';
+import { Progress } from '@/components/animate-ui/components/radix/progress';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
 import { Trash2, Download } from 'lucide-react';
@@ -156,127 +164,157 @@ export function UserUploadedImages({
     }
   };
 
+  const progressPercentage =
+    downloadProgress.total > 0
+      ? Math.round((downloadProgress.current / downloadProgress.total) * 100)
+      : 0;
+
   return (
-    <div className='space-y-6'>
-      {/* Bulk Actions Bar - Always visible */}
-      {images.length > 0 && (
-        <div
-          className={`flex items-center justify-between w-full gap-2 fade-in-from-top
-          ${getDelayClass(4)}`}
-        >
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <Checkbox
-              checked={selectedIds.size === images.length && images.length > 0}
-              onCheckedChange={handleSelectAll}
-              disabled={isBulkDeleting || isDownloading}
-            >
-              <CheckboxIndicator />
-            </Checkbox>
-            <Text variant='bd-sm'>Select All</Text>
-          </label>
-          <div className='flex gap-2'>
-            {/* Delete button - only for authenticated users */}
-            {isAuthenticated && selectedIds.size > 0 && (
-              <Button
-                variant='destructive'
-                size='sm'
-                onClick={handleBulkDelete}
+    <>
+      {/* Download Progress Dialog */}
+      <Dialog open={isDownloading && downloadProgress.total > 1} onOpenChange={() => {}}>
+        <DialogContent showCloseButton={false} className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Downloading Images</DialogTitle>
+            <DialogDescription>
+              Please do not navigate away or close this tab while downloading.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <div className='flex justify-between text-sm'>
+                <Text variant='bd-sm'>
+                  {downloadProgress.current} of {downloadProgress.total} images
+                </Text>
+                <Text variant='bd-sm'>{progressPercentage}%</Text>
+              </div>
+              <Progress value={progressPercentage} className='w-full' />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className='space-y-6'>
+        {/* Bulk Actions Bar - Always visible */}
+        {images.length > 0 && (
+          <div
+            className={`flex items-center justify-between w-full gap-2 fade-in-from-top
+            ${getDelayClass(4)}`}
+          >
+            <label className='flex items-center gap-2 cursor-pointer'>
+              <Checkbox
+                checked={selectedIds.size === images.length && images.length > 0}
+                onCheckedChange={handleSelectAll}
                 disabled={isBulkDeleting || isDownloading}
               >
-                {isBulkDeleting ? (
-                  <>
-                    <Spinner /> Deleting {deletionProgress.current} of{' '}
-                    {deletionProgress.total}...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 /> Delete Selected ({selectedIds.size})
-                  </>
-                )}
-              </Button>
-            )}
-            {/* Download button - for everyone */}
-            {selectedIds.size > 0 && (
-              <Button
-                variant='default'
-                size='sm'
-                onClick={handleBulkDownload}
-                disabled={isDownloading || isBulkDeleting}
-              >
-                {isDownloading ? (
-                  <>
-                    <Spinner /> Downloading {downloadProgress.current} of{' '}
-                    {downloadProgress.total}...
-                  </>
-                ) : (
-                  <>
-                    <Download /> Download Selected ({selectedIds.size})
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Images Grid */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {images.map((image, index) => (
-          <div
-            key={image.id}
-            className={`group relative overflow-hidden rounded bg-muted cursor-pointer
-            fade-in-from-top ${getDelayClass(index + 5)}`}
-            onClick={() => onImageClick(index)}
-          >
-            <div className='relative aspect-16/10 overflow-hidden bg-muted'>
-              {image.image_url ? (
-                <OptimizedImageWithLoading
-                  src={image.image_url}
-                  alt={`${collectionTitle} - Photo ${index + 1}`}
-                  fill
-                  className='object-cover hover:scale-105 transition-transform
-                    duration-300'
-                  loading='eager'
-                  sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
-                />
-              ) : (
-                <div className='flex h-full items-center justify-center'>
-                  <Text variant='muted'>No image</Text>
-                </div>
-              )}
-
-              {/* Checkbox - Always visible */}
-              <div className='absolute top-2 left-2 z-10'>
-                <Checkbox
-                  checked={selectedIds.has(image.id)}
-                  onCheckedChange={(checked) =>
-                    handleSelectOne(image.id, checked as boolean)
-                  }
+                <CheckboxIndicator />
+              </Checkbox>
+              <Text variant='bd-sm'>Select All</Text>
+            </label>
+            <div className='flex gap-2'>
+              {/* Delete button - only for authenticated users */}
+              {isAuthenticated && selectedIds.size > 0 && (
+                <Button
+                  variant='destructive'
+                  size='sm'
+                  onClick={handleBulkDelete}
                   disabled={isBulkDeleting || isDownloading}
-                  variant='overlay'
-                  onClick={(e) => e.stopPropagation()}
                 >
-                  <CheckboxIndicator />
-                </Checkbox>
-              </div>
-
-              {/* Individual Delete button - Only for authenticated users */}
-              {isAuthenticated && (
-                <div className='absolute top-2 right-2 z-10'>
-                  <Button
-                    variant='destructive'
-                    size='icon'
-                    onClick={(e) => handleDeleteClick(e, image.id)}
-                    disabled={isDeletingImage || isBulkDeleting || isDownloading}
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
+                  {isBulkDeleting ? (
+                    <>
+                      <Spinner /> Deleting {deletionProgress.current} of{' '}
+                      {deletionProgress.total}...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 /> Delete Selected ({selectedIds.size})
+                    </>
+                  )}
+                </Button>
+              )}
+              {/* Download button - for everyone */}
+              {selectedIds.size > 0 && (
+                <Button
+                  variant='default'
+                  size='sm'
+                  onClick={handleBulkDownload}
+                  disabled={isDownloading || isBulkDeleting}
+                >
+                  {isDownloading ? (
+                    <>
+                      <Spinner /> Downloading {downloadProgress.current} of{' '}
+                      {downloadProgress.total}...
+                    </>
+                  ) : (
+                    <>
+                      <Download /> Download Selected ({selectedIds.size})
+                    </>
+                  )}
+                </Button>
               )}
             </div>
           </div>
-        ))}
+        )}
+
+        {/* Images Grid */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {images.map((image, index) => (
+            <div
+              key={image.id}
+              className={`group relative overflow-hidden rounded bg-muted cursor-pointer
+              fade-in-from-top ${getDelayClass(index + 5)}`}
+              onClick={() => onImageClick(index)}
+            >
+              <div className='relative aspect-16/10 overflow-hidden bg-muted'>
+                {image.image_url ? (
+                  <OptimizedImageWithLoading
+                    src={image.image_url}
+                    alt={`${collectionTitle} - Photo ${index + 1}`}
+                    fill
+                    className='object-cover hover:scale-105 transition-transform
+                      duration-300'
+                    loading='eager'
+                    sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
+                  />
+                ) : (
+                  <div className='flex h-full items-center justify-center'>
+                    <Text variant='muted'>No image</Text>
+                  </div>
+                )}
+
+                {/* Checkbox - Always visible */}
+                <div className='absolute top-2 left-2 z-10'>
+                  <Checkbox
+                    checked={selectedIds.has(image.id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectOne(image.id, checked as boolean)
+                    }
+                    disabled={isBulkDeleting || isDownloading}
+                    variant='overlay'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <CheckboxIndicator />
+                  </Checkbox>
+                </div>
+
+                {/* Individual Delete button - Only for authenticated users */}
+                {isAuthenticated && (
+                  <div className='absolute top-2 right-2 z-10'>
+                    <Button
+                      variant='destructive'
+                      size='icon'
+                      onClick={(e) => handleDeleteClick(e, image.id)}
+                      disabled={isDeletingImage || isBulkDeleting || isDownloading}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
