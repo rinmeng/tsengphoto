@@ -41,6 +41,7 @@ export function DriveImages({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const [zippingProgress, setZippingProgress] = useState(0);
   const { toast } = useToast();
@@ -91,6 +92,7 @@ export function DriveImages({
 
     setIsDownloading(true);
     setDownloadComplete(false);
+    setDialogOpen(true);
 
     // Create array of selected images with their indices for URL lookup
     const selectedImagesWithIndices = images
@@ -182,8 +184,12 @@ export function DriveImages({
   };
 
   const handleCloseDialog = () => {
-    setDownloadComplete(false);
-    setSelectedIds(new Set());
+    setDialogOpen(false);
+    // Delay state reset to allow dialog close animation to complete
+    setTimeout(() => {
+      setDownloadComplete(false);
+      setSelectedIds(new Set());
+    }, 200);
   };
 
   const progressPercentage =
@@ -194,12 +200,7 @@ export function DriveImages({
   return (
     <>
       {/* Download Progress Dialog */}
-      <Dialog
-        open={
-          (isDownloading || isZipping || downloadComplete) && downloadProgress.total > 1
-        }
-        onOpenChange={() => {}}
-      >
+      <Dialog open={dialogOpen && downloadProgress.total > 1} onOpenChange={() => {}}>
         <DialogContent showCloseButton={false} className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle className={`fade-in-from-bottom ${getDelayClass(1)}`}>
