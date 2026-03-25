@@ -1,8 +1,6 @@
 'use client';
 import Autoplay from 'embla-carousel-autoplay';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -13,8 +11,6 @@ import {
   Card,
   CardContent,
 } from '@/components/ui';
-import { Text } from '@/components/Text';
-import { getDelayClass } from '@/utils/animations';
 import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface PhotoCarouselProps {
@@ -46,21 +42,6 @@ export function PhotoCarousel({
   objectFit = 'cover',
   objectPosition = 'center',
 }: PhotoCarouselProps) {
-  const [loadingImages, setLoadingImages] = useState<Record<number, boolean>>(() => {
-    // Initialize all images as loading
-    return images.reduce(
-      (acc, _, index) => {
-        acc[index] = true;
-        return acc;
-      },
-      {} as Record<number, boolean>
-    );
-  });
-
-  const handleImageLoad = (index: number) => {
-    setLoadingImages((prev) => ({ ...prev, [index]: false }));
-  };
-
   const itemBasisClass =
     itemsToShow === 1
       ? 'basis-full'
@@ -112,30 +93,12 @@ export function PhotoCarousel({
                     containerClassName
                   )}
                 >
-                  {loadingImages[index] && (
-                    <div
-                      className='absolute inset-0 flex flex-col items-center
-                        justify-center z-10 bg-black/50 backdrop-blur-md'
-                    >
-                      <Loader2
-                        className={`size-8 animate-spin text-primary mb-3
-                          fade-in-from-bottom ${getDelayClass(1)}`}
-                      />
-                      <Text
-                        variant='bd-md'
-                        className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
-                      >
-                        We&apos;re fetching the highest quality possible...
-                      </Text>
-                    </div>
-                  )}
                   <OptimizedImage
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
                     style={{ objectPosition }}
-                    onLoad={() => handleImageLoad(index)}
                   />
                 </div>
               ) : (
@@ -154,7 +117,6 @@ export function PhotoCarousel({
                         objectFit === 'cover' ? 'object-cover' : 'object-contain'
                       }
                       style={{ objectPosition }}
-                      onLoad={() => handleImageLoad(index)}
                     />
                   </CardContent>
                 </Card>
