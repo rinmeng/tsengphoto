@@ -2,7 +2,7 @@
 
 import { notFound, useParams } from 'next/navigation';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon, Download } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { Badge } from '@/components/ui';
@@ -42,7 +42,6 @@ export default function CollectionPage() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
-  const [downloadMode, setDownloadMode] = useState(false);
 
   const {
     data: collection,
@@ -242,22 +241,13 @@ export default function CollectionPage() {
     >
       {/* Back Button & Upload */}
       <div className={`sticky top-20 mb-6 z-50 fade-in-from-top ${getDelayClass(0)}`}>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-4 flex-wrap'>
           <Link href='/collections'>
             <Button variant='default'>
               <ArrowLeft />
               Back to Collections
             </Button>
           </Link>
-          {!isEmpty && (
-            <Button
-              variant={downloadMode ? 'default' : 'secondary'}
-              onClick={() => setDownloadMode(!downloadMode)}
-            >
-              <Download />
-              {downloadMode ? 'Exit Download Mode' : 'Download Mode'}
-            </Button>
-          )}
           {user && (
             <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
               <Upload />
@@ -337,7 +327,6 @@ export default function CollectionPage() {
             onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
             isBulkDeleting={bulkDeleteMutation.isPending}
             deletionProgress={deletionProgress}
-            downloadMode={downloadMode}
           />
         )}
 
@@ -349,7 +338,6 @@ export default function CollectionPage() {
               collectionTitle={collection.title}
               onImageClick={handleImageClick}
               startIndex={sortedImages.length}
-              downloadMode={downloadMode}
               driveFullQualityUrls={driveFullQualityUrls}
             />
           </div>

@@ -21,7 +21,6 @@ interface UserUploadedImagesProps {
   onBulkDelete: (images: CollectionImage[]) => void;
   isBulkDeleting?: boolean;
   deletionProgress?: { current: number; total: number };
-  downloadMode?: boolean;
 }
 
 export function UserUploadedImages({
@@ -34,10 +33,8 @@ export function UserUploadedImages({
   onBulkDelete,
   isBulkDeleting = false,
   deletionProgress = { current: 0, total: 0 },
-  downloadMode = false,
 }: UserUploadedImagesProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [selectedDownloadIds, setSelectedDownloadIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
@@ -71,25 +68,6 @@ export function UserUploadedImages({
     onDeleteImage(imageId);
   };
 
-  // Download handlers
-  const handleSelectAllDownload = (checked: boolean) => {
-    if (checked) {
-      setSelectedDownloadIds(new Set(images.map((img) => img.id)));
-    } else {
-      setSelectedDownloadIds(new Set());
-    }
-  };
-
-  const handleSelectOneDownload = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedDownloadIds);
-    if (checked) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedDownloadIds(newSelected);
-  };
-
   const downloadImage = async (url: string, filename: string) => {
     try {
       const response = await fetch(url);
@@ -108,10 +86,10 @@ export function UserUploadedImages({
   };
 
   const handleBulkDownload = async () => {
-    if (selectedDownloadIds.size === 0) return;
+    if (selectedIds.size === 0) return;
 
     setIsDownloading(true);
-    const selectedImages = images.filter((img) => selectedDownloadIds.has(img.id));
+    const selectedImages = images.filter((img) => selectedIds.has(img.id));
     setDownloadProgress({ current: 0, total: selectedImages.length });
 
     try {
@@ -173,15 +151,15 @@ export function UserUploadedImages({
       toast.error('Failed to download images');
     } finally {
       setIsDownloading(false);
-      setSelectedDownloadIds(new Set());
+      setSelectedIds(new Set());
       setDownloadProgress({ current: 0, total: 0 });
     }
   };
 
   return (
     <div className='space-y-6'>
-      {/* Bulk Actions Bar for Delete (Admin only) */}
-      {images.length > 0 && isAuthenticated && !downloadMode && (
+      {/* Bulk Actions Bar - Always visible */}
+      {images.length > 0 && (
         <div
           className={`flex items-center justify-between w-full gap-2 fade-in-from-top
           ${getDelayClass(4)}`}
@@ -190,69 +168,54 @@ export function UserUploadedImages({
             <Checkbox
               checked={selectedIds.size === images.length && images.length > 0}
               onCheckedChange={handleSelectAll}
-              disabled={isBulkDeleting}
+              disabled={isBulkDeleting || isDownloading}
             >
               <CheckboxIndicator />
             </Checkbox>
             <Text variant='bd-sm'>Select All</Text>
           </label>
-          {(selectedIds.size > 0 || isBulkDeleting) && (
-            <Button
-              variant='destructive'
-              size='sm'
-              onClick={handleBulkDelete}
-              disabled={isBulkDeleting}
-            >
-              {isBulkDeleting ? (
-                <>
-                  <Spinner /> Deleting {deletionProgress.current} of{' '}
-                  {deletionProgress.total}...
-                </>
-              ) : (
-                <>
-                  <Trash2 /> Delete Selected ({selectedIds.size})
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Bulk Actions Bar for Download (Public) */}
-      {images.length > 0 && downloadMode && (
-        <div
-          className={`flex items-center justify-between w-full gap-2 fade-in-from-top
-          ${getDelayClass(4)}`}
-        >
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <Checkbox
-              checked={selectedDownloadIds.size === images.length && images.length > 0}
-              onCheckedChange={handleSelectAllDownload}
-              disabled={isDownloading}
-            >
-              <CheckboxIndicator />
-            </Checkbox>
-            <Text variant='bd-sm'>Select All</Text>
-          </label>
-          {(selectedDownloadIds.size > 0 || isDownloading) && (
-            <Button
-              variant='default'
-              size='sm'
-              onClick={handleBulkDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <Spinner /> Downloading {downloadProgress.current} of{' '}
-                  {downloadProgress.total}...
-                </>
-              ) : (
-                <>
-                  <Download /> Download Selected ({selectedDownloadIds.size})
-                </>
-              )}
-            </Button>
-          )}
+          <div className='flex gap-2'>
+            {/* Delete button - only for authenticated users */}
+            {isAuthenticated && selectedIds.size > 0 && (
+              <Button
+                variant='destructive'
+                size='sm'
+                onClick={handleBulkDelete}
+                disabled={isBulkDeleting || isDownloading}
+              >
+                {isBulkDeleting ? (
+                  <>
+                    <Spinner /> Deleting {deletionProgress.current} of{' '}
+                    {deletionProgress.total}...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 /> Delete Selected ({selectedIds.size})
+                  </>
+                )}
+              </Button>
+            )}
+            {/* Download button - for everyone */}
+            {selectedIds.size > 0 && (
+              <Button
+                variant='default'
+                size='sm'
+                onClick={handleBulkDownload}
+                disabled={isDownloading || isBulkDeleting}
+              >
+                {isDownloading ? (
+                  <>
+                    <Spinner /> Downloading {downloadProgress.current} of{' '}
+                    {downloadProgress.total}...
+                  </>
+                ) : (
+                  <>
+                    <Download /> Download Selected ({selectedIds.size})
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       )}
 
@@ -282,49 +245,32 @@ export function UserUploadedImages({
                 </div>
               )}
 
-              {/* Controls (only when authenticated and not in download mode) */}
-              {isAuthenticated && !downloadMode && (
-                <>
-                  <div className='absolute top-2 left-2 z-10'>
-                    <Checkbox
-                      checked={selectedIds.has(image.id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectOne(image.id, checked as boolean)
-                      }
-                      disabled={isBulkDeleting}
-                      variant='overlay'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <CheckboxIndicator />
-                    </Checkbox>
-                  </div>
-                  <div className='absolute top-2 right-2 z-10'>
-                    <Button
-                      variant='destructive'
-                      size='icon'
-                      onClick={(e) => handleDeleteClick(e, image.id)}
-                      disabled={isDeletingImage || isBulkDeleting}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                </>
-              )}
+              {/* Checkbox - Always visible */}
+              <div className='absolute top-2 left-2 z-10'>
+                <Checkbox
+                  checked={selectedIds.has(image.id)}
+                  onCheckedChange={(checked) =>
+                    handleSelectOne(image.id, checked as boolean)
+                  }
+                  disabled={isBulkDeleting || isDownloading}
+                  variant='overlay'
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CheckboxIndicator />
+                </Checkbox>
+              </div>
 
-              {/* Download mode controls (public) */}
-              {downloadMode && (
-                <div className='absolute top-2 left-2 z-10'>
-                  <Checkbox
-                    checked={selectedDownloadIds.has(image.id)}
-                    onCheckedChange={(checked) =>
-                      handleSelectOneDownload(image.id, checked as boolean)
-                    }
-                    disabled={isDownloading}
-                    variant='overlay'
-                    onClick={(e) => e.stopPropagation()}
+              {/* Individual Delete button - Only for authenticated users */}
+              {isAuthenticated && (
+                <div className='absolute top-2 right-2 z-10'>
+                  <Button
+                    variant='destructive'
+                    size='icon'
+                    onClick={(e) => handleDeleteClick(e, image.id)}
+                    disabled={isDeletingImage || isBulkDeleting || isDownloading}
                   >
-                    <CheckboxIndicator />
-                  </Checkbox>
+                    <Trash2 />
+                  </Button>
                 </div>
               )}
             </div>

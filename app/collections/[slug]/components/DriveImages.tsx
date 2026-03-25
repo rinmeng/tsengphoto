@@ -17,7 +17,6 @@ interface DriveImagesProps {
   collectionTitle: string;
   onImageClick: (index: number) => void;
   startIndex?: number;
-  downloadMode?: boolean;
   driveFullQualityUrls?: string[];
 }
 
@@ -26,11 +25,10 @@ export function DriveImages({
   collectionTitle,
   onImageClick,
   startIndex = 0,
-  downloadMode = false,
   driveFullQualityUrls = [],
 }: DriveImagesProps) {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-  const [selectedDownloadIds, setSelectedDownloadIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
@@ -39,23 +37,23 @@ export function DriveImages({
     setFailedImages((prev) => new Set(prev).add(imageId));
   };
 
-  // Download handlers
-  const handleSelectAllDownload = (checked: boolean) => {
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedDownloadIds(new Set(images.map((img) => img.id)));
+      setSelectedIds(new Set(images.map((img) => img.id)));
     } else {
-      setSelectedDownloadIds(new Set());
+      setSelectedIds(new Set());
     }
   };
 
-  const handleSelectOneDownload = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedDownloadIds);
+  const handleSelectOne = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
     if (checked) {
       newSelected.add(id);
     } else {
       newSelected.delete(id);
     }
-    setSelectedDownloadIds(newSelected);
+    setSelectedIds(newSelected);
   };
 
   const downloadImage = async (url: string, filename: string) => {
@@ -76,14 +74,14 @@ export function DriveImages({
   };
 
   const handleBulkDownload = async () => {
-    if (selectedDownloadIds.size === 0) return;
+    if (selectedIds.size === 0) return;
 
     setIsDownloading(true);
 
     // Create array of selected images with their indices for URL lookup
     const selectedImagesWithIndices = images
       .map((img, idx) => ({ img, idx }))
-      .filter(({ img }) => selectedDownloadIds.has(img.id));
+      .filter(({ img }) => selectedIds.has(img.id));
 
     setDownloadProgress({ current: 0, total: selectedImagesWithIndices.length });
 
@@ -153,7 +151,7 @@ export function DriveImages({
       toast.error('Failed to download images');
     } finally {
       setIsDownloading(false);
-      setSelectedDownloadIds(new Set());
+      setSelectedIds(new Set());
       setDownloadProgress({ current: 0, total: 0 });
     }
   };
@@ -164,23 +162,23 @@ export function DriveImages({
         {startIndex > 0 ? 'More Images from' : 'Images from'} Google Drive
       </Text>
 
-      {/* Bulk Actions Bar for Download */}
-      {images.length > 0 && downloadMode && (
+      {/* Bulk Actions Bar - Always visible */}
+      {images.length > 0 && (
         <div
           className={`flex items-center justify-between w-full gap-2 fade-in-from-top
           ${getDelayClass(4)}`}
         >
           <label className='flex items-center gap-2 cursor-pointer'>
             <Checkbox
-              checked={selectedDownloadIds.size === images.length && images.length > 0}
-              onCheckedChange={handleSelectAllDownload}
+              checked={selectedIds.size === images.length && images.length > 0}
+              onCheckedChange={handleSelectAll}
               disabled={isDownloading}
             >
               <CheckboxIndicator />
             </Checkbox>
             <Text variant='bd-sm'>Select All</Text>
           </label>
-          {(selectedDownloadIds.size > 0 || isDownloading) && (
+          {selectedIds.size > 0 && (
             <Button
               variant='default'
               size='sm'
@@ -194,7 +192,7 @@ export function DriveImages({
                 </>
               ) : (
                 <>
-                  <Download /> Download Selected ({selectedDownloadIds.size})
+                  <Download /> Download Selected ({selectedIds.size})
                 </>
               )}
             </Button>
@@ -238,22 +236,20 @@ export function DriveImages({
                   </div>
                 )}
 
-                {/* Download mode controls */}
-                {downloadMode && (
-                  <div className='absolute top-2 left-2 z-10'>
-                    <Checkbox
-                      checked={selectedDownloadIds.has(image.id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectOneDownload(image.id, checked as boolean)
-                      }
-                      disabled={isDownloading}
-                      variant='overlay'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <CheckboxIndicator />
-                    </Checkbox>
-                  </div>
-                )}
+                {/* Checkbox - Always visible */}
+                <div className='absolute top-2 left-2 z-10'>
+                  <Checkbox
+                    checked={selectedIds.has(image.id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectOne(image.id, checked as boolean)
+                    }
+                    disabled={isDownloading}
+                    variant='overlay'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <CheckboxIndicator />
+                  </Checkbox>
+                </div>
               </div>
             </div>
           );
