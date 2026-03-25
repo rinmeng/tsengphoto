@@ -1,7 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 import { useState } from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
@@ -17,7 +16,6 @@ interface DriveImagesProps {
 
 export function DriveImages({
   images,
-  driveLink,
   collectionTitle,
   onImageClick,
   startIndex = 0,
@@ -31,16 +29,7 @@ export function DriveImages({
   return (
     <div className='space-y-6'>
       <Text variant='hd-lg' className={`fade-in-from-top ${getDelayClass(1)}`}>
-        {startIndex > 0 ? 'More Images from' : 'Images from'}{' '}
-        <Link
-          href={driveLink || 'https://drive.google.com'}
-          target='_blank'
-          className='underline hover:text-primary hover:no-underline transition-all
-            duration-200'
-          rel='noopener noreferrer'
-        >
-          Google Drive
-        </Link>
+        {startIndex > 0 ? 'More Images from' : 'Images from'} Google Drive
       </Text>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -62,12 +51,15 @@ export function DriveImages({
                     <Text variant='muted-sm'>Failed to load</Text>
                   </div>
                 ) : image.image_url ? (
-                  <img
+                  <Image
                     src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
                     alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
-                    className='w-full h-full object-cover hover:scale-105
-                      transition-transform duration-300'
+                    fill
+                    className='object-cover hover:scale-105 transition-transform
+                      duration-300'
+                    sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                     loading='lazy'
+                    unoptimized
                     onError={() => handleImageError(image.id)}
                   />
                 ) : (
