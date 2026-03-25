@@ -156,6 +156,7 @@ export default function Home() {
           dotsLocation='below-carousel'
           btnLocation='below-carousel'
           images={eventPhotography}
+          objectPosition='center 20%'
         />
         <div className='container mx-auto flex justify-center mt-8'>
           <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
@@ -184,6 +185,7 @@ export default function Home() {
           dotsLocation='below-carousel'
           btnLocation='below-carousel'
           images={portraitPhotography}
+          objectPosition='center 40%'
         />
         <div className='container mx-auto flex justify-center mt-8'>
           <Button variant='default' size='xl' onClick={() => router.push('/contact')}>

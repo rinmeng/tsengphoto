@@ -29,6 +29,7 @@ interface PhotoCarouselProps {
   dotsLocation?: 'absolute' | 'below-carousel';
   showDots?: boolean;
   objectFit?: 'cover' | 'contain';
+  objectPosition?: string;
 }
 
 export function PhotoCarousel({
@@ -43,6 +44,7 @@ export function PhotoCarousel({
   dotsLocation = 'absolute',
   showDots = true,
   objectFit = 'cover',
+  objectPosition = 'center',
 }: PhotoCarouselProps) {
   const [loadingImages, setLoadingImages] = useState<Record<number, boolean>>(() => {
     // Initialize all images as loading
@@ -132,7 +134,7 @@ export function PhotoCarousel({
                     alt={`Image ${index + 1}`}
                     fill
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
-                    style={{ objectPosition: 'center' }}
+                    style={{ objectPosition }}
                     onLoad={() => handleImageLoad(index)}
                   />
                 </div>
@@ -144,23 +146,6 @@ export function PhotoCarousel({
                       containerClassName
                     )}
                   >
-                    {loadingImages[index] && (
-                      <div
-                        className='absolute inset-0 flex flex-col items-center
-                          justify-center z-10 bg-black/80 backdrop-blur-sm'
-                      >
-                        <Loader2
-                          className={`size-8 animate-spin text-primary mb-3
-                            fade-in-from-bottom ${getDelayClass(1)}`}
-                        />
-                        <Text
-                          variant='bd-md'
-                          className={`text-white fade-in-from-bottom ${getDelayClass(2)}`}
-                        >
-                          We&apos;re fetching the highest quality possible...
-                        </Text>
-                      </div>
-                    )}
                     <OptimizedImage
                       src={src}
                       alt={`Image ${index + 1}`}
@@ -168,7 +153,7 @@ export function PhotoCarousel({
                       className={
                         objectFit === 'cover' ? 'object-cover' : 'object-contain'
                       }
-                      style={{ objectPosition: 'center' }}
+                      style={{ objectPosition }}
                       onLoad={() => handleImageLoad(index)}
                     />
                   </CardContent>
