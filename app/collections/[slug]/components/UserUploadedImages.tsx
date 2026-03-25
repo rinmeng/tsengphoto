@@ -6,8 +6,10 @@ import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import { Text } from '@/components/Text';
 import { getDelayClass } from '@/utils/animations';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Download } from 'lucide-react';
 import type { CollectionImage } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import JSZip from 'jszip';
 
 interface UserUploadedImagesProps {
   images: CollectionImage[];
@@ -19,6 +21,7 @@ interface UserUploadedImagesProps {
   onBulkDelete: (images: CollectionImage[]) => void;
   isBulkDeleting?: boolean;
   deletionProgress?: { current: number; total: number };
+  downloadMode?: boolean;
 }
 
 export function UserUploadedImages({
@@ -31,8 +34,13 @@ export function UserUploadedImages({
   onBulkDelete,
   isBulkDeleting = false,
   deletionProgress = { current: 0, total: 0 },
+  downloadMode = false,
 }: UserUploadedImagesProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedDownloadIds, setSelectedDownloadIds] = useState<Set<string>>(new Set());
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
+  const { toast } = useToast();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -63,10 +71,117 @@ export function UserUploadedImages({
     onDeleteImage(imageId);
   };
 
+  // Download handlers
+  const handleSelectAllDownload = (checked: boolean) => {
+    if (checked) {
+      setSelectedDownloadIds(new Set(images.map((img) => img.id)));
+    } else {
+      setSelectedDownloadIds(new Set());
+    }
+  };
+
+  const handleSelectOneDownload = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedDownloadIds);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedDownloadIds(newSelected);
+  };
+
+  const downloadImage = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      throw new Error(`Failed to download ${filename}`);
+    }
+  };
+
+  const handleBulkDownload = async () => {
+    if (selectedDownloadIds.size === 0) return;
+
+    setIsDownloading(true);
+    const selectedImages = images.filter((img) => selectedDownloadIds.has(img.id));
+    setDownloadProgress({ current: 0, total: selectedImages.length });
+
+    try {
+      // If only one image, download directly without zipping
+      if (selectedImages.length === 1) {
+        const image = selectedImages[0];
+        if (image.image_url) {
+          const filename = `${collectionTitle.replace(/\s+/g, '_')}_1.jpg`;
+          await downloadImage(image.image_url, filename);
+          toast.success('Downloaded 1 image');
+        }
+      } else {
+        // Multiple images - create a zip file
+        const zip = new JSZip();
+        let successCount = 0;
+        let failedCount = 0;
+
+        for (let i = 0; i < selectedImages.length; i++) {
+          const image = selectedImages[i];
+          setDownloadProgress({ current: i + 1, total: selectedImages.length });
+
+          if (image.image_url) {
+            try {
+              const response = await fetch(image.image_url);
+              const blob = await response.blob();
+              const filename = `${collectionTitle.replace(/\s+/g, '_')}_${i + 1}.jpg`;
+              zip.file(filename, blob);
+              successCount++;
+            } catch {
+              failedCount++;
+            }
+          }
+        }
+
+        if (successCount > 0) {
+          // Generate zip and download
+          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          const zipUrl = URL.createObjectURL(zipBlob);
+          const a = document.createElement('a');
+          a.href = zipUrl;
+          a.download = `${collectionTitle.replace(/\s+/g, '_')}_images.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(zipUrl);
+
+          toast.success(
+            `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
+          );
+        }
+
+        if (failedCount > 0) {
+          toast.error(
+            `Failed to download ${failedCount} image${failedCount !== 1 ? 's' : ''}`
+          );
+        }
+      }
+    } catch {
+      toast.error('Failed to download images');
+    } finally {
+      setIsDownloading(false);
+      setSelectedDownloadIds(new Set());
+      setDownloadProgress({ current: 0, total: 0 });
+    }
+  };
+
   return (
     <div className='space-y-6'>
-      {/* Bulk Actions Bar */}
-      {images.length > 0 && isAuthenticated && (
+      {/* Bulk Actions Bar for Delete (Admin only) */}
+      {images.length > 0 && isAuthenticated && !downloadMode && (
         <div
           className={`flex items-center justify-between w-full gap-2 fade-in-from-top
           ${getDelayClass(4)}`}
@@ -103,6 +218,44 @@ export function UserUploadedImages({
         </div>
       )}
 
+      {/* Bulk Actions Bar for Download (Public) */}
+      {images.length > 0 && downloadMode && (
+        <div
+          className={`flex items-center justify-between w-full gap-2 fade-in-from-top
+          ${getDelayClass(4)}`}
+        >
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <Checkbox
+              checked={selectedDownloadIds.size === images.length && images.length > 0}
+              onCheckedChange={handleSelectAllDownload}
+              disabled={isDownloading}
+            >
+              <CheckboxIndicator />
+            </Checkbox>
+            <Text variant='bd-sm'>Select All</Text>
+          </label>
+          {(selectedDownloadIds.size > 0 || isDownloading) && (
+            <Button
+              variant='default'
+              size='sm'
+              onClick={handleBulkDownload}
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                <>
+                  <Spinner /> Downloading {downloadProgress.current} of{' '}
+                  {downloadProgress.total}...
+                </>
+              ) : (
+                <>
+                  <Download /> Download Selected ({selectedDownloadIds.size})
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Images Grid */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         {images.map((image, index) => (
@@ -129,8 +282,8 @@ export function UserUploadedImages({
                 </div>
               )}
 
-              {/* Controls (only when authenticated) */}
-              {isAuthenticated && (
+              {/* Controls (only when authenticated and not in download mode) */}
+              {isAuthenticated && !downloadMode && (
                 <>
                   <div className='absolute top-2 left-2 z-10'>
                     <Checkbox
@@ -156,6 +309,23 @@ export function UserUploadedImages({
                     </Button>
                   </div>
                 </>
+              )}
+
+              {/* Download mode controls (public) */}
+              {downloadMode && (
+                <div className='absolute top-2 left-2 z-10'>
+                  <Checkbox
+                    checked={selectedDownloadIds.has(image.id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectOneDownload(image.id, checked as boolean)
+                    }
+                    disabled={isDownloading}
+                    variant='overlay'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <CheckboxIndicator />
+                  </Checkbox>
+                </div>
               )}
             </div>
           </div>

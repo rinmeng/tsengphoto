@@ -72,7 +72,7 @@ export function EmptyState({
       <EmptyHeader className={config.spacing}>
         <EmptyMedia
           variant='icon'
-          className={`flex h-auto fade-in-from-bottom ${getDelayClass(4)}`}
+          className={`flex h-auto w-auto p-4 fade-in-from-bottom ${getDelayClass(4)}`}
         >
           <Icon className={config.icon} />
         </EmptyMedia>

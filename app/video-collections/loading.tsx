@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/ui';
 import { getDelayClass } from '@/utils/animations';
 
-export default function CollectionsLoading() {
+export default function VideoCollectionsLoading() {
   return (
     <div className='pt-18'>
       {/* Header Skeleton */}
