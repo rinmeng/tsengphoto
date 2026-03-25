@@ -56,7 +56,7 @@ export function OptimizedImage(props: ImageProps) {
       {showLoadingUI && (
         <div
           className={`absolute inset-0 flex flex-col items-center justify-center z-10
-          bg-black/50 backdrop-blur-md`}
+          bg-black/50 backdrop-blur-md t200e`}
         >
           <div className={`fade-in-from-bottom ${getDelayClass(1)}`}>
             <Loader2
