@@ -223,7 +223,11 @@ export function UserUploadedImages({
                 <>
                   <div className='flex justify-between text-sm'>
                     <Text variant='bd-sm'>Zipping files</Text>
-                    <Text variant='bd-sm'>{Math.round(zippingProgress)}%</Text>
+                    <Text variant='bd-sm'>
+                      {Math.round(zippingProgress) >= 100
+                        ? 'Completed'
+                        : `${Math.round(zippingProgress)}%`}
+                    </Text>
                   </div>
                   <Progress value={zippingProgress} className='w-full' />
                 </>
