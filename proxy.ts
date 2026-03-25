@@ -8,6 +8,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (nextUrl.pathname.startsWith('/api/v1/proxy-image')) {
+    return NextResponse.next();
+  }
+
   const { user, supabaseResponse } = await updateSession(request);
 
   const pathname = nextUrl.pathname;
