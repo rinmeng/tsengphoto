@@ -15,7 +15,7 @@ export function ImageViewer({ images, isOpen, onOpenChange }: ImageViewerProps) 
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className='w-full sm:w-[95%] h-auto p-0 sm:max-w-none overflow-hidden
+        className='w-full sm:max-w-[min(95vw,calc(95vh*16/9))] h-auto p-0 overflow-hidden
           bg-transparent border-0 shadow-none'
       >
         <DialogClose asChild className='absolute top-2 right-2 z-10'>

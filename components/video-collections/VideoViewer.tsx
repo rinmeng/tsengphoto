@@ -3,6 +3,8 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Video as VideoType } from '@/lib/types';
 import { generateYouTubeEmbedUrl } from '@/services/videos.service';
+import { Button, DialogClose } from '../animate-ui/components';
+import { X } from 'lucide-react';
 
 interface VideoViewerProps {
   video: VideoType | null;
@@ -18,7 +20,8 @@ export function VideoViewer({ video, open, onOpenChange }: VideoViewerProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className='w-full sm:w-[95%] h-auto p-0 sm:max-w-none overflow-hidden
+        showCloseButton={false}
+        className='w-full sm:max-w-[min(95vw,calc(95vh*16/9))] h-auto p-0 overflow-hidden
           bg-transparent border-0 shadow-none'
       >
         <div className='relative aspect-video w-full'>
