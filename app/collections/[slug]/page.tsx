@@ -348,6 +348,7 @@ export default function CollectionPage() {
       <ImageViewer
         images={rotatedImageUrls}
         isOpen={isViewerOpen}
+        showDownloadButton={true}
         onOpenChange={setIsViewerOpen}
       />
 

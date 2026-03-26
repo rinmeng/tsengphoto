@@ -10,8 +10,11 @@ import {
   CarouselDots,
   Card,
   CardContent,
+  CarouselApi,
 } from '@/components/ui';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import { useEffect, useState } from 'react';
+import { on } from 'events';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -26,6 +29,7 @@ interface PhotoCarouselProps {
   showDots?: boolean;
   objectFit?: 'cover' | 'contain';
   objectPosition?: string;
+  onIndexChange?: (index: number) => void;
 }
 
 export function PhotoCarousel({
@@ -41,6 +45,7 @@ export function PhotoCarousel({
   showDots = true,
   objectFit = 'cover',
   objectPosition = 'center',
+  onIndexChange,
 }: PhotoCarouselProps) {
   const itemBasisClass =
     itemsToShow === 1
@@ -58,6 +63,13 @@ export function PhotoCarousel({
   // Only use Autoplay plugin if autoplayDelay is greater than 0
   const plugins = autoplayDelay > 0 ? [Autoplay({ delay: autoplayDelay })] : [];
 
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api || !onIndexChange) return;
+    api.on('select', () => onIndexChange(api.selectedScrollSnap()));
+  }, [api, onIndexChange]);
+
   return (
     <section
       className={cn(
@@ -67,6 +79,7 @@ export function PhotoCarousel({
       )}
     >
       <Carousel
+        setApi={setApi}
         btnVariant={btnVariant}
         btnLocation={btnLocation}
         showDots={showDots}
