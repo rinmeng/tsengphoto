@@ -276,7 +276,7 @@ export default function CollectionPage() {
               Back
             </Button>
           </Link>
-          <Button variant='default' onClick={handleShareClick}>
+          <Button variant='secondary' onClick={handleShareClick}>
             <Share2 className='size-5' />
             Share
           </Button>
