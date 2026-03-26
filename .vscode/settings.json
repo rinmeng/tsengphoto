@@ -4,5 +4,6 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
   },
+  // ** Enable the whole project diagnostics to get better error reporting in the editor */
   "js/ts.tsserver.experimental.enableProjectDiagnostics": true
 }
