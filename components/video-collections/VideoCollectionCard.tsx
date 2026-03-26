@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { VideoCollectionWithVideos } from '@/lib/types/database';
 import {
@@ -16,11 +18,11 @@ import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'luci
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import { useAuth } from '@/hooks/use-auth';
 
 interface VideoCollectionCardProps {
   videoCollection: VideoCollectionWithVideos;
   className?: string;
-  isAuthenticated?: boolean;
   onEdit?: (videoCollection: VideoCollectionWithVideos) => void;
   onDelete?: (videoCollectionId: string) => void;
   onPublish?: (videoCollectionId: string) => void;
@@ -29,11 +31,11 @@ interface VideoCollectionCardProps {
 export function VideoCollectionCard({
   videoCollection,
   className,
-  isAuthenticated = false,
   onEdit,
   onDelete,
   onPublish,
 }: VideoCollectionCardProps) {
+  const { isAuthenticated } = useAuth();
   const formattedDate = videoCollection.date
     ? new Date(videoCollection.date).toLocaleDateString('en-US', {
         year: 'numeric',

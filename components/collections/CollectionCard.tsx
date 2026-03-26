@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { CollectionWithImages } from '@/lib/types/database';
 import {
@@ -16,11 +18,11 @@ import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'luci
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import { useAuth } from '@/hooks/use-auth';
 
 interface CollectionCardProps {
   collection: CollectionWithImages;
   className?: string;
-  isAuthenticated?: boolean;
   onEdit?: (collection: CollectionWithImages) => void;
   onDelete?: (collectionId: string) => void;
   onPublish?: (collectionId: string) => void;
@@ -29,11 +31,11 @@ interface CollectionCardProps {
 export function CollectionCard({
   collection,
   className,
-  isAuthenticated = false,
   onEdit,
   onDelete,
   onPublish,
 }: CollectionCardProps) {
+  const { isAuthenticated } = useAuth();
   const formattedDate = collection.date
     ? new Date(collection.date).toLocaleDateString('en-US', {
         year: 'numeric',

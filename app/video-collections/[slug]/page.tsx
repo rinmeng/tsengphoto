@@ -310,7 +310,6 @@ export default function VideoCollectionPage() {
                 >
                   <VideoCard
                     video={video}
-                    isAuthenticated={!!user}
                     onDelete={handleDeleteClick}
                     onClick={isMobile ? undefined : handleVideoClick}
                     isSelected={selectedVideoIds.has(video.id)}

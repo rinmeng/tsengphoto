@@ -26,7 +26,7 @@ import CollectionsLoading from './loading';
 import { Separator } from '@/components/ui';
 
 export default function CollectionsPage() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function CollectionsPage() {
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
   const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
-    queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: !!user }],
+    queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: isAuthenticated }],
     queryFn: async () => {
       const response = await fetch('/api/v1/collections');
       if (!response.ok) {
@@ -182,7 +182,6 @@ export default function CollectionsPage() {
 
         <CollectionGrid
           collections={collections}
-          isAuthenticated={!!user}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}

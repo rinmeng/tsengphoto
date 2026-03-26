@@ -7,7 +7,6 @@ import { ArrowLeft, Video } from 'lucide-react';
 
 interface VideoCollectionGridProps {
   videoCollections: VideoCollectionWithVideos[];
-  isAuthenticated?: boolean;
   onEdit?: (videoCollection: VideoCollectionWithVideos) => void;
   onDelete?: (videoCollectionId: string) => void;
   onPublish?: (videoCollectionId: string) => void;
@@ -15,7 +14,6 @@ interface VideoCollectionGridProps {
 
 export function VideoCollectionGrid({
   videoCollections,
-  isAuthenticated = false,
   onEdit,
   onDelete,
   onPublish,
@@ -58,7 +56,6 @@ export function VideoCollectionGrid({
           className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
           key={videoCollection.id}
           videoCollection={videoCollection}
-          isAuthenticated={isAuthenticated}
           onEdit={onEdit}
           onDelete={onDelete}
           onPublish={onPublish}

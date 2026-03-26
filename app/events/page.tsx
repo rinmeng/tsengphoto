@@ -178,7 +178,6 @@ export default function EventsPage() {
 
         <CollectionGrid
           collections={collections}
-          isAuthenticated={!!user}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}

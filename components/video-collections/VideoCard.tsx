@@ -8,11 +8,11 @@ import { Button } from '@/components/animate-ui/components/button';
 import { Trash2, Play } from 'lucide-react';
 import { cn } from '@/lib';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import { useAuth } from '@/hooks/use-auth';
 
 interface VideoCardProps {
   video: VideoType;
   className?: string;
-  isAuthenticated?: boolean;
   onDelete?: (videoId: string) => void;
   onClick?: (video: VideoType) => void;
   isSelected?: boolean;
@@ -23,13 +23,13 @@ interface VideoCardProps {
 export function VideoCard({
   video,
   className,
-  isAuthenticated = false,
   onDelete,
   onClick,
   isSelected = false,
   onSelect,
   isBulkDeleting = false,
 }: VideoCardProps) {
+  const { isAuthenticated } = useAuth();
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();

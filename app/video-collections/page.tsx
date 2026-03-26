@@ -184,7 +184,6 @@ export default function VideoCollectionsPage() {
 
         <VideoCollectionGrid
           videoCollections={videoCollections}
-          isAuthenticated={!!user}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}

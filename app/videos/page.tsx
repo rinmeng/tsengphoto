@@ -179,7 +179,6 @@ export default function VideosPage() {
 
         <CollectionGrid
           collections={collections}
-          isAuthenticated={!!user}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}

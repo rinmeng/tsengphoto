@@ -4,4 +4,5 @@ export type AuthContextType = {
   user: User | null;
   signOut: () => Promise<void>;
   loading: boolean;
+  isAuthenticated: boolean;
 };

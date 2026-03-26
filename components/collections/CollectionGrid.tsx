@@ -7,7 +7,6 @@ import { ArrowLeft, ImageOff } from 'lucide-react';
 
 interface CollectionGridProps {
   collections: CollectionWithImages[];
-  isAuthenticated?: boolean;
   onEdit?: (collection: CollectionWithImages) => void;
   onDelete?: (collectionId: string) => void;
   onPublish?: (collectionId: string) => void;
@@ -15,7 +14,6 @@ interface CollectionGridProps {
 
 export function CollectionGrid({
   collections,
-  isAuthenticated = false,
   onEdit,
   onDelete,
   onPublish,
@@ -58,7 +56,6 @@ export function CollectionGrid({
           className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
           key={collection.id}
           collection={collection}
-          isAuthenticated={isAuthenticated}
           onEdit={onEdit}
           onDelete={onDelete}
           onPublish={onPublish}

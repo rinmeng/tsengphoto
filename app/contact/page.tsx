@@ -277,7 +277,7 @@ export default function ContactPage() {
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={field.value?.includes(service)}
+                                    checked={field.value?.includes(service) ?? false}
                                     onCheckedChange={(checked) => {
                                       const current = field.value ?? [];
                                       field.onChange(

@@ -349,7 +349,6 @@ export default function CollectionPage() {
           <UserUploadedImages
             images={sortedImages}
             collectionTitle={collection.title}
-            isAuthenticated={!!user}
             onImageClick={handleImageClick}
             onDeleteImage={handleDeleteClick}
             isDeletingImage={deleteImageMutation.isPending}

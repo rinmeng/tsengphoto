@@ -18,12 +18,12 @@ import { Trash2, Download } from 'lucide-react';
 import type { CollectionImage } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/hooks/use-auth';
 import JSZip from 'jszip';
 
 interface UserUploadedImagesProps {
   images: CollectionImage[];
   collectionTitle: string;
-  isAuthenticated?: boolean;
   onImageClick: (index: number) => void;
   onDeleteImage: (imageId: string) => void;
   isDeletingImage?: boolean;
@@ -35,7 +35,6 @@ interface UserUploadedImagesProps {
 export function UserUploadedImages({
   images,
   collectionTitle,
-  isAuthenticated = false,
   onImageClick,
   onDeleteImage,
   isDeletingImage = false,
@@ -43,6 +42,7 @@ export function UserUploadedImages({
   isBulkDeleting = false,
   deletionProgress = { current: 0, total: 0 },
 }: UserUploadedImagesProps) {
+  const { isAuthenticated } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
