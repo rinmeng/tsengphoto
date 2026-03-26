@@ -247,9 +247,7 @@ export default function CollectionPage() {
           text: `Check out this collection: ${collection.title}`,
           url,
         })
-        .catch((error) => {
-          toast.error('Failed to share', { description: error.message });
-        });
+        .catch(() => {});
     } else {
       navigator.clipboard
         .writeText(url)
