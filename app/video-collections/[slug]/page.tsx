@@ -2,7 +2,7 @@
 
 import { notFound, useParams } from 'next/navigation';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Plus, Trash2, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { VideoCard } from '@/components/video-collections/VideoCard';
@@ -189,6 +189,29 @@ export default function VideoCollectionPage() {
     (a: Video, b: Video) => (a.order || 0) - (b.order || 0)
   );
 
+  const handleShareClick = () => {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: collection.title,
+          text: `Check out this collection: ${collection.title}`,
+          url,
+        })
+        .catch(() => {});
+    } else {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          toast.success('Link copied to clipboard');
+        })
+        .catch((error) => {
+          toast.error('Failed to copy URL', { description: error.message });
+        });
+    }
+  };
+
   return (
     <>
       <section
@@ -201,9 +224,13 @@ export default function VideoCollectionPage() {
             <Link href='/video-collections'>
               <Button variant='default'>
                 <ArrowLeft />
-                Back to Video Collections
+                Back
               </Button>
             </Link>
+            <Button variant='secondary' onClick={handleShareClick}>
+              <Share2 className='size-5' />
+              Share
+            </Button>
             {isAuthenticated && (
               <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
                 <Plus />
