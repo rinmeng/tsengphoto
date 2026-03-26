@@ -251,7 +251,7 @@ export default function CollectionPage() {
       navigator.clipboard
         .writeText(url)
         .then(() => {
-          toast.success('Collection URL copied to clipboard');
+          toast.success('Link copied to clipboard');
         })
         .catch((error) => {
           toast.error('Failed to copy URL', { description: error.message });
