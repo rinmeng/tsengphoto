@@ -8,7 +8,7 @@ export default function CollectionLoading() {
       <div className='mb-12 space-y-6'>
         <div className='space-y-2'>
           <div className={`fade-in-from-top ${getDelayClass(1)}`}>
-            <Skeleton className='h-6 w-20' />
+            <Skeleton className='h-12 w-20' />
           </div>
           <div className={`fade-in-from-top ${getDelayClass(2)}`}>
             <Skeleton className='h-12 w-96' />
