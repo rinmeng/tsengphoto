@@ -4,10 +4,6 @@ import { getDelayClass } from '@/utils/animations';
 export default function CollectionLoading() {
   return (
     <div className='container mx-auto px-4 pb-4 nb-padding fade-in-from-bottom'>
-      <div className={`mb-8 fade-in-from-top ${getDelayClass(0)}`}>
-        <Skeleton className='h-10 w-40' />
-      </div>
-
       {/* Header Skeleton */}
       <div className='mb-12 space-y-6'>
         <div className='space-y-2'>
