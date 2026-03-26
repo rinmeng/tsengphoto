@@ -3,7 +3,7 @@
  * Handles client-side operations for video collections
  */
 
-import type { VideoCollection } from '@/lib/types';
+import type { Video, VideoCollection } from '@/lib/types';
 
 /**
  * Deletes a video collection by calling the API endpoint
@@ -27,7 +27,7 @@ export async function deleteVideoCollection(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }
@@ -59,7 +59,7 @@ export async function createVideoCollection(
 
     const result = await response.json();
     return { success: true, data: result.data };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }
@@ -93,7 +93,7 @@ export async function updateVideoCollection(
 
     const result = await response.json();
     return { success: true, data: result.data };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }
@@ -117,7 +117,7 @@ export async function deleteVideo(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }
@@ -135,7 +135,7 @@ export async function addVideoToCollection(
   youtubeUrl: string,
   title?: string,
   description?: string
-): Promise<{ success: boolean; data?: any; error?: string }> {
+): Promise<{ success: boolean; data?: Video; error?: string }> {
   try {
     const response = await fetch('/api/v1/video', {
       method: 'POST',
@@ -157,7 +157,7 @@ export async function addVideoToCollection(
 
     const result = await response.json();
     return { success: true, data: result.data };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }

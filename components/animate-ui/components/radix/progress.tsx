@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {
   Progress as ProgressPrimitive,
   ProgressIndicator as ProgressIndicatorPrimitive,
@@ -14,11 +12,11 @@ function Progress({ className, ...props }: ProgressProps) {
     <ProgressPrimitive
       className={cn(
         'bg-primary/20 relative h-2 w-full overflow-hidden rounded-full',
-        className,
+        className
       )}
       {...props}
     >
-      <ProgressIndicatorPrimitive className="bg-primary rounded-full h-full w-full flex-1" />
+      <ProgressIndicatorPrimitive className='bg-primary rounded-full h-full w-full flex-1' />
     </ProgressPrimitive>
   );
 }

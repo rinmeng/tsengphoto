@@ -8,7 +8,7 @@ import {
 import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
@@ -38,7 +38,9 @@ export async function GET(
     const images = driveImages.map((img) => ({
       id: img.id,
       name: img.name,
-      thumbnailUrl: img.thumbnailLink ? getDriveThumbnailUrl(img.thumbnailLink, 's1600') : '',
+      thumbnailUrl: img.thumbnailLink
+        ? getDriveThumbnailUrl(img.thumbnailLink, 's1600')
+        : '',
       fullQualityUrl: img.thumbnailLink ? getDriveFullQualityUrl(img.thumbnailLink) : '',
     }));
 

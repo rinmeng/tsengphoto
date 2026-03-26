@@ -3,7 +3,6 @@ import { CollectionWithImages } from '@/lib/types/database';
 import {
   Badge,
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

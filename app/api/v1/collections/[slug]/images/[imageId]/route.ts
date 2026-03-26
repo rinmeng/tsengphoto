@@ -7,7 +7,7 @@ import { Logger } from '@/lib/logger';
  * Removes an image from a collection
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; imageId: string }> }
 ) {
   try {

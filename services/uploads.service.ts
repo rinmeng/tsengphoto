@@ -23,7 +23,7 @@ export async function deleteUpload(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Something went wrong' };
   }
 }

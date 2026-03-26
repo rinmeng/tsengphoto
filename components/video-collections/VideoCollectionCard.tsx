@@ -12,16 +12,7 @@ import {
   TooltipContent,
 } from '@/components/ui';
 import { Text } from '@/components/Text';
-import {
-  Calendar,
-  Globe,
-  MapPin,
-  Trash2,
-  GlobeLock,
-  Edit,
-  ImageOff,
-  Video,
-} from 'lucide-react';
+import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'lucide-react';
 import { cn } from '@/lib';
 import { Button } from '@/components/animate-ui/components/button';
 import { OptimizedImage } from '@/components/OptimizedImage';

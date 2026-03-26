@@ -9,6 +9,7 @@ import { QueryProvider } from '@/components/query-provider';
 import { ImageOptimizationProvider } from '@/contexts/ImageOptimizationContext';
 import { Toaster } from '@/components/ui/sonner';
 import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
+
 import './globals.css';
 import { Footer } from '@/components/Footer';
 import { SpeedInsights } from '@vercel/speed-insights/next';

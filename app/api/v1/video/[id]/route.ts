@@ -7,7 +7,7 @@ import { Logger } from '@/lib/logger';
  * Deletes a video from a collection (authenticated users only)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
