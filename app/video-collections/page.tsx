@@ -26,7 +26,7 @@ import VideoCollectionsLoading from './loading';
 import { Separator } from '@/components/ui';
 
 export default function VideoCollectionsPage() {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -41,7 +41,10 @@ export default function VideoCollectionsPage() {
   const { data: videoCollections = [], isLoading } = useQuery<
     VideoCollectionWithVideos[]
   >({
-    queryKey: [...videoCollectionsQueryKeys.list(), { includeUnpublished: !!user }],
+    queryKey: [
+      ...videoCollectionsQueryKeys.list(),
+      { includeUnpublished: isAuthenticated },
+    ],
     queryFn: async () => {
       const response = await fetch('/api/v1/video-collections');
       if (!response.ok) {
@@ -171,7 +174,7 @@ export default function VideoCollectionsPage() {
       <Separator className='border' />
       <div className='container mx-auto px-4 py-4 border-dashed border-x-2'>
         {/* Add Button - Only for authenticated users */}
-        {user && (
+        {isAuthenticated && (
           <div
             className={`mb-6 flex justify-center fade-in-from-bottom ${getDelayClass(2)}`}
           >

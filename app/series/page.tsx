@@ -26,7 +26,7 @@ import CollectionsLoading from '@/app/collections/loading';
 import { Separator } from '@/components/ui';
 
 export default function SeriesPage() {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -37,7 +37,10 @@ export default function SeriesPage() {
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
   const { data: collections = [], isLoading } = useQuery({
-    queryKey: [...collectionsQueryKeys.byType('series'), { includeUnpublished: !!user }],
+    queryKey: [
+      ...collectionsQueryKeys.byType('series'),
+      { includeUnpublished: isAuthenticated },
+    ],
     queryFn: async () => {
       const response = await fetch('/api/v1/collections');
       if (!response.ok) {
@@ -165,7 +168,7 @@ export default function SeriesPage() {
       <Separator className='border' />
       <div className='container mx-auto px-4 py-4 border-dashed border-x-2'>
         {/* Add Button - Only for authenticated users */}
-        {user && (
+        {isAuthenticated && (
           <div
             className={`mb-6 flex justify-center fade-in-from-top ${getDelayClass(2)}`}
           >

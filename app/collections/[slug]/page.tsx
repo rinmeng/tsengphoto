@@ -34,7 +34,7 @@ import { EmptyState } from '@/components/EmptyState';
 export default function CollectionPage() {
   const params = useParams();
   const slug = params['slug'] as string;
-  const { user, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -48,7 +48,10 @@ export default function CollectionPage() {
     isLoading: isLoadingCollection,
     isError,
   } = useQuery({
-    queryKey: [...collectionsQueryKeys.bySlug(slug), { includeUnpublished: !!user }],
+    queryKey: [
+      ...collectionsQueryKeys.bySlug(slug),
+      { includeUnpublished: isAuthenticated },
+    ],
     queryFn: async () => {
       const response = await fetch(`/api/v1/collections/${slug}`);
       if (!response.ok) {
@@ -277,7 +280,7 @@ export default function CollectionPage() {
             <Share2 className='size-5' />
             Share
           </Button>
-          {user && (
+          {isAuthenticated && (
             <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
               <Upload />
               Upload Images
@@ -337,7 +340,7 @@ export default function CollectionPage() {
               icon={ImageIcon}
               title='No images in this collection yet.'
               description={
-                user
+                isAuthenticated
                   ? 'Start by uploading some photos or linking a Google Drive folder to this collection via editing the collection on the previous page.'
                   : 'Please check back later!'
               }
@@ -414,7 +417,7 @@ export default function CollectionPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {user && (
+      {isAuthenticated && (
         <CollectionUploadDialog
           open={uploadDialogOpen}
           onOpenChange={setUploadDialogOpen}

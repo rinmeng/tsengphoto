@@ -35,7 +35,7 @@ import { Spinner } from '@/components/ui';
 export default function VideoCollectionPage() {
   const params = useParams();
   const slug = params['slug'] as string;
-  const { user, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
@@ -52,7 +52,10 @@ export default function VideoCollectionPage() {
     isLoading: isLoadingCollection,
     isError,
   } = useQuery({
-    queryKey: [...videoCollectionsQueryKeys.bySlug(slug), { includeUnpublished: !!user }],
+    queryKey: [
+      ...videoCollectionsQueryKeys.bySlug(slug),
+      { includeUnpublished: isAuthenticated },
+    ],
     queryFn: async () => {
       const response = await fetch(`/api/v1/video-collections/${slug}`);
       if (!response.ok) {
@@ -201,7 +204,7 @@ export default function VideoCollectionPage() {
                 Back to Video Collections
               </Button>
             </Link>
-            {user && (
+            {isAuthenticated && (
               <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
                 <Plus />
                 Add Video
@@ -253,7 +256,7 @@ export default function VideoCollectionPage() {
             icon={VideoIcon}
             title='No videos yet'
             description={
-              user
+              isAuthenticated
                 ? 'Get started by adding your first video to this collection.'
                 : 'Check back later for video content.'
             }
@@ -262,7 +265,7 @@ export default function VideoCollectionPage() {
         ) : (
           <div className='space-y-6'>
             {/* Bulk Actions Bar */}
-            {user && sortedVideos.length > 0 && (
+            {isAuthenticated && sortedVideos.length > 0 && (
               <div
                 className={`flex items-center justify-between w-full gap-2
                   fade-in-from-top ${getDelayClass(4)}`}
@@ -314,7 +317,9 @@ export default function VideoCollectionPage() {
                     onClick={isMobile ? undefined : handleVideoClick}
                     isSelected={selectedVideoIds.has(video.id)}
                     onSelect={
-                      user ? (checked) => handleSelectOne(video.id, checked) : undefined
+                      isAuthenticated
+                        ? (checked) => handleSelectOne(video.id, checked)
+                        : undefined
                     }
                     isBulkDeleting={bulkDeleteMutation.isPending}
                   />
@@ -325,7 +330,7 @@ export default function VideoCollectionPage() {
         )}
       </section>
 
-      {user && (
+      {isAuthenticated && (
         <VideoUploadDialog
           videoCollectionId={videoCollection.id}
           videoCollectionSlug={slug}

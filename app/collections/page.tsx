@@ -26,7 +26,7 @@ import CollectionsLoading from './loading';
 import { Separator } from '@/components/ui';
 
 export default function CollectionsPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -169,7 +169,7 @@ export default function CollectionsPage() {
         {/* Page Header */}
 
         {/* Add Button - Only for authenticated users */}
-        {user && (
+        {isAuthenticated && (
           <div
             className={`mb-6 flex justify-center fade-in-from-bottom ${getDelayClass(2)}`}
           >
