@@ -32,8 +32,28 @@ export function Footer() {
             <span className='text-base md:text-lg'>matthewtseng35</span>
           </Link>
           <div
-            className={`text-sm text-muted-foreground fade-in-from-bottom
+            className={`flex items-center gap-2 text-sm text-muted-foreground fade-in-from-bottom
               ${getDelayClass(3)}`}
+          >
+            <p>Made with ❤️ by</p>
+            <Link
+              href='https://rinm.dev'
+              target='_blank'
+              rel='noreferrer'
+              className='hover:opacity-70 transition-opacity'
+            >
+              <OptimizedImage
+                src='/rmlogo.png'
+                alt='rmlogo'
+                width={64}
+                height={32}
+                className='h-auto w-16 dark:invert'
+              />
+            </Link>
+          </div>
+          <div
+            className={`text-sm text-muted-foreground fade-in-from-bottom
+              ${getDelayClass(4)}`}
           >
             © {new Date().getFullYear()} Tseng Photography. All rights reserved.
           </div>
