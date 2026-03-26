@@ -15,7 +15,7 @@ import {
 import { Progress } from '@/components/animate-ui/components/radix/progress';
 import { getDelayClass } from '@/utils/animations';
 import type { CollectionImage } from '@/lib/types';
-import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import JSZip from 'jszip';
@@ -330,7 +330,7 @@ export function DriveImages({
                       <Text variant='muted-sm'>Failed to load</Text>
                     </div>
                   ) : image.image_url ? (
-                    <OptimizedImageWithLoading
+                    <OptimizedImage
                       src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
                       alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
                       fill
@@ -338,7 +338,7 @@ export function DriveImages({
                         duration-300'
                       sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                       loading='lazy'
-                      unoptimized
+                      showLoading={true}
                       onError={() => handleImageError(image.id)}
                     />
                   ) : (

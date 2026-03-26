@@ -17,7 +17,7 @@ import { Text } from '@/components/Text';
 import { Download, ImageOff, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
-import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { useToast } from '@/hooks/use-toast';
 import type { Upload } from '@/lib/types';
 import * as UploadService from '@/services/uploads.service';
@@ -260,11 +260,12 @@ export function UploadsGallery({
                       target='_blank'
                       rel='noopener noreferrer'
                     >
-                      <OptimizedImageWithLoading
+                      <OptimizedImage
                         src={upload.file_url}
                         alt={upload.file_name}
                         fill
                         className='object-cover'
+                        showLoading={true}
                       />
                     </Link>
                   </div>

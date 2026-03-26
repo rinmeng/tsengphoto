@@ -12,7 +12,6 @@ import {
   CardContent,
 } from '@/components/ui';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import { OptimizedImageWithLoading } from '@/components/OptimizedImageWithLoading';
 
 interface PhotoCarouselProps {
   images: string[];
@@ -94,12 +93,13 @@ export function PhotoCarousel({
                     containerClassName
                   )}
                 >
-                  <OptimizedImageWithLoading
+                  <OptimizedImage
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
                     style={{ objectPosition }}
+                    showLoading={true}
                   />
                 </div>
               ) : (

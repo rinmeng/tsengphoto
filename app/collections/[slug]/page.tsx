@@ -90,11 +90,11 @@ export default function CollectionPage() {
     );
   }, [driveImages, collection?.id]);
 
-  // Full quality URLs for viewer
+  // Full quality URLs for viewer (proxied to avoid rate limits)
   const driveFullQualityUrls: string[] = useMemo(() => {
     return driveImages.map(
       (img: { id: string; name: string; thumbnailUrl: string; fullQualityUrl: string }) =>
-        img.fullQualityUrl
+        `/api/v1/proxy-image?url=${encodeURIComponent(img.fullQualityUrl)}`
     );
   }, [driveImages]);
 
@@ -111,7 +111,7 @@ export default function CollectionPage() {
     const uploaded = sortedImages
       .map((img: CollectionImage) => img.image_url)
       .filter(Boolean) as string[];
-    // Use full quality URLs for viewer
+    // Use proxied full quality URLs for viewer to avoid rate limits
     return [...uploaded, ...driveFullQualityUrls];
   }, [sortedImages, driveFullQualityUrls]);
 

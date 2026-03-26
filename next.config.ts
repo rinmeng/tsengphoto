@@ -2,6 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
+    // Allow local images with any pathname (including query strings)
+    // This enables /api/v1/proxy-image?url=... to be optimized by Next.js
+    localPatterns: [
+      {
+        pathname: '/**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
