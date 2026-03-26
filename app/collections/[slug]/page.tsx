@@ -289,14 +289,9 @@ export default function CollectionPage() {
 
       {/* Collection Header */}
       <div className='mb-4 space-y-6 fade-in-from-top'>
-        <div className='space-y-2'>
-          <Badge className={`fade-in-from-top capitalize ${getDelayClass(1)}`}>
-            <Text variant='bd-xs'>{collection.type}</Text>
-          </Badge>
-          <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(2)}`}>
-            {collection.title}
-          </Text>
-        </div>
+        <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(2)}`}>
+          {collection.title}
+        </Text>
 
         {collection.description && (
           <Text
@@ -325,6 +320,9 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
+          <Badge className={`fade-in-from-top capitalize ${getDelayClass(1)}`}>
+            <Text variant='bd-xs'>{collection.type}</Text>
+          </Badge>
         </div>
       </div>
 
