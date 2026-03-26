@@ -320,7 +320,10 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
-          <Badge className={`fade-in-from-top capitalize ${getDelayClass(1)}`}>
+          <Badge
+            variant='outline'
+            className={`fade-in-from-top capitalize ${getDelayClass(1)}`}
+          >
             <Text variant='bd-xs'>{collection.type}</Text>
           </Badge>
         </div>
