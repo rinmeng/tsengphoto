@@ -33,7 +33,7 @@ import { EmptyState } from '@/components/EmptyState';
 
 export default function CollectionPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = params['slug'] as string;
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();

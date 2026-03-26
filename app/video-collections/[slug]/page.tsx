@@ -34,7 +34,7 @@ import { Spinner } from '@/components/ui';
 
 export default function VideoCollectionPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = params['slug'] as string;
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
