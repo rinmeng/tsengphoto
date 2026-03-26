@@ -14,7 +14,6 @@ import {
 } from '@/components/ui';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { useEffect, useState } from 'react';
-import { on } from 'events';
 
 interface PhotoCarouselProps {
   images: string[];

@@ -2,7 +2,7 @@
 
 import { notFound, useParams } from 'next/navigation';
 import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { Badge } from '@/components/ui';
@@ -234,6 +234,31 @@ export default function CollectionPage() {
     sortedImages.length === 0 &&
     formattedDriveImages.length === 0;
 
+  const handleShareClick = () => {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: collection.title,
+          text: `Check out this collection: ${collection.title}`,
+          url,
+        })
+        .catch((error) => {
+          toast.error('Failed to share', { description: error.message });
+        });
+    } else {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          toast.success('Collection URL copied to clipboard');
+        })
+        .catch((error) => {
+          toast.error('Failed to copy URL', { description: error.message });
+        });
+    }
+  };
+
   return (
     <section
       className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
@@ -245,9 +270,13 @@ export default function CollectionPage() {
           <Link href='/collections'>
             <Button variant='default'>
               <ArrowLeft />
-              Back to Collections
+              Back
             </Button>
           </Link>
+          <Button variant='default' onClick={handleShareClick}>
+            <Share2 className='size-5' />
+            Share
+          </Button>
           {user && (
             <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
               <Upload />
