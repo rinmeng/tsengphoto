@@ -32,8 +32,8 @@ export function Footer() {
             <span className='text-base md:text-lg'>matthewtseng35</span>
           </Link>
           <div
-            className={`flex items-center gap-2 text-sm text-muted-foreground fade-in-from-bottom
-              ${getDelayClass(3)}`}
+            className={`flex items-center gap-2 text-sm text-muted-foreground
+              fade-in-from-bottom ${getDelayClass(3)}`}
           >
             <p>Made with ❤️ by</p>
             <Link
