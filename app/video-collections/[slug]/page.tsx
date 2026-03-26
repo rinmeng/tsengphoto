@@ -195,8 +195,8 @@ export default function VideoCollectionPage() {
     if (navigator.share) {
       navigator
         .share({
-          title: collection.title,
-          text: `Check out this collection: ${collection.title}`,
+          title: videoCollection.title,
+          text: `Check out this collection: ${videoCollection.title}`,
           url,
         })
         .catch(() => {});
