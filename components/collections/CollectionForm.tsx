@@ -1,21 +1,15 @@
 'use client';
 
-import { useForm, useWatch } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/animate-ui/components/button';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import { Button } from '@/components/animate-ui/components/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/animate-ui/components/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CoverImageUploader } from '@/components/CoverImageUploader';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -24,6 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -32,18 +28,22 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Info, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib';
-import { CoverImageUploader } from '@/components/CoverImageUploader';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { CalendarIcon, Info, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { Collection } from '@/lib/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui';
 
-const COLLECTION_TYPES = ['event', 'video', 'series'] as const;
+const COLLECTION_TYPES = ['event', 'series'] as const;
 
 const collectionSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -69,7 +69,7 @@ interface CollectionFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (updatedSlug?: string) => void;
-  defaultType?: 'event' | 'video' | 'series';
+  defaultType?: 'event' | 'series';
 }
 
 export function CollectionForm({
@@ -327,7 +327,6 @@ export function CollectionForm({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value='event'>Event</SelectItem>
-                      <SelectItem value='video'>Video</SelectItem>
                       <SelectItem value='series'>Series</SelectItem>
                     </SelectContent>
                   </Select>

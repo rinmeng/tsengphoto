@@ -1,15 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { CollectionGrid } from '@/components/collections/CollectionGrid';
-import { CollectionForm } from '@/components/collections/CollectionForm';
-import { Text } from '@/components/Text';
-import { getDelayClass } from '@/utils/animations';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { collectionsQueryKeys } from '@/lib/queries/collections';
-import { Button } from '@/components/animate-ui/components/button';
-import { Plus } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +10,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
-import { toast } from 'sonner';
-import type { CollectionWithImages } from '@/lib/types';
-import CollectionsLoading from './loading';
+import { Button } from '@/components/animate-ui/components/button';
+import { CollectionForm } from '@/components/collections/CollectionForm';
+import { CollectionGrid } from '@/components/collections/CollectionGrid';
+import { SearchAndFilterBar } from '@/components/SearchAndFilterBar';
+import { Text } from '@/components/Text';
 import { Separator } from '@/components/ui';
+import { useAuth } from '@/hooks/use-auth';
+import { collectionsQueryKeys } from '@/lib/queries/collections';
+import type { CollectionWithImages } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import CollectionsLoading from './loading';
 
 export default function CollectionsPage() {
   const { isAuthenticated } = useAuth();
@@ -35,6 +36,9 @@ export default function CollectionsPage() {
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionWithImages | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
+  const [filteredCollections, setFilteredCollections] = useState<CollectionWithImages[]>(
+    []
+  );
 
   const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: isAuthenticated }],
@@ -180,8 +184,19 @@ export default function CollectionsPage() {
           </div>
         )}
 
+        {/* Search Bar */}
+        <div className={`mb-6 fade-in-from-bottom ${getDelayClass(3)}`}>
+          <SearchAndFilterBar
+            items={collections}
+            searchKeys={['title', 'description', 'slug']}
+            onFilteredResults={setFilteredCollections}
+            placeholder='Search collections...'
+            countLabel='collections'
+          />
+        </div>
+
         <CollectionGrid
-          collections={collections}
+          collections={filteredCollections}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}
