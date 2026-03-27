@@ -1,9 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { OptimizedImage } from '@/components/OptimizedImage';
-import { Button } from '@/components/animate-ui/components/button';
-import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import { Button } from '@/components/animate-ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -12,14 +9,17 @@ import {
   DialogTitle,
 } from '@/components/animate-ui/components/dialog';
 import { Progress } from '@/components/animate-ui/components/radix/progress';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Text } from '@/components/Text';
-import { getDelayClass } from '@/utils/animations';
-import { Trash2, Download } from 'lucide-react';
-import type { CollectionImage } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Spinner } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
+import type { CollectionImage } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
 import JSZip from 'jszip';
+import { Download, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 interface UserUploadedImagesProps {
   images: CollectionImage[];
@@ -343,8 +343,8 @@ export function UserUploadedImages({
                     src={image.image_url}
                     alt={`${collectionTitle} - Photo ${index + 1}`}
                     fill
-                    className='object-cover hover:scale-105 transition-transform
-                      duration-300'
+                    className='object-cover object-[center_20%] hover:scale-105
+                      transition-transform duration-300'
                     loading='eager'
                     sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                     showLoading={true}

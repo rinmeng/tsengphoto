@@ -1,10 +1,8 @@
 'use client';
-import { useState } from 'react';
-import { ImageOff, Download } from 'lucide-react';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Text } from '@/components/Text';
-import { Button } from '@/components/animate-ui/components/button';
-import { Spinner } from '@/components/ui';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import { Button } from '@/components/animate-ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -13,12 +11,14 @@ import {
   DialogTitle,
 } from '@/components/animate-ui/components/dialog';
 import { Progress } from '@/components/animate-ui/components/radix/progress';
-import { getDelayClass } from '@/utils/animations';
-import type { CollectionImage } from '@/lib/types';
-import { OptimizedImage } from '@/components/OptimizedImage';
-import { useToast } from '@/hooks/use-toast';
+import { Spinner } from '@/components/ui';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
+import type { CollectionImage } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
 import JSZip from 'jszip';
+import { Download, ImageOff } from 'lucide-react';
+import { useState } from 'react';
 
 interface DriveImagesProps {
   images: CollectionImage[];
@@ -334,8 +334,8 @@ export function DriveImages({
                       src={`/api/v1/proxy-image?url=${encodeURIComponent(image.image_url)}`}
                       alt={`${collectionTitle} - Google Drive Photo ${index + 1}`}
                       fill
-                      className='object-cover hover:scale-105 transition-transform
-                        duration-300'
+                      className='object-cover object-[center_20%] hover:scale-105
+                        transition-transform duration-300'
                       sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                       loading='lazy'
                       showLoading={true}
