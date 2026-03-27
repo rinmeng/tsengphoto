@@ -30,6 +30,7 @@ import { getDelayClass } from '@/utils/animations';
 import { useMutation } from '@tanstack/react-query';
 import { SERVICES } from '@/services/contact.service';
 import { contactSchema } from '@/services/contact.service';
+import { useAuth } from '@/hooks/use-auth';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
@@ -71,6 +72,7 @@ function SuccessMessage({ onReset }: { onReset: () => void }) {
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -87,7 +89,7 @@ export default function ContactPage() {
 
   const contactMutation = useMutation({
     mutationFn: async (values: ContactFormValues) => {
-      await sendContactForm(values);
+      await sendContactForm(values, isAuthenticated);
     },
     onSuccess: () => {
       setSubmitted(true);

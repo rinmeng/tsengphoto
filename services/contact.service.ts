@@ -21,7 +21,8 @@ export type ContactFormValues = z.infer<typeof contactSchema>;
 const RATE_LIMIT_KEY = 'contact_last_sent';
 const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
-function canSendEmail(): boolean {
+function canSendEmail(skipRateLimit?: boolean): boolean {
+  if (skipRateLimit) return true;
   const last = localStorage.getItem(RATE_LIMIT_KEY);
   if (!last) return true;
   return Date.now() - parseInt(last) > COOLDOWN_MS;
@@ -37,8 +38,11 @@ function markEmailSent(): void {
   localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
 }
 
-export async function sendContactForm(values: ContactFormValues): Promise<void> {
-  if (!canSendEmail()) {
+export async function sendContactForm(
+  values: ContactFormValues,
+  skipRateLimit?: boolean
+): Promise<void> {
+  if (!canSendEmail(skipRateLimit)) {
     const minutes = Math.ceil(getRemainingCooldown() / 1000 / 60);
     throw new Error(
       `Please wait ${minutes} minute${minutes > 1 ? 's' : ''} before sending another message.`

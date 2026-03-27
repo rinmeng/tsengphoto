@@ -52,13 +52,10 @@ export function buildEmailHtml({
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#fdf9f4;border:1px solid #d4c9b8;border-radius:4px;overflow:hidden;">
 
       <div style="background:#3d3126;padding:2rem;text-align:center;">
-        <p style="color:#e8ddd0;font-size:10px;letter-spacing:0.2em;margin:0 0 8px;text-transform:uppercase;opacity:0.7;">Matthew Tseng</p>
-        <p style="color:#f5ede3;font-size:24px;font-weight:400;margin:0;letter-spacing:0.05em;">Tseng Photography</p>
+        <p style="color:#f5ede3;font-size:24px;font-weight:400;margin:0;letter-spacing:0.05em;">You have a new inquiry</p>
       </div>
 
       <div style="padding:2rem;">
-        <p style="font-size:14px;color:#8a7f6e;margin:0 0 1.5rem;font-style:italic;">You have a new inquiry:</p>
-
         <div style="background:#f5ede3;border:1px solid #d4c9b8;border-radius:4px;padding:1.25rem;margin-bottom:1.5rem;">
           <table style="width:100%;border-collapse:collapse;">
             <tr>
