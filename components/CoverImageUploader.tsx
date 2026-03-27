@@ -19,7 +19,6 @@ import { useToast } from '@/hooks/use-toast';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import imageCompression from 'browser-image-compression';
 import { useMutation } from '@tanstack/react-query';
-import { Arrow } from '@radix-ui/react-context-menu';
 
 interface CoverImageUploaderProps {
   value?: string; // Current image URL (backward compatible)
