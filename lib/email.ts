@@ -78,7 +78,10 @@ export function buildEmailHtml({
           style="display:block;text-align:center;background:#3d3126;color:#f5ede3;text-decoration:none;padding:14px;border-radius:4px;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;">
           Reply to ${firstName}
         </a>
+
+        <div style="margin-top:1.5rem;font-size:11px;color:#8a7f6e;text-align:center;">Sent from Tseng Photography website</div>
       </div>
+      
     </div>
   `;
 }
