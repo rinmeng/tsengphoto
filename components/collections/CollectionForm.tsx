@@ -34,7 +34,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Info } from 'lucide-react';
+import { CalendarIcon, Info, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib';
 import { CoverImageUploader } from '@/components/CoverImageUploader';
@@ -82,6 +82,7 @@ export function CollectionForm({
 }: CollectionFormProps) {
   const queryClient = useQueryClient();
   const [isCoverImageUploading, setIsCoverImageUploading] = useState(false);
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
@@ -116,6 +117,12 @@ export function CollectionForm({
   const coverImageId = useWatch({
     control: form.control,
     name: 'cover_image_id',
+  });
+
+  // Watch date to ensure button text updates
+  const dateValue = useWatch({
+    control: form.control,
+    name: 'date',
   });
 
   const mutation = useMutation({
@@ -336,30 +343,47 @@ export function CollectionForm({
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
                   <FormLabel>Date (optional)</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant='outline'
-                          className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className='flex gap-2 w-full'>
+                    <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                      <PopoverTrigger asChild className='flex-1'>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            className={cn(
+                              'w-full',
+                              !dateValue && 'text-muted-foreground'
+                            )}
+                          >
+                            {dateValue ? format(dateValue, 'PPP') : 'Pick a date'}
+                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value ?? undefined}
+                          onSelect={(date) => {
+                            field.onChange(date ?? undefined);
+                            setDatePopoverOpen(false);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {dateValue && (
+                      <Button
+                        type='button'
+                        variant='outline'
+                        size='icon'
+                        onClick={() => {
+                          field.onChange(undefined);
+                          setDatePopoverOpen(false);
+                        }}
+                      >
+                        <X className='size-5' />
+                      </Button>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
