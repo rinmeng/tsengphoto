@@ -21,7 +21,6 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
 import { useAuth } from '@/hooks/use-auth';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import VideoCollectionDetailLoading from './loading';
 import { useState } from 'react';
@@ -37,7 +36,6 @@ export default function VideoCollectionPage() {
   const slug = params['slug'] as string;
   const { isAuthenticated, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const isMobile = useIsMobile();
 
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -241,7 +239,7 @@ export default function VideoCollectionPage() {
         </div>
 
         {/* Header */}
-        <div className='mb-12 space-y-6'>
+        <div className='mb-6 space-y-6'>
           <div className='space-y-4'>
             <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(1)}`}>
               {videoCollection.title}
@@ -341,7 +339,7 @@ export default function VideoCollectionPage() {
                   <VideoCard
                     video={video}
                     onDelete={handleDeleteClick}
-                    onClick={isMobile ? undefined : handleVideoClick}
+                    onClick={handleVideoClick}
                     isSelected={selectedVideoIds.has(video.id)}
                     onSelect={
                       isAuthenticated

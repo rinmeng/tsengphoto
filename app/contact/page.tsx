@@ -28,21 +28,12 @@ import { Separator } from '@/components/ui';
 import { toast } from 'sonner';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation } from '@tanstack/react-query';
+import { SERVICES } from '@/services/contact.service';
+import { contactSchema } from '@/services/contact.service';
+import { useAuth } from '@/hooks/use-auth';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
-
-const SERVICES = ['Events', 'Photoshoot'] as const;
-
-const contactSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
-  email: z.email('Invalid email format.'),
-  phone: z.string().optional(),
-  services: z.array(z.enum(SERVICES)).optional(),
-  preferredDate: z.date().optional(),
-  message: z.string().optional(),
-});
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -81,6 +72,7 @@ function SuccessMessage({ onReset }: { onReset: () => void }) {
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -89,7 +81,7 @@ export default function ContactPage() {
       lastName: '',
       email: '',
       phone: '',
-      services: [],
+      services: [SERVICES.GENERAL_INQUIRIES],
       preferredDate: undefined,
       message: '',
     },
@@ -97,7 +89,7 @@ export default function ContactPage() {
 
   const contactMutation = useMutation({
     mutationFn: async (values: ContactFormValues) => {
-      await sendContactForm(values);
+      await sendContactForm(values, isAuthenticated);
     },
     onSuccess: () => {
       setSubmitted(true);
@@ -108,7 +100,7 @@ export default function ContactPage() {
     onError: (error: Error) => {
       form.setError('root', { message: error.message });
       toast.error('Failed to send message', {
-        description: 'Something went wrong. Please try again.',
+        description: error.message,
       });
     },
   });
@@ -268,9 +260,11 @@ export default function ContactPage() {
                       name='services'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Services</FormLabel>
+                          <FormLabel>
+                            Services <Required />
+                          </FormLabel>
                           <div className='flex gap-6'>
-                            {SERVICES.map((service) => (
+                            {Object.values(SERVICES).map((service) => (
                               <FormItem
                                 key={service}
                                 className='flex items-center gap-2.5 space-y-0'
