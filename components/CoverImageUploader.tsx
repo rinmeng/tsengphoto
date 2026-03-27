@@ -201,7 +201,6 @@ export function CoverImageUploader({
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
-        console.log(img.naturalWidth, img.naturalHeight);
         resolve({ width: img.naturalWidth, height: img.naturalHeight });
         URL.revokeObjectURL(url);
       };
