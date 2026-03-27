@@ -6,11 +6,20 @@ import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button } from '@/components/animate-ui/components/button';
 import { Progress } from '@/components/ui';
 import { Text } from '@/components/Text';
-import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
+import {
+  Upload,
+  Image as ImageIcon,
+  Trash2,
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import imageCompression from 'browser-image-compression';
+import { useMutation } from '@tanstack/react-query';
+import { Arrow } from '@radix-ui/react-context-menu';
 
 interface CoverImageUploaderProps {
   value?: string; // Current image URL (backward compatible)
@@ -21,13 +30,14 @@ interface CoverImageUploaderProps {
   className?: string;
 }
 
-type FileStatus = 'pending' | 'uploading' | 'success' | 'error';
+type FileStatus = 'compressing' | 'pending' | 'uploading' | 'success' | 'error';
 
 interface FileWithStatus {
   file: File;
   status: FileStatus;
   progress: number;
   error?: string;
+  originalSize?: number; // Track original file size before compression
 }
 
 export function CoverImageUploader({
@@ -53,6 +63,16 @@ export function CoverImageUploader({
       if (acceptedFiles.length > 0) {
         const originalFile = acceptedFiles[0];
 
+        // Set compressing status and store original size
+        setFileState({
+          file: originalFile,
+          status: 'compressing',
+          progress: 0,
+          originalSize: originalFile.size,
+        });
+        setIsUploading(true);
+        onUploadingChange?.(true);
+
         try {
           // Measure actual dimensions first
           const dimensions = await getImageDimensions(originalFile);
@@ -73,13 +93,13 @@ export function CoverImageUploader({
             type: 'image/webp',
           });
 
-          setFileState({
+          // Update to uploading status and preserve original size
+          setFileState((prev) => ({
             file,
             status: 'uploading',
             progress: 0,
-          });
-          setIsUploading(true);
-          onUploadingChange?.(true);
+            originalSize: prev?.originalSize,
+          }));
 
           const result = await startUpload([file]);
           if (result && result[0]?.url) {
@@ -95,12 +115,9 @@ export function CoverImageUploader({
             });
             toast.success('Cover image uploaded successfully');
 
-            // Clear file state after successful upload
-            setTimeout(() => {
-              setFileState(null);
-              setIsUploading(false);
-              onUploadingChange?.(false);
-            }, 500);
+            // Keep file state to show compression info
+            setIsUploading(false);
+            onUploadingChange?.(false);
           } else {
             throw new Error('Upload failed');
           }
@@ -150,10 +167,10 @@ export function CoverImageUploader({
     disabled: isUploading || !!value, // Disable if already has image
   });
 
-  const handleRemove = async () => {
-    // If there's an upload ID, delete from UploadThing and database
-    if (uploadId && value) {
-      try {
+  // TanStack Query mutation for deleting cover image
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (uploadId && value) {
         const response = await fetch('/api/v1/uploads', {
           method: 'DELETE',
           headers: {
@@ -166,20 +183,19 @@ export function CoverImageUploader({
         });
 
         if (!response.ok) {
-          toast.error('Failed to delete image from storage');
-          return;
+          throw new Error('Failed to delete image from storage');
         }
-
-        toast.success('Cover image deleted successfully');
-      } catch {
-        toast.error('Something went wrong while deleting the image');
-        return;
       }
-    }
-
-    setFileState(null);
-    onRemove?.();
-  };
+    },
+    onSuccess: () => {
+      toast.success('Cover image deleted successfully');
+      setFileState(null);
+      onRemove?.();
+    },
+    onError: () => {
+      toast.error('Something went wrong while deleting the image');
+    },
+  });
 
   function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve) => {
@@ -195,7 +211,7 @@ export function CoverImageUploader({
   }
 
   // If there's already an uploaded image (value), show it
-  if (value && !fileState) {
+  if (value) {
     return (
       <div className={cn('space-y-2', className)}>
         <Text variant='bd-sm' className='font-medium'>
@@ -218,13 +234,44 @@ export function CoverImageUploader({
             <Button
               variant='destructive'
               size='icon'
-              onClick={handleRemove}
+              onClick={() => deleteMutation.mutate()}
               type='button'
+              disabled={deleteMutation.isPending}
             >
-              <Trash2 />
+              {deleteMutation.isPending ? (
+                <Loader2 className='animate-spin' />
+              ) : (
+                <Trash2 />
+              )}
             </Button>
           </div>
         </div>
+
+        {/* Show compression info if available */}
+        {fileState && fileState.status === 'success' && fileState.originalSize && (
+          <div className='border rounded p-3 bg-muted/30'>
+            <div className='flex items-center gap-3'>
+              <div className='rounded bg-primary/10 p-2 text-primary'>
+                <ImageIcon className='size-4' />
+              </div>
+              <div className='flex-1 min-w-0'>
+                <Text variant='bd-sm' className='font-medium truncate'>
+                  {fileState.file.name}
+                </Text>
+                <div className='flex items-center gap-1.5'>
+                  <Text variant='caption'>
+                    {(fileState.originalSize / 1024 / 1024).toFixed(2)} MB
+                  </Text>
+                  <ArrowRight className='size-3 text-muted-foreground' />
+                  <Text variant='caption' className='text-green-600 dark:text-green-400'>
+                    {(fileState.file.size / 1024 / 1024).toFixed(2)} MB (compressed)
+                  </Text>
+                </div>
+              </div>
+              <CheckCircle2 className='size-5 text-green-500 shrink-0' />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -279,18 +326,38 @@ export function CoverImageUploader({
               <Text variant='bd-sm' className='font-medium truncate'>
                 {fileState.file.name}
               </Text>
-              <Text variant='caption'>
-                {(fileState.file.size / 1024 / 1024).toFixed(2)} MB
-                {fileState.error && (
-                  <Text variant='caption' className='text-destructive ml-2'>
-                    Error: {fileState.error}
+              {fileState.originalSize && fileState.status !== 'compressing' ? (
+                <div className='flex items-center gap-1.5'>
+                  <Text variant='caption'>
+                    {(fileState.originalSize / 1024 / 1024).toFixed(2)} MB
                   </Text>
-                )}
-              </Text>
+                  <ArrowRight className='size-3 text-muted-foreground' />
+                  <Text variant='caption' className='text-green-600 dark:text-green-400'>
+                    {(fileState.file.size / 1024 / 1024).toFixed(2)} MB
+                  </Text>
+                </div>
+              ) : (
+                <Text variant='caption'>
+                  {(fileState.file.size / 1024 / 1024).toFixed(2)} MB
+                  {fileState.error && (
+                    <Text variant='caption' className='text-destructive ml-2'>
+                      Error: {fileState.error}
+                    </Text>
+                  )}
+                </Text>
+              )}
             </div>
           </div>
 
           {/* Progress Bar */}
+          {fileState.status === 'compressing' && (
+            <div className='space-y-1'>
+              <div className='flex items-center justify-between'>
+                <Text variant='caption'>Compressing...</Text>
+              </div>
+              <Progress value={undefined} className='animate-pulse' />
+            </div>
+          )}
           {fileState.status === 'uploading' && (
             <div className='space-y-1'>
               <div className='flex items-center justify-between'>

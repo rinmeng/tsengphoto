@@ -6,10 +6,18 @@ import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button } from '@/components/animate-ui/components/button';
 import { Progress, ScrollArea } from '@/components/ui';
 import { Text } from '@/components/Text';
-import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
+import {
+  Upload,
+  Image as ImageIcon,
+  X,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import imageCompression from 'browser-image-compression';
+import { useMutation } from '@tanstack/react-query';
 
 interface ImageUploaderProps {
   onUploadComplete?: (uploadedUrls?: string[]) => void;
@@ -17,7 +25,7 @@ interface ImageUploaderProps {
   className?: string;
 }
 
-type FileStatus = 'pending' | 'uploading' | 'success' | 'error';
+type FileStatus = 'compressing' | 'pending' | 'uploading' | 'success' | 'error';
 
 interface FileWithStatus {
   file: File;
@@ -33,8 +41,26 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const currentFileIndexRef = useRef<number>(-1);
   const { toast } = useToast();
+
+  // TanStack Query mutation for removing files
+  const removeFileMutation = useMutation({
+    mutationFn: async (index: number) => {
+      // Simulate async operation (in case future API call is needed)
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return index;
+    },
+    onSuccess: (index) => {
+      setFiles((prev) => prev.filter((_, i) => i !== index));
+      setDeletingIndex(null);
+    },
+    onError: () => {
+      toast.error('Failed to remove file');
+      setDeletingIndex(null);
+    },
+  });
 
   const { startUpload } = useUploadThing('imageUploader', {
     onUploadProgress: (progress) => {
@@ -47,66 +73,99 @@ export function ImageUploader({
     },
   });
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // Compress images before adding to queue
-    const compressedFiles: File[] = [];
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      // Add files with 'compressing' status immediately
+      const pendingFiles: FileWithStatus[] = acceptedFiles.map((file) => ({
+        file,
+        status: 'compressing' as FileStatus,
+        progress: 0,
+      }));
 
-    for (const file of acceptedFiles) {
-      try {
-        // Compress to WebP at 75% quality
-        const compressedFile = await imageCompression(file, {
-          maxSizeMB: 16,
-          fileType: 'image/webp',
-          initialQuality: 0.75,
-          useWebWorker: true,
-        });
+      setFiles((prev) => [...prev, ...pendingFiles]);
 
-        // Rename to .webp extension
-        const baseName = file.name.replace(/\.[^.]+$/, '');
-        const webpFile = new File([compressedFile], `${baseName}.webp`, {
-          type: 'image/webp',
-        });
+      // Compress images
+      const compressedFiles: File[] = [];
+      const startIndex = files.length;
 
-        compressedFiles.push(webpFile);
-      } catch (error) {
-        console.error('Compression failed for', file.name, error);
-        // If compression fails, use original file
-        compressedFiles.push(file);
-      }
-    }
+      for (let i = 0; i < acceptedFiles.length; i++) {
+        const file = acceptedFiles[i];
+        try {
+          // Compress to WebP at 75% quality
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 16,
+            fileType: 'image/webp',
+            initialQuality: 0.75,
+            useWebWorker: true,
+          });
 
-    setFiles((prev) => {
-      const newFiles: FileWithStatus[] = [...prev];
-      const existingNames = new Set(prev.map((f) => f.file.name));
+          // Rename to .webp extension
+          const baseName = file.name.replace(/\.[^.]+$/, '');
+          const webpFile = new File([compressedFile], `${baseName}.webp`, {
+            type: 'image/webp',
+          });
 
-      compressedFiles.forEach((file) => {
-        let fileName = file.name;
-        let counter = 1;
+          compressedFiles.push(webpFile);
 
-        // Rename if duplicate
-        while (existingNames.has(fileName)) {
-          const nameParts = file.name.split('.');
-          const ext = nameParts.pop();
-          const baseName = nameParts.join('.');
-          fileName = `${baseName} (${counter}).${ext}`;
-          counter++;
+          // Update status to pending after compression
+          setFiles((prev) =>
+            prev.map((f, idx) =>
+              idx === startIndex + i
+                ? { ...f, file: webpFile, status: 'pending' as FileStatus, progress: 0 }
+                : f
+            )
+          );
+        } catch (error) {
+          console.error('Compression failed for', file.name, error);
+          // If compression fails, use original file
+          compressedFiles.push(file);
+          setFiles((prev) =>
+            prev.map((f, idx) =>
+              idx === startIndex + i ? { ...f, status: 'pending' as FileStatus } : f
+            )
+          );
         }
+      }
 
-        // Create new file with potentially renamed name
-        const finalFile =
-          fileName !== file.name ? new File([file], fileName, { type: file.type }) : file;
+      // Handle duplicate names
+      setFiles((prev) => {
+        const existingNames = new Set(prev.slice(0, startIndex).map((f) => f.file.name));
 
-        newFiles.push({
-          file: finalFile,
-          status: 'pending',
-          progress: 0,
+        return prev.map((fileWithStatus, idx) => {
+          if (idx < startIndex || idx >= startIndex + compressedFiles.length) {
+            return fileWithStatus;
+          }
+
+          const file = fileWithStatus.file;
+          let fileName = file.name;
+          let counter = 1;
+
+          // Rename if duplicate
+          while (existingNames.has(fileName)) {
+            const nameParts = file.name.split('.');
+            const ext = nameParts.pop();
+            const baseName = nameParts.join('.');
+            fileName = `${baseName} (${counter}).${ext}`;
+            counter++;
+          }
+
+          existingNames.add(fileName);
+
+          // Create new file with potentially renamed name if needed
+          const finalFile =
+            fileName !== file.name
+              ? new File([file], fileName, { type: file.type })
+              : file;
+
+          return {
+            ...fileWithStatus,
+            file: finalFile,
+          };
         });
-        existingNames.add(fileName);
       });
-
-      return newFiles;
-    });
-  }, []);
+    },
+    [files.length]
+  );
 
   const onDropRejected = useCallback(
     (fileRejections: FileRejection[]) => {
@@ -195,7 +254,8 @@ export function ImageUploader({
   };
 
   const removeFile = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index));
+    setDeletingIndex(index);
+    removeFileMutation.mutate(index);
   };
 
   const removeAllFiles = () => {
@@ -288,12 +348,25 @@ export function ImageUploader({
                           size='icon'
                           onClick={() => removeFile(index)}
                           className='shrink-0 size-8'
+                          disabled={deletingIndex === index}
                         >
-                          <X className='size-4' />
+                          {deletingIndex === index ? (
+                            <Loader2 className='size-4 animate-spin' />
+                          ) : (
+                            <X className='size-4' />
+                          )}
                         </Button>
                       )}
                     </div>
                     {/* Per-file Progress Bar */}
+                    {fileWithStatus.status === 'compressing' && (
+                      <div className='space-y-1 px-2 pb-2'>
+                        <div className='flex items-center justify-between'>
+                          <Text variant='caption'>Compressing...</Text>
+                        </div>
+                        <Progress value={undefined} className='animate-pulse' />
+                      </div>
+                    )}
                     {fileWithStatus.status === 'uploading' && (
                       <div className='space-y-1 px-2 pb-2'>
                         <div className='flex items-center justify-between'>
