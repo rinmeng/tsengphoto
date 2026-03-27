@@ -77,7 +77,6 @@ export function CollectionCard({
               src={collection.cover_image}
               alt={collection.title}
               fill
-              showLoading='spinner-only'
               loading='lazy'
               className='object-cover object-[center_20%] transition-transform
                 group-hover:scale-105'
