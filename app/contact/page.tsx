@@ -98,7 +98,7 @@ export default function ContactPage() {
     onError: (error: Error) => {
       form.setError('root', { message: error.message });
       toast.error('Failed to send message', {
-        description: 'Something went wrong. Please try again.',
+        description: error.message,
       });
     },
   });
