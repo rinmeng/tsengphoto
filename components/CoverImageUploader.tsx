@@ -174,7 +174,7 @@ export function CoverImageUploader({
             src={value}
             alt='Cover image'
             fill
-            className='object-cover'
+            className='object-cover object-[center_20%]'
             sizes='(max-width: 768px) 100vw, 600px'
           />
           <div
