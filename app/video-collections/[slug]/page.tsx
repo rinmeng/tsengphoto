@@ -241,7 +241,7 @@ export default function VideoCollectionPage() {
         </div>
 
         {/* Header */}
-        <div className='mb-12 space-y-6'>
+        <div className='mb-6 space-y-6'>
           <div className='space-y-4'>
             <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(1)}`}>
               {videoCollection.title}
