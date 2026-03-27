@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import { CollectionWithImages } from '@/lib/types/database';
-import { CollectionCard } from './CollectionCard';
 import { getDelayClass } from '@/utils/animations';
-import { EmptyState } from '../EmptyState';
 import { ArrowLeft, ImageOff, Search } from 'lucide-react';
+import { useMemo } from 'react';
+import { EmptyState } from '../EmptyState';
+import { CollectionCard } from './CollectionCard';
 
 interface CollectionGridProps {
   collections: CollectionWithImages[];
