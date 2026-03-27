@@ -80,6 +80,7 @@ export function VideoCollectionCard({
               src={videoCollection.cover_image}
               alt={videoCollection.title}
               fill
+              loading='lazy'
               quality={60}
               className='object-cover object-[center_20%] transition-transform
                 group-hover:scale-105'
