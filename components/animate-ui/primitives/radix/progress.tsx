@@ -18,16 +18,14 @@ type ProgressProps = React.ComponentProps<typeof ProgressPrimitive.Root>;
 function Progress(props: ProgressProps) {
   return (
     <ProgressProvider value={{ value: props.value ?? 0 }}>
-      <ProgressPrimitive.Root data-slot="progress" {...props} />
+      <ProgressPrimitive.Root data-slot='progress' {...props} />
     </ProgressProvider>
   );
 }
 
 const MotionProgressIndicator = motion.create(ProgressPrimitive.Indicator);
 
-type ProgressIndicatorProps = React.ComponentProps<
-  typeof MotionProgressIndicator
->;
+type ProgressIndicatorProps = React.ComponentProps<typeof MotionProgressIndicator>;
 
 function ProgressIndicator({
   transition = { type: 'spring', stiffness: 100, damping: 30 },
@@ -37,7 +35,7 @@ function ProgressIndicator({
 
   return (
     <MotionProgressIndicator
-      data-slot="progress-indicator"
+      data-slot='progress-indicator'
       animate={{ x: `-${100 - (value || 0)}%` }}
       transition={transition}
       {...props}

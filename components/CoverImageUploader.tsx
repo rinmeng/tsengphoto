@@ -1,24 +1,24 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useDropzone, type FileRejection } from 'react-dropzone';
-import { useUploadThing } from '@/utils/uploadthing/uploadthing';
 import { Button } from '@/components/animate-ui/components/button';
-import { Progress } from '@/components/ui';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Text } from '@/components/Text';
+import { Progress } from '@/components/ui';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { useUploadThing } from '@/utils/uploadthing/uploadthing';
+import { useMutation } from '@tanstack/react-query';
+import imageCompression from 'browser-image-compression';
 import {
-  Upload,
-  Image as ImageIcon,
-  Trash2,
-  Loader2,
   ArrowRight,
   CheckCircle2,
+  Image as ImageIcon,
+  Loader2,
+  Trash2,
+  Upload,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
-import { OptimizedImage } from '@/components/OptimizedImage';
-import imageCompression from 'browser-image-compression';
-import { useMutation } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
+import { useDropzone, type FileRejection } from 'react-dropzone';
 
 interface CoverImageUploaderProps {
   value?: string; // Current image URL (backward compatible)

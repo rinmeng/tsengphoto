@@ -27,7 +27,7 @@ function AlertDialog(props: AlertDialogProps) {
   return (
     <AlertDialogProvider value={{ isOpen, setIsOpen }}>
       <AlertDialogPrimitive.Root
-        data-slot="alert-dialog"
+        data-slot='alert-dialog'
         {...props}
         onOpenChange={setIsOpen}
       />
@@ -35,14 +35,10 @@ function AlertDialog(props: AlertDialogProps) {
   );
 }
 
-type AlertDialogTriggerProps = React.ComponentProps<
-  typeof AlertDialogPrimitive.Trigger
->;
+type AlertDialogTriggerProps = React.ComponentProps<typeof AlertDialogPrimitive.Trigger>;
 
 function AlertDialogTrigger(props: AlertDialogTriggerProps) {
-  return (
-    <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />
-  );
+  return <AlertDialogPrimitive.Trigger data-slot='alert-dialog-trigger' {...props} />;
 }
 
 type AlertDialogPortalProps = Omit<
@@ -57,7 +53,7 @@ function AlertDialogPortal(props: AlertDialogPortalProps) {
     <AnimatePresence>
       {isOpen && (
         <AlertDialogPrimitive.Portal
-          data-slot="alert-dialog-portal"
+          data-slot='alert-dialog-portal'
           forceMount
           {...props}
         />
@@ -77,13 +73,9 @@ function AlertDialogOverlay({
   ...props
 }: AlertDialogOverlayProps) {
   return (
-    <AlertDialogPrimitive.Overlay
-      data-slot="alert-dialog-overlay"
-      asChild
-      forceMount
-    >
+    <AlertDialogPrimitive.Overlay data-slot='alert-dialog-overlay' asChild forceMount>
       <motion.div
-        key="alert-dialog-overlay"
+        key='alert-dialog-overlay'
         initial={{ opacity: 0, filter: 'blur(4px)' }}
         animate={{ opacity: 1, filter: 'blur(0px)' }}
         exit={{ opacity: 0, filter: 'blur(4px)' }}
@@ -112,8 +104,7 @@ function AlertDialogContent({
   transition = { type: 'spring', stiffness: 150, damping: 25 },
   ...props
 }: AlertDialogContentProps) {
-  const initialRotation =
-    from === 'bottom' || from === 'left' ? '20deg' : '-20deg';
+  const initialRotation = from === 'bottom' || from === 'left' ? '20deg' : '-20deg';
   const isVertical = from === 'top' || from === 'bottom';
   const rotateAxis = isVertical ? 'rotateX' : 'rotateY';
 
@@ -126,8 +117,8 @@ function AlertDialogContent({
       onEscapeKeyDown={onEscapeKeyDown}
     >
       <motion.div
-        key="alert-dialog-content"
-        data-slot="alert-dialog-content"
+        key='alert-dialog-content'
+        data-slot='alert-dialog-content'
         initial={{
           opacity: 0,
           filter: 'blur(4px)',
@@ -150,46 +141,34 @@ function AlertDialogContent({
   );
 }
 
-type AlertDialogCancelProps = React.ComponentProps<
-  typeof AlertDialogPrimitive.Cancel
->;
+type AlertDialogCancelProps = React.ComponentProps<typeof AlertDialogPrimitive.Cancel>;
 
 function AlertDialogCancel(props: AlertDialogCancelProps) {
-  return (
-    <AlertDialogPrimitive.Cancel data-slot="alert-dialog-cancel" {...props} />
-  );
+  return <AlertDialogPrimitive.Cancel data-slot='alert-dialog-cancel' {...props} />;
 }
 
-type AlertDialogActionProps = React.ComponentProps<
-  typeof AlertDialogPrimitive.Action
->;
+type AlertDialogActionProps = React.ComponentProps<typeof AlertDialogPrimitive.Action>;
 
 function AlertDialogAction(props: AlertDialogActionProps) {
-  return (
-    <AlertDialogPrimitive.Action data-slot="alert-dialog-action" {...props} />
-  );
+  return <AlertDialogPrimitive.Action data-slot='alert-dialog-action' {...props} />;
 }
 
 type AlertDialogHeaderProps = React.ComponentProps<'div'>;
 
 function AlertDialogHeader(props: AlertDialogHeaderProps) {
-  return <div data-slot="alert-dialog-header" {...props} />;
+  return <div data-slot='alert-dialog-header' {...props} />;
 }
 
 type AlertDialogFooterProps = React.ComponentProps<'div'>;
 
 function AlertDialogFooter(props: AlertDialogFooterProps) {
-  return <div data-slot="alert-dialog-footer" {...props} />;
+  return <div data-slot='alert-dialog-footer' {...props} />;
 }
 
-type AlertDialogTitleProps = React.ComponentProps<
-  typeof AlertDialogPrimitive.Title
->;
+type AlertDialogTitleProps = React.ComponentProps<typeof AlertDialogPrimitive.Title>;
 
 function AlertDialogTitle(props: AlertDialogTitleProps) {
-  return (
-    <AlertDialogPrimitive.Title data-slot="alert-dialog-title" {...props} />
-  );
+  return <AlertDialogPrimitive.Title data-slot='alert-dialog-title' {...props} />;
 }
 
 type AlertDialogDescriptionProps = React.ComponentProps<
@@ -198,10 +177,7 @@ type AlertDialogDescriptionProps = React.ComponentProps<
 
 function AlertDialogDescription(props: AlertDialogDescriptionProps) {
   return (
-    <AlertDialogPrimitive.Description
-      data-slot="alert-dialog-description"
-      {...props}
-    />
+    <AlertDialogPrimitive.Description data-slot='alert-dialog-description' {...props} />
   );
 }
 
