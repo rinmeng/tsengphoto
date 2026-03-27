@@ -27,6 +27,7 @@ export function SearchAndFilterBar<T>({
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
+  const prevQueryRef = useRef<string>('');
 
   const fuse = useMemo(() => {
     return new Fuse(items, {
@@ -56,8 +57,14 @@ export function SearchAndFilterBar<T>({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Apply search filter
+  // Apply search filter - only when query actually changes
   useEffect(() => {
+    // Skip if query hasn't changed
+    if (prevQueryRef.current === debouncedQuery) {
+      return;
+    }
+    prevQueryRef.current = debouncedQuery;
+
     const isSearching = debouncedQuery.trim().length > 0;
 
     if (isSearching) {
@@ -65,9 +72,9 @@ export function SearchAndFilterBar<T>({
       const results = searchResults.map((result: FuseResult<T>) => result.item);
       onFilteredResults(results, true);
     } else {
-      onFilteredResults(items, false);
+      onFilteredResults([], false);
     }
-  }, [debouncedQuery, items, fuse, onFilteredResults]);
+  }, [debouncedQuery, fuse, onFilteredResults]);
 
   const displayedCount = useMemo(() => {
     if (!debouncedQuery.trim()) {

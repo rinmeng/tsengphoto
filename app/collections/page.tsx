@@ -22,7 +22,7 @@ import type { CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import CollectionsLoading from './loading';
 
@@ -40,6 +40,16 @@ export default function CollectionsPage() {
     []
   );
   const [isFiltered, setIsFiltered] = useState(false);
+
+  const handleFilteredResults = useCallback(
+    (results: CollectionWithImages[], filtered: boolean) => {
+      setIsFiltered(filtered);
+      if (filtered) {
+        setFilteredCollections(results);
+      }
+    },
+    []
+  );
 
   const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: isAuthenticated }],
@@ -190,17 +200,14 @@ export default function CollectionsPage() {
           <SearchAndFilterBar
             items={collections}
             searchKeys={['title', 'description', 'slug']}
-            onFilteredResults={(results, filtered) => {
-              setFilteredCollections(results);
-              setIsFiltered(filtered);
-            }}
+            onFilteredResults={handleFilteredResults}
             placeholder='Search collections...'
             countLabel='collections'
           />
         </div>
 
         <CollectionGrid
-          collections={filteredCollections}
+          collections={isFiltered ? filteredCollections : collections}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}
