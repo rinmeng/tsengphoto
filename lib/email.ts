@@ -79,7 +79,7 @@ export function buildEmailHtml({
           Reply to ${firstName}
         </a>
 
-        <div style="margin-top:1.5rem;font-size:11px;color:#8a7f6e;text-align:center;">Sent from Tseng Photography website, using the email ${process.env.NEXT_PUBLIC_RESEND_EMAIL_FROM}</div>
+        <div style="margin-top:1.5rem;font-size:11px;color:#8a7f6e;text-align:center;">Sent from Tseng Photography website</div>
       </div>
       
     </div>
