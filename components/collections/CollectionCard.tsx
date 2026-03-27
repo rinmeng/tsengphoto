@@ -77,6 +77,7 @@ export function CollectionCard({
               src={collection.cover_image}
               alt={collection.title}
               fill
+              quality={60}
               className='object-cover object-[center_20%] transition-transform
                 group-hover:scale-105'
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
