@@ -19,7 +19,15 @@ export async function sendContactForm(values: ContactFormValues): Promise<void> 
     ...values,
     preferredDate: values.preferredDate?.toISOString(),
   };
-  // wait for 3 seconds to simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.info('To be implemented: sendContactForm', formattedValues);
+
+  const res = await fetch('/api/v1/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formattedValues),
+  });
+
+  if (!res.ok) {
+    const { error } = await res.json();
+    throw new Error(error ?? 'Failed to send message');
+  }
 }

@@ -39,7 +39,7 @@ const contactSchema = z.object({
   lastName: z.string().min(1, 'Last name is required.'),
   email: z.email('Invalid email format.'),
   phone: z.string().optional(),
-  services: z.array(z.enum(SERVICES)).optional(),
+  services: z.array(z.enum(SERVICES)).min(1, 'Please select at least one service.'),
   preferredDate: z.date().optional(),
   message: z.string().optional(),
 });
@@ -268,7 +268,9 @@ export default function ContactPage() {
                       name='services'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Services</FormLabel>
+                          <FormLabel>
+                            Services <Required />
+                          </FormLabel>
                           <div className='flex gap-6'>
                             {SERVICES.map((service) => (
                               <FormItem
