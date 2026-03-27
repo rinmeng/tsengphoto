@@ -3,13 +3,14 @@ import { CollectionWithImages } from '@/lib/types/database';
 import { CollectionCard } from './CollectionCard';
 import { getDelayClass } from '@/utils/animations';
 import { EmptyState } from '../EmptyState';
-import { ArrowLeft, ImageOff } from 'lucide-react';
+import { ArrowLeft, ImageOff, Search } from 'lucide-react';
 
 interface CollectionGridProps {
   collections: CollectionWithImages[];
   onEdit?: (collection: CollectionWithImages) => void;
   onDelete?: (collectionId: string) => void;
   onPublish?: (collectionId: string) => void;
+  isFiltered?: boolean;
 }
 
 export function CollectionGrid({
@@ -17,6 +18,7 @@ export function CollectionGrid({
   onEdit,
   onDelete,
   onPublish,
+  isFiltered = false,
 }: CollectionGridProps) {
   // Sort collections by date (recent to old), extract year from title, then alphabetical
   const sortedCollections = useMemo(() => {
@@ -59,10 +61,14 @@ export function CollectionGrid({
         <EmptyState
           className='h-full'
           bordered={true}
-          icon={ImageOff}
-          title={`There's nothing here`}
-          description='Come back later when we have some collections to show!'
-          buttonIcon={ArrowLeft}
+          icon={isFiltered ? Search : ImageOff}
+          title={isFiltered ? 'No results found' : `There's nothing here`}
+          description={
+            isFiltered
+              ? 'Try adjusting your search to find what you are looking for.'
+              : 'Come back later when we have some collections to show!'
+          }
+          buttonIcon={isFiltered ? undefined : ArrowLeft}
         />
       </div>
     );

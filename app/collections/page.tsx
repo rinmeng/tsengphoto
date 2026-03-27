@@ -39,6 +39,7 @@ export default function CollectionsPage() {
   const [filteredCollections, setFilteredCollections] = useState<CollectionWithImages[]>(
     []
   );
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [...collectionsQueryKeys.list(), { includeUnpublished: isAuthenticated }],
@@ -189,7 +190,10 @@ export default function CollectionsPage() {
           <SearchAndFilterBar
             items={collections}
             searchKeys={['title', 'description', 'slug']}
-            onFilteredResults={setFilteredCollections}
+            onFilteredResults={(results, filtered) => {
+              setFilteredCollections(results);
+              setIsFiltered(filtered);
+            }}
             placeholder='Search collections...'
             countLabel='collections'
           />
@@ -200,6 +204,7 @@ export default function CollectionsPage() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}
+          isFiltered={isFiltered}
         />
 
         <CollectionForm mode='add' open={addDialogOpen} onOpenChange={setAddDialogOpen} />
