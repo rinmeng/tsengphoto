@@ -1,13 +1,13 @@
 'use client';
-import { useState } from 'react';
-import Image, { ImageProps } from 'next/image';
-import { Loader2 } from 'lucide-react';
-import { useImageOptimization } from '@/contexts/ImageOptimizationContext';
 import { Text } from '@/components/Text';
+import { useImageOptimization } from '@/contexts/ImageOptimizationContext';
 import { getDelayClass } from '@/utils/animations';
+import { Loader2 } from 'lucide-react';
+import Image, { ImageProps } from 'next/image';
+import { useState } from 'react';
 
 interface OptimizedImageProps extends ImageProps {
-  showLoading?: boolean;
+  showLoading?: boolean | 'spinner-only';
 }
 
 /**
@@ -66,12 +66,14 @@ export function OptimizedImage({ showLoading = false, ...props }: OptimizedImage
             className={`size-8 animate-spin text-primary mb-3 fade-in-from-bottom
             ${getDelayClass(2)}`}
           />
-          <Text
-            variant='bd-xs'
-            className={`text-center text-white fade-in-from-bottom ${getDelayClass(3)}`}
-          >
-            We&apos;re fetching the highest quality possible...
-          </Text>
+          {showLoading !== 'spinner-only' && (
+            <Text
+              variant='bd-xs'
+              className={`text-center text-white fade-in-from-bottom ${getDelayClass(3)}`}
+            >
+              We&apos;re fetching the highest quality possible...
+            </Text>
+          )}
         </div>
       )}
       {imageElement}

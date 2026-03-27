@@ -1,24 +1,24 @@
 'use client';
 
-import Link from 'next/link';
-import { CollectionWithImages } from '@/lib/types/database';
+import { Button } from '@/components/animate-ui/components/button';
+import { OptimizedImage } from '@/components/OptimizedImage';
+import { Text } from '@/components/Text';
 import {
   Badge,
   Card,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
-  CardFooter,
+  TooltipTrigger,
 } from '@/components/ui';
-import { Text } from '@/components/Text';
-import { Calendar, Globe, MapPin, Trash2, GlobeLock, Edit, ImageOff } from 'lucide-react';
-import { cn } from '@/lib';
-import { Button } from '@/components/animate-ui/components/button';
-import { OptimizedImage } from '@/components/OptimizedImage';
 import { useAuth } from '@/hooks/use-auth';
+import { cn } from '@/lib';
+import { CollectionWithImages } from '@/lib/types/database';
+import { Calendar, Edit, Globe, GlobeLock, ImageOff, MapPin, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 interface CollectionCardProps {
   collection: CollectionWithImages;
@@ -77,6 +77,7 @@ export function CollectionCard({
               src={collection.cover_image}
               alt={collection.title}
               fill
+              showLoading='spinner-only'
               loading='lazy'
               className='object-cover object-[center_20%] transition-transform
                 group-hover:scale-105'
