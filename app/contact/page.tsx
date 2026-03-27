@@ -28,11 +28,10 @@ import { Separator } from '@/components/ui';
 import { toast } from 'sonner';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation } from '@tanstack/react-query';
+import { SERVICES } from '@/services/contact.service';
 
 const PHOTO_URL =
   'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
-
-const SERVICES = ['Events', 'Photoshoot'] as const;
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -272,7 +271,7 @@ export default function ContactPage() {
                             Services <Required />
                           </FormLabel>
                           <div className='flex gap-6'>
-                            {SERVICES.map((service) => (
+                            {Object.values(SERVICES).map((service) => (
                               <FormItem
                                 key={service}
                                 className='flex items-center gap-2.5 space-y-0'

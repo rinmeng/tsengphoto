@@ -1,6 +1,10 @@
 import * as z from 'zod';
 
-const SERVICES = ['Events', 'Photoshoot'] as const;
+export enum SERVICES {
+  GENERAL_INQUIRIES = 'General Inquiries',
+  EVENTS = 'Events',
+  PHOTOSHOOT = 'Photoshoot',
+}
 
 export const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
