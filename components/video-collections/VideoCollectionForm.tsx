@@ -45,7 +45,7 @@ const videoCollectionSchema = z.object({
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
-  cover_image: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
+  cover_image: z.url('Must be a valid URL.').optional().or(z.literal('')),
   cover_image_id: z.string().uuid().optional().or(z.literal('')),
   is_published: z.boolean(),
 });

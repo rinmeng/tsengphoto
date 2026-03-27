@@ -56,7 +56,6 @@ export function VideoCard({
               src={video.thumbnail_url}
               alt={video.title || 'Video thumbnail'}
               fill
-              quality={60}
               className='object-cover object-[center_20%] transition-transform
                 group-hover:scale-105'
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'

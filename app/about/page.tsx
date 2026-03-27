@@ -26,7 +26,6 @@ export default function AboutPage() {
               alt='Young man with glasses sitting on the edge of a blue sports car with gullwing doors open, another person standing beside him holding a camera.'
               fill
               className='object-cover'
-              priority
             />
           </div>
 

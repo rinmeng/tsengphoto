@@ -264,7 +264,7 @@ export function UploadsGallery({
                         src={upload.file_url}
                         alt={upload.file_name}
                         fill
-                        quality={60}
+                        quality={70}
                         className='object-cover'
                         showLoading={true}
                       />

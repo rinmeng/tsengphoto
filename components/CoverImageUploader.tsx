@@ -10,6 +10,7 @@ import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import imageCompression from 'browser-image-compression';
 
 interface CoverImageUploaderProps {
   value?: string; // Current image URL (backward compatible)
@@ -50,16 +51,36 @@ export function CoverImageUploader({
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-        setFileState({
-          file,
-          status: 'uploading',
-          progress: 0,
-        });
-        setIsUploading(true);
-        onUploadingChange?.(true);
+        const originalFile = acceptedFiles[0];
 
         try {
+          // Measure actual dimensions first
+          const dimensions = await getImageDimensions(originalFile);
+
+          // Only downscale if wider than 1920px (overkill for a cover)
+          const maxWidth = Math.min(dimensions.width, 1920);
+
+          const compressedFile = await imageCompression(originalFile, {
+            maxWidthOrHeight: maxWidth,
+            fileType: 'image/webp',
+            initialQuality: 1, // resizing does the heavy lifting, we can leave it at 1.
+            useWebWorker: true,
+          });
+
+          // Rename to .webp extension
+          const baseName = originalFile.name.replace(/\.[^.]+$/, '');
+          const file = new File([compressedFile], `${baseName}.webp`, {
+            type: 'image/webp',
+          });
+
+          setFileState({
+            file,
+            status: 'uploading',
+            progress: 0,
+          });
+          setIsUploading(true);
+          onUploadingChange?.(true);
+
           const result = await startUpload([file]);
           if (result && result[0]?.url) {
             setFileState((prev) =>
@@ -69,7 +90,7 @@ export function CoverImageUploader({
             // Extract uploadId from serverData
             const uploadId = result[0].serverData?.uploadId;
             onChange?.({
-              url: result[0].url,
+              url: result[0].ufsUrl,
               uploadId: uploadId,
             });
             toast.success('Cover image uploaded successfully');
@@ -159,6 +180,19 @@ export function CoverImageUploader({
     setFileState(null);
     onRemove?.();
   };
+
+  function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        console.log(img.naturalWidth, img.naturalHeight);
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+  }
 
   // If there's already an uploaded image (value), show it
   if (value && !fileState) {

@@ -9,6 +9,7 @@ import { Text } from '@/components/Text';
 import { Upload, Image as ImageIcon, X, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import imageCompression from 'browser-image-compression';
 
 interface ImageUploaderProps {
   onUploadComplete?: (uploadedUrls?: string[]) => void;
@@ -46,12 +47,39 @@ export function ImageUploader({
     },
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    // Compress images before adding to queue
+    const compressedFiles: File[] = [];
+
+    for (const file of acceptedFiles) {
+      try {
+        // Compress to WebP at 75% quality
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 16,
+          fileType: 'image/webp',
+          initialQuality: 0.75,
+          useWebWorker: true,
+        });
+
+        // Rename to .webp extension
+        const baseName = file.name.replace(/\.[^.]+$/, '');
+        const webpFile = new File([compressedFile], `${baseName}.webp`, {
+          type: 'image/webp',
+        });
+
+        compressedFiles.push(webpFile);
+      } catch (error) {
+        console.error('Compression failed for', file.name, error);
+        // If compression fails, use original file
+        compressedFiles.push(file);
+      }
+    }
+
     setFiles((prev) => {
       const newFiles: FileWithStatus[] = [...prev];
       const existingNames = new Set(prev.map((f) => f.file.name));
 
-      acceptedFiles.forEach((file) => {
+      compressedFiles.forEach((file) => {
         let fileName = file.name;
         let counter = 1;
 
@@ -131,8 +159,8 @@ export function ImageUploader({
 
       try {
         const result = await startUpload([files[i].file]);
-        if (result && result[0]?.url) {
-          uploadedUrls.push(result[0].url);
+        if (result && result[0]?.ufsUrl) {
+          uploadedUrls.push(result[0].ufsUrl);
         }
         setFiles((prev) =>
           prev.map((f, idx) =>
