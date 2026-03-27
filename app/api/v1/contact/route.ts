@@ -1,7 +1,7 @@
 // app/api/contact/route.ts
 
 import { Resend } from 'resend';
-import { buildEmailHtml } from '@/lib/email';
+import { buildEmailHtml, buildConfirmationHtml } from '@/lib/email';
 import { Logger } from '@/lib/logger';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -13,21 +13,29 @@ export async function POST(req: Request) {
   const { firstName, lastName, email, phone, services, preferredDate, message } = body;
 
   try {
-    await resend.emails.send({
-      from: `Tseng Photography <${FROM_EMAIL}>`,
-      to: TO_EMAIL,
-      replyTo: email,
-      subject: `New inquiry from ${firstName} ${lastName}`,
-      html: buildEmailHtml({
-        firstName,
-        lastName,
-        email,
-        phone,
-        services,
-        preferredDate,
-        message,
+    await Promise.all([
+      resend.emails.send({
+        from: `Tseng Photography <${FROM_EMAIL}>`,
+        to: TO_EMAIL,
+        replyTo: email,
+        subject: `New inquiry from ${firstName} ${lastName}`,
+        html: buildEmailHtml({
+          firstName,
+          lastName,
+          email,
+          phone,
+          services,
+          preferredDate,
+          message,
+        }),
       }),
-    });
+      resend.emails.send({
+        from: `Tseng Photography <${FROM_EMAIL}>`,
+        to: email,
+        subject: 'We received your message',
+        html: buildConfirmationHtml({ firstName }),
+      }),
+    ]);
   } catch (error) {
     Logger.error('Error sending email:', error);
     return Response.json(

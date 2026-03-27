@@ -85,3 +85,25 @@ export function buildEmailHtml({
     </div>
   `;
 }
+
+export function buildConfirmationHtml({ firstName }: { firstName: string }) {
+  return `
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#fdf9f4;border:1px solid #d4c9b8;border-radius:4px;overflow:hidden;">
+      
+      <div style="background:#3d3126;padding:2rem;text-align:center;">
+        <p style="color:#f5ede3;font-size:24px;font-weight:400;margin:0;letter-spacing:0.05em;">Tseng Photography</p>
+      </div>
+
+      <div style="padding:2rem;">
+        <p style="font-size:15px;color:#3d3126;margin:0 0 1rem;font-family:Georgia,serif;">Hi ${firstName},</p>
+        <p style="font-size:14px;color:#3d3126;line-height:1.7;margin:0 0 1.5rem;font-family:Georgia,serif;">
+          Thank you for reaching out. Your message has been received and I'll be in touch with you shortly.
+        </p>
+        <p style="font-size:14px;color:#8a7f6e;line-height:1.7;margin:0;font-family:Georgia,serif;">
+          — Matthew Tseng
+        </p>
+      </div>
+
+    </div>
+  `;
+}
