@@ -18,10 +18,15 @@ export function CollectionGrid({
   onDelete,
   onPublish,
 }: CollectionGridProps) {
-  // Sort collections by date (recent to old), fall back to created_at if no date
+  // Sort collections by date (recent to old), extract year from title, then alphabetical
   const sortedCollections = useMemo(() => {
+    const extractYear = (title: string): number | null => {
+      const yearMatch = title.match(/\b(19\d{2}|20\d{2})\b/);
+      return yearMatch ? parseInt(yearMatch[1], 10) : null;
+    };
+
     return [...collections].sort((a, b) => {
-      // Both have dates - sort by date
+      // Both have explicit dates - sort by date (newest first)
       if (a.date && b.date) {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
@@ -29,8 +34,22 @@ export function CollectionGrid({
       if (a.date && !b.date) return -1;
       // Only b has date - b comes first
       if (!a.date && b.date) return 1;
-      // Neither has date - sort by created_at
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+
+      // Extract years from titles
+      const yearA = extractYear(a.title);
+      const yearB = extractYear(b.title);
+
+      // Both have years in title - sort by year (newest first)
+      if (yearA && yearB) {
+        return yearB - yearA;
+      }
+      // Only a has year - a comes first
+      if (yearA && !yearB) return -1;
+      // Only b has year - b comes first
+      if (!yearA && yearB) return 1;
+
+      // Neither has date nor year - sort alphabetically (A-Z)
+      return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
     });
   }, [collections]);
 
