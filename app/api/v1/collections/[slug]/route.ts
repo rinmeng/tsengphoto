@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { Logger } from '@/lib/logger';
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * GET /api/v1/collections/[slug]
@@ -27,6 +27,7 @@ export async function GET(
       .select(
         `
         *,
+        collection_group_name:collection_groups(name),
         images:collection_image(*)
       `
       )
@@ -46,7 +47,14 @@ export async function GET(
       return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
     }
 
-    return NextResponse.json({ data: collection }, { status: 200 });
+    // Transform collection_group_name from nested object to string
+    const transformedCollection = {
+      ...collection,
+      collection_group_name:
+        (collection.collection_group_name as { name: string } | null)?.name || null,
+    };
+
+    return NextResponse.json({ data: transformedCollection }, { status: 200 });
   } catch (error) {
     Logger.error('Error in GET /api/v1/collections/[slug]:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });

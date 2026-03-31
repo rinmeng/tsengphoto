@@ -37,7 +37,7 @@ export default function SeriesPage() {
     useState<CollectionWithImages | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
-  const { data: collections = [], isLoading } = useQuery({
+  const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [
       ...collectionsQueryKeys.byType('series'),
       { includeUnpublished: isAuthenticated },
@@ -53,7 +53,7 @@ export default function SeriesPage() {
     },
   });
 
-  const { data: groups = [] } = useQuery({
+  const { data: groups = [] } = useQuery<CollectionGroup[]>({
     queryKey: collectionGroupsQueryKeys.all,
     queryFn: async () => {
       const response = await fetch('/api/v1/collection-groups');

@@ -150,10 +150,19 @@ export function CollectionCard({
             </div>
           )}
 
-          {/* Type badge */}
-          <Badge className='capitalize'>
-            <Text variant='bd-xs'>{collection.type}</Text>
-          </Badge>
+          <div className='flex flex-row gap-2'>
+            {/* Type badge */}
+            <Badge variant='outline' className='capitalize'>
+              <Text variant='bd-xs'>{collection.type}</Text>
+            </Badge>
+
+            {/* Group badge */}
+            {collection.collection_group_name && (
+              <Badge variant='outline' className='capitalize'>
+                <Text variant='bd-xs'>{collection.collection_group_name}</Text>
+              </Badge>
+            )}
+          </div>
         </CardFooter>
       </Card>
     </Link>

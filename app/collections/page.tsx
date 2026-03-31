@@ -63,7 +63,7 @@ export default function CollectionsPage() {
       return result.data || [];
     },
   });
-  const { data: groups = [] } = useQuery({
+  const { data: groups = [] } = useQuery<CollectionGroup[]>({
     queryKey: collectionGroupsQueryKeys.all,
     queryFn: async () => {
       const response = await fetch('/api/v1/collection-groups');
