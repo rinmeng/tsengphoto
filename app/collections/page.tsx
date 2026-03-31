@@ -11,24 +11,31 @@ import {
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
 import { Button } from '@/components/animate-ui/components/button';
+import { CollectionCard } from '@/components/collections/CollectionCard';
 import { CollectionForm } from '@/components/collections/CollectionForm';
 import { CollectionGrid } from '@/components/collections/CollectionGrid';
+import { CollectionGroupCard } from '@/components/collections/CollectionGroupCard';
 import { SearchAndFilterBar } from '@/components/SearchAndFilterBar';
 import { Text } from '@/components/Text';
 import { Separator } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
+import { collectionGroupsQueryKeys } from '@/lib/queries/collection-groups';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
-import type { CollectionWithImages } from '@/lib/types';
+import type { CollectionGroup, CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import CollectionsLoading from './loading';
 
 export default function CollectionsPage() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -41,14 +48,48 @@ export default function CollectionsPage() {
   );
   const [isFiltered, setIsFiltered] = useState(false);
 
+  // Get all filter params from URL
+  const searchQuery = searchParams.get('q') || '';
+  const groupFilter = searchParams.get('group');
+
+  // Helper to update URL params
+  const updateURLParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value && value !== '') {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      const newSearch = params.toString();
+      router.push(newSearch ? `${pathname}?${newSearch}` : pathname);
+    },
+    [router, pathname, searchParams]
+  );
+
   const handleFilteredResults = useCallback(
     (results: CollectionWithImages[], filtered: boolean) => {
       setIsFiltered(filtered);
-      if (filtered) {
-        setFilteredCollections(results);
-      }
+      // Always set filtered collections (includes sorting even when not filtered)
+      setFilteredCollections(results);
     },
     []
+  );
+
+  const handleGroupFilterChange = useCallback(
+    (group: string | null) => {
+      updateURLParams({ group });
+    },
+    [updateURLParams]
+  );
+
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      updateURLParams({ q: query || null });
+    },
+    [updateURLParams]
   );
 
   const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
@@ -62,7 +103,16 @@ export default function CollectionsPage() {
       return result.data || [];
     },
   });
-
+  const { data: groups = [] } = useQuery<CollectionGroup[]>({
+    queryKey: collectionGroupsQueryKeys.all,
+    queryFn: async () => {
+      const response = await fetch('/api/v1/collection-groups');
+      if (!response.ok) throw new Error('Failed to fetch groups');
+      const result = await response.json();
+      return result.data as CollectionGroup[];
+    },
+    enabled: addDialogOpen || editDialogOpen,
+  });
   const deleteMutation = useMutation({
     mutationFn: async (collectionId: string) => {
       const response = await fetch('/api/v1/collections', {
@@ -138,6 +188,30 @@ export default function CollectionsPage() {
     },
   });
 
+  const deleteGroupMutation = useMutation({
+    mutationFn: async (groupId: string) => {
+      const response = await fetch(`/api/v1/collection-groups/${groupId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete group');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionGroupsQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
+      toast.success('Group deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to delete group', { description: error.message });
+    },
+  });
+
+  const handleDeleteGroup = (groupId: string) => {
+    deleteGroupMutation.mutate(groupId);
+  };
+
   const handleEdit = (collection: CollectionWithImages) => {
     setSelectedCollection(collection);
     setEditDialogOpen(true);
@@ -157,6 +231,25 @@ export default function CollectionsPage() {
       deleteMutation.mutate(collectionToDelete);
     }
   };
+
+  // Group collections by collection_group_name
+  const groupedCollections = useMemo(() => {
+    const groups: Record<string, CollectionWithImages[]> = {};
+
+    collections.forEach((collection) => {
+      const groupName = collection.collection_group_name || 'Ungrouped';
+      if (!groups[groupName]) {
+        groups[groupName] = [];
+      }
+      groups[groupName].push(collection);
+    });
+
+    return groups;
+  }, [collections]);
+
+  const groupNames = useMemo(() => {
+    return Object.keys(groupedCollections).filter((name) => name !== 'Ungrouped');
+  }, [groupedCollections]);
 
   if (isLoading) {
     return <CollectionsLoading />;
@@ -199,22 +292,96 @@ export default function CollectionsPage() {
         <div className={`mb-6 fade-in-from-bottom ${getDelayClass(3)}`}>
           <SearchAndFilterBar
             items={collections}
-            searchKeys={['title', 'description', 'slug']}
+            searchKeys={['title', 'description', 'slug', 'collection_group_name']}
             onFilteredResults={handleFilteredResults}
             placeholder='Search collections...'
             countLabel='collections'
+            searchQuery={searchQuery}
+            groupFilter={groupFilter}
+            availableGroups={groupNames}
+            onSearchChange={handleSearchChange}
+            onGroupFilterChange={handleGroupFilterChange}
           />
         </div>
 
+        {/* Collection Groups - Show when not filtered and groups exist */}
+        {!isFiltered && !groupFilter && groupNames.length > 0 && (
+          <>
+            <div className='mb-4'>
+              <Text variant='hd-lg' className='mb-4'>
+                Collection Groups
+              </Text>
+            </div>
+            <div
+              className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
+                mb-12'
+            >
+              {groupNames.map((groupName, index) => (
+                <CollectionGroupCard
+                  key={groupName}
+                  groupName={groupName}
+                  collections={groupedCollections[groupName]}
+                  className={`fade-in-from-bottom ${getDelayClass(index)}`}
+                  onClick={() => handleGroupFilterChange(groupName)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Unique Collection - Show ungrouped collections when not filtered */}
+        {!isFiltered &&
+          !groupFilter &&
+          groupedCollections['Ungrouped'] &&
+          groupedCollections['Ungrouped'].length > 0 && (
+            <>
+              <div className='mb-4'>
+                <Text variant='hd-lg' className='mb-4'>
+                  Unique Collections
+                </Text>
+              </div>
+              <div
+                className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
+                  mb-12'
+              >
+                {groupedCollections['Ungrouped'].map((collection, index) => (
+                  <CollectionCard
+                    key={collection.id}
+                    collection={collection}
+                    className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onPublish={handlePublish}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+        {/* All Collections */}
+        {!isFiltered && !groupFilter && (
+          <div className='mb-4'>
+            <Text variant='hd-lg' className='mb-4'>
+              All Collections
+            </Text>
+          </div>
+        )}
+
         <CollectionGrid
-          collections={isFiltered ? filteredCollections : collections}
+          collections={filteredCollections}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPublish={handlePublish}
-          isFiltered={isFiltered}
+          isFiltered={isFiltered || !!groupFilter}
         />
 
-        <CollectionForm mode='add' open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+        <CollectionForm
+          mode='add'
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          groups={groups}
+          onDeleteGroup={handleDeleteGroup}
+        />
 
         {selectedCollection && (
           <CollectionForm
@@ -222,6 +389,8 @@ export default function CollectionsPage() {
             collection={selectedCollection}
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
+            groups={groups}
+            onDeleteGroup={handleDeleteGroup}
           />
         )}
 

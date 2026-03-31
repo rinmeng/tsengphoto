@@ -1,15 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { CollectionGrid } from '@/components/collections/CollectionGrid';
-import { CollectionForm } from '@/components/collections/CollectionForm';
-import { Text } from '@/components/Text';
-import { getDelayClass } from '@/utils/animations';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { collectionsQueryKeys } from '@/lib/queries/collections';
-import { Button } from '@/components/animate-ui/components/button';
-import { Plus } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import CollectionsLoading from '@/app/collections/loading';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +11,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
-import { toast } from 'sonner';
-import type { CollectionWithImages } from '@/lib/types';
-import CollectionsLoading from '@/app/collections/loading';
+import { Button } from '@/components/animate-ui/components/button';
+import { CollectionForm } from '@/components/collections/CollectionForm';
+import { CollectionGrid } from '@/components/collections/CollectionGrid';
+import { Text } from '@/components/Text';
 import { Separator } from '@/components/ui';
+import { useAuth } from '@/hooks/use-auth';
+import { collectionGroupsQueryKeys } from '@/lib/queries/collection-groups';
+import { collectionsQueryKeys } from '@/lib/queries/collections';
+import type { CollectionGroup, CollectionWithImages } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function EventsPage() {
   const { isAuthenticated } = useAuth();
@@ -36,7 +37,7 @@ export default function EventsPage() {
     useState<CollectionWithImages | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
-  const { data: collections = [], isLoading } = useQuery({
+  const { data: collections = [], isLoading } = useQuery<CollectionWithImages[]>({
     queryKey: [
       ...collectionsQueryKeys.byType('event'),
       { includeUnpublished: isAuthenticated },
@@ -50,6 +51,17 @@ export default function EventsPage() {
       const allCollections = result.data || [];
       return allCollections.filter((c: CollectionWithImages) => c.type === 'event');
     },
+  });
+
+  const { data: groups = [] } = useQuery<CollectionGroup[]>({
+    queryKey: collectionGroupsQueryKeys.all,
+    queryFn: async () => {
+      const response = await fetch('/api/v1/collection-groups');
+      if (!response.ok) throw new Error('Failed to fetch groups');
+      const result = await response.json();
+      return result.data as CollectionGroup[];
+    },
+    enabled: addDialogOpen || editDialogOpen,
   });
 
   const deleteMutation = useMutation({
@@ -123,6 +135,29 @@ export default function EventsPage() {
       });
     },
   });
+  const deleteGroupMutation = useMutation({
+    mutationFn: async (groupId: string) => {
+      const response = await fetch(`/api/v1/collection-groups/${groupId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete group');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionGroupsQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
+      toast.success('Group deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to delete group', { description: error.message });
+    },
+  });
+
+  const handleDeleteGroup = (groupId: string) => {
+    deleteGroupMutation.mutate(groupId);
+  };
 
   const handleEdit = (collection: CollectionWithImages) => {
     setSelectedCollection(collection);
@@ -191,6 +226,8 @@ export default function EventsPage() {
           open={addDialogOpen}
           onOpenChange={setAddDialogOpen}
           defaultType='event'
+          groups={groups}
+          onDeleteGroup={handleDeleteGroup}
         />
 
         {selectedCollection && (
@@ -199,6 +236,8 @@ export default function EventsPage() {
             collection={selectedCollection}
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
+            groups={groups}
+            onDeleteGroup={handleDeleteGroup}
           />
         )}
 

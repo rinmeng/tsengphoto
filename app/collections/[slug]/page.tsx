@@ -1,16 +1,5 @@
 'use client';
 
-import { notFound, useParams } from 'next/navigation';
-import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Upload, ImageIcon, Share2 } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/animate-ui/components/button';
-import { Badge } from '@/components/ui';
-import { getDelayClass } from '@/utils/animations';
-import { UserUploadedImages } from './components/UserUploadedImages';
-import { DriveImages } from './components/DriveImages';
-import { ImageViewer } from './components/ImageViewer';
-import { CollectionUploadDialog } from '@/components/collections/CollectionUploadDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,15 +10,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
-import { Loader2 } from 'lucide-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { collectionsQueryKeys } from '@/lib/queries/collections';
+import { Button } from '@/components/animate-ui/components/button';
+import { CollectionUploadDialog } from '@/components/collections/CollectionUploadDialog';
+import { EmptyState } from '@/components/EmptyState';
+import { Text } from '@/components/Text';
+import { Badge } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { collectionsQueryKeys } from '@/lib/queries/collections';
+import type { CollectionImage, CollectionWithImages } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  ArrowLeft,
+  Calendar,
+  ImageIcon,
+  Loader2,
+  MapPin,
+  Share2,
+  Upload,
+} from 'lucide-react';
+import Link from 'next/link';
+import { notFound, useParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { DriveImages } from './components/DriveImages';
+import { ImageViewer } from './components/ImageViewer';
+import { UserUploadedImages } from './components/UserUploadedImages';
 import CollectionLoading from './loading';
-import { useState, useMemo } from 'react';
-import type { CollectionImage } from '@/lib/types';
-import { EmptyState } from '@/components/EmptyState';
 
 export default function CollectionPage() {
   const params = useParams();
@@ -47,7 +54,7 @@ export default function CollectionPage() {
     data: collection,
     isLoading: isLoadingCollection,
     isError,
-  } = useQuery({
+  } = useQuery<CollectionWithImages>({
     queryKey: [
       ...collectionsQueryKeys.bySlug(slug),
       { includeUnpublished: isAuthenticated },
@@ -305,7 +312,7 @@ export default function CollectionPage() {
 
         {/* Meta Information */}
         <div
-          className={`flex flex-wrap gap-6 text-muted-foreground fade-in-from-top
+          className={`flex flex-wrap gap-4 text-muted-foreground fade-in-from-top
             ${getDelayClass(4)}`}
         >
           {formattedDate && (
@@ -320,12 +327,14 @@ export default function CollectionPage() {
               <Text variant='bd-md'>{collection.location}</Text>
             </div>
           )}
-          <Badge
-            variant='outline'
-            className={`fade-in-from-top capitalize ${getDelayClass(1)}`}
-          >
+          <Badge variant='outline' className='capitalize'>
             <Text variant='bd-xs'>{collection.type}</Text>
           </Badge>
+          {collection.collection_group_name && (
+            <Badge variant='outline' className='capitalize'>
+              <Text variant='bd-xs'>{collection.collection_group_name}</Text>
+            </Badge>
+          )}
         </div>
       </div>
 
