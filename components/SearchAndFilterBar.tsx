@@ -1,10 +1,23 @@
 'use client';
 
+import { Button } from '@/components/animate-ui/components/';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import Fuse, { type FuseResult } from 'fuse.js';
-import { Search, X } from 'lucide-react';
+import { ArrowDownNarrowWide, ArrowUpNarrowWide, Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface SearchAndFilterBarProps<T> {
@@ -28,6 +41,7 @@ export function SearchAndFilterBar<T>({
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
   const prevQueryRef = useRef<string>('');
+  const [toggleAscending, setToggleAscending] = useState(true);
 
   const fuse = useMemo(() => {
     return new Fuse(items, {
@@ -85,9 +99,9 @@ export function SearchAndFilterBar<T>({
 
   return (
     <div className={`flex flex-col items-center gap-3 ${className}`}>
-      <div className='flex flex-col md:flex-row items-center gap-3 w-full'>
+      <div className='flex flex-col items-center gap-3 w-full justify-center'>
         {/* Search Input */}
-        <div className='relative w-full md:w-2/3 mx-auto'>
+        <div className='relative w-full md:w-2/3'>
           <Search
             className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4
               text-muted-foreground'
@@ -108,6 +122,36 @@ export function SearchAndFilterBar<T>({
               onClick={() => setSearchQuery('')}
             />
           )}
+        </div>
+        <div className='flex items-center gap-2 w-full sm:w-1/4 justify-center'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size='icon' onClick={() => setToggleAscending((prev) => !prev)}>
+                {toggleAscending ? (
+                  <ArrowDownNarrowWide className='size-5' />
+                ) : (
+                  <ArrowUpNarrowWide className='size-5' />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {toggleAscending ? 'Click to sort descending' : 'Click to sort ascending'}
+            </TooltipContent>
+          </Tooltip>
+          <Select>
+            <SelectTrigger className='w-full [&>span]:flex-1 [&>span]:text-center'>
+              <SelectValue placeholder='Select a filter' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Filter by</SelectLabel>
+                <SelectItem value='name'>Name</SelectItem>
+                <SelectItem value='grouping'>Grouping</SelectItem>
+                <SelectItem value='date'>Date</SelectItem>
+                <SelectItem value='type'>Type</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
