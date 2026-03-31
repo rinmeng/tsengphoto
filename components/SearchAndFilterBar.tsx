@@ -34,11 +34,16 @@ interface SearchAndFilterBarProps<T> {
   className?: string;
   // URL-based filter state
   searchQuery?: string;
+  typeFilter?: string | null;
+  availableTypes?: string[];
   groupFilter?: string | null;
   availableGroups?: string[];
+  pageFilterType?: string | null; // Page-level filter (not URL param)
   // Callbacks to update URL params
   onSearchChange?: (query: string) => void;
+  onTypeFilterChange?: (type: string | null) => void;
   onGroupFilterChange?: (group: string | null) => void;
+  onClearFilters?: () => void; // Single callback to clear all filters
 }
 
 export function SearchAndFilterBar<T>({
@@ -49,16 +54,22 @@ export function SearchAndFilterBar<T>({
   countLabel = 'items',
   className = '',
   searchQuery: propSearchQuery = '',
+  typeFilter = null,
+  availableTypes = [],
   groupFilter = null,
   availableGroups = [],
+  pageFilterType = null,
   onSearchChange,
+  onTypeFilterChange,
   onGroupFilterChange,
+  onClearFilters,
 }: SearchAndFilterBarProps<T>) {
   // Use local state for immediate UI updates, sync with props
   const [localSearchQuery, setLocalSearchQuery] = useState(propSearchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedQuery = useDebounce(localSearchQuery, 300);
   const prevQueryRef = useRef<string | undefined>(undefined);
+  const prevTypeFilterRef = useRef<string | null | undefined>(undefined);
   const prevGroupFilterRef = useRef<string | null | undefined>(undefined);
   const prevItemsLengthRef = useRef<number | undefined>(undefined);
 
@@ -78,10 +89,18 @@ export function SearchAndFilterBar<T>({
 
   // Sync debounced query to URL via callback
   useEffect(() => {
+    // Skip sync if we just cleared but debounce hasn't caught up yet
+    if (!localSearchQuery && debouncedQuery) {
+      return;
+    }
+    // Skip sync if both are empty (prevents re-adding cleared search)
+    if (!debouncedQuery && !propSearchQuery) {
+      return;
+    }
     if (debouncedQuery !== propSearchQuery) {
       onSearchChange?.(debouncedQuery);
     }
-  }, [debouncedQuery, onSearchChange, propSearchQuery]);
+  }, [debouncedQuery, onSearchChange, propSearchQuery, localSearchQuery]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -103,17 +122,19 @@ export function SearchAndFilterBar<T>({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSearchChange]);
 
-  // Apply search and group filter
+  // Apply search, type filter, and group filter
   useEffect(() => {
     // Skip if nothing has changed
     if (
       prevQueryRef.current === debouncedQuery &&
+      prevTypeFilterRef.current === typeFilter &&
       prevGroupFilterRef.current === groupFilter &&
       prevItemsLengthRef.current === items.length
     ) {
       return;
     }
     prevQueryRef.current = debouncedQuery;
+    prevTypeFilterRef.current = typeFilter;
     prevGroupFilterRef.current = groupFilter;
     prevItemsLengthRef.current = items.length;
 
@@ -127,6 +148,13 @@ export function SearchAndFilterBar<T>({
       results = [...items];
     }
 
+    // Apply type filter
+    if (typeFilter) {
+      results = results.filter(
+        (item) => (item as unknown as SortableItem).type === typeFilter
+      );
+    }
+
     // Apply group filter
     if (groupFilter) {
       results = results.filter(
@@ -134,8 +162,8 @@ export function SearchAndFilterBar<T>({
       );
     }
 
-    onFilteredResults(results, isSearching || !!groupFilter);
-  }, [debouncedQuery, fuse, onFilteredResults, items, groupFilter]);
+    onFilteredResults(results, isSearching || !!typeFilter || !!groupFilter);
+  }, [debouncedQuery, fuse, onFilteredResults, items, typeFilter, groupFilter]);
 
   const displayedCount = useMemo(() => {
     let count = items.length;
@@ -144,33 +172,52 @@ export function SearchAndFilterBar<T>({
       count = fuse.search(debouncedQuery).length;
     }
 
-    if (groupFilter) {
-      const filtered = items.filter(
-        (item) => (item as unknown as SortableItem).collection_group_name === groupFilter
-      );
+    if (typeFilter || groupFilter) {
+      let filtered = items;
+
+      if (typeFilter) {
+        filtered = filtered.filter(
+          (item) => (item as unknown as SortableItem).type === typeFilter
+        );
+      }
+
+      if (groupFilter) {
+        filtered = filtered.filter(
+          (item) =>
+            (item as unknown as SortableItem).collection_group_name === groupFilter
+        );
+      }
+
       count = debouncedQuery.trim()
-        ? fuse
-            .search(debouncedQuery)
-            .filter(
-              (result) =>
-                (result.item as unknown as SortableItem).collection_group_name ===
-                groupFilter
-            ).length
+        ? fuse.search(debouncedQuery).filter((result) => {
+            const item = result.item as unknown as SortableItem;
+            const matchesType = !typeFilter || item.type === typeFilter;
+            const matchesGroup =
+              !groupFilter || item.collection_group_name === groupFilter;
+            return matchesType && matchesGroup;
+          }).length
         : filtered.length;
     }
 
     return count;
-  }, [debouncedQuery, items, fuse, groupFilter]);
+  }, [debouncedQuery, items, fuse, typeFilter, groupFilter]);
 
   const handleClearFilters = () => {
     setLocalSearchQuery('');
-    onSearchChange?.('');
-    onGroupFilterChange?.(null);
+    if (onClearFilters) {
+      // Use the dedicated clear handler if provided (clears all in one go)
+      onClearFilters();
+    } else {
+      // Fallback to individual handlers
+      onSearchChange?.('');
+      onTypeFilterChange?.(null);
+      onGroupFilterChange?.(null);
+    }
   };
 
   return (
     <div className={`flex flex-col items-center gap-3 ${className}`}>
-      <div className='flex flex-col items-center gap-3 w-full justify-center'>
+      <div className='flex flex-col items-center gap-3 w-full md:w-1/2 justify-center'>
         {/* Search Input */}
         <div className='relative w-full md:w-2/3'>
           <Search
@@ -197,28 +244,56 @@ export function SearchAndFilterBar<T>({
             />
           )}
         </div>
-        <div className='flex items-center gap-2 w-full sm:w-1/3 justify-center'>
-          <Select
-            value={groupFilter || 'all'}
-            onValueChange={(value) =>
-              onGroupFilterChange?.(value === 'all' ? null : value)
-            }
-          >
-            <SelectTrigger className='w-full [&>span]:flex-1 [&>span]:text-center'>
-              <SelectValue placeholder='Group by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Group by</SelectLabel>
-                <SelectItem value='all'>All Groups</SelectItem>
-                {availableGroups.map((group) => (
-                  <SelectItem key={group} value={group}>
-                    {group}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        <div className='flex items-center gap-2 w-full sm:w-2/3 justify-center'>
+          {/* Type Filter - Only show if available */}
+          {availableTypes.length > 0 && onTypeFilterChange && (
+            <Select
+              value={typeFilter || 'all'}
+              onValueChange={(value) =>
+                onTypeFilterChange(value === 'all' ? null : value)
+              }
+            >
+              <SelectTrigger className='w-full [&>span]:flex-1 [&>span]:text-center'>
+                <SelectValue placeholder='Type' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Type</SelectLabel>
+                  <SelectItem value='all'>All Types</SelectItem>
+                  {availableTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Group Filter - Only show if available */}
+          {availableGroups.length > 0 && onGroupFilterChange && (
+            <Select
+              value={groupFilter || 'all'}
+              onValueChange={(value) =>
+                onGroupFilterChange(value === 'all' ? null : value)
+              }
+            >
+              <SelectTrigger className='w-full [&>span]:flex-1 [&>span]:text-center'>
+                <SelectValue placeholder='Group by' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Group by</SelectLabel>
+                  <SelectItem value='all'>All Groups</SelectItem>
+                  {availableGroups.map((group) => (
+                    <SelectItem key={group} value={group}>
+                      {group}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
 
@@ -226,11 +301,13 @@ export function SearchAndFilterBar<T>({
       <Badge variant='secondary' className='shrink-0'>
         {displayedCount} {countLabel}
         {debouncedQuery && ` found for "${debouncedQuery}"`}
+        {(typeFilter || pageFilterType) &&
+          ` of type "${(typeFilter || pageFilterType)!.charAt(0).toUpperCase() + (typeFilter || pageFilterType)!.slice(1)}"`}
         {groupFilter && ` in "${groupFilter}"`}
       </Badge>
 
       {/* Clear Filters Button */}
-      {(debouncedQuery || groupFilter) && (
+      {(debouncedQuery || typeFilter || groupFilter) && (
         <Button variant='outline' size='sm' onClick={handleClearFilters}>
           <X className='size-4' />
           Clear all filters
