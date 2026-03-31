@@ -10,6 +10,12 @@ export interface Upload {
   created_at: string;
 }
 
+export interface CollectionGroup {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
 export interface Collection {
   id: string;
   slug: string; // URL-friendly identifier
@@ -21,6 +27,7 @@ export interface Collection {
   cover_image: string | null;
   cover_image_id: string | null; // FK to uploads.id
   drive_link: string | null; // Optional Google Drive folder URL
+  collection_group_id: string | null; // FK to collection_groups.id
   is_published: boolean;
   created_at: string;
   modified_at: string | null;

@@ -5,11 +5,21 @@ import { Button } from '@/components/animate-ui/components/button';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/animate-ui/components/dialog';
 import { CoverImageUploader } from '@/components/CoverImageUploader';
 import { Calendar } from '@/components/ui/calendar';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command';
 import {
   Form,
   FormControl,
@@ -33,15 +43,17 @@ import { cn } from '@/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { CalendarIcon, Info, X } from 'lucide-react';
+import { CalendarIcon, Check, Info, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { collectionGroupsQueryKeys } from '@/lib/queries/collection-groups';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
-import type { Collection } from '@/lib/types';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui';
+import type { Collection, CollectionGroup } from '@/lib/types';
+import { Text } from '../Text';
+import { DialogDescription, Tooltip, TooltipContent, TooltipTrigger } from '../ui';
 
 const COLLECTION_TYPES = ['event', 'series'] as const;
 
@@ -52,6 +64,7 @@ const collectionSchema = z.object({
     .min(1, 'Slug is required.')
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only.'),
   type: z.enum(COLLECTION_TYPES, { message: 'Type is required.' }),
+  collection_group_id: z.string().uuid().optional().or(z.literal('')),
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
@@ -66,23 +79,31 @@ type CollectionFormValues = z.infer<typeof collectionSchema>;
 interface CollectionFormProps {
   mode: 'add' | 'edit';
   collection?: Collection;
+  groups?: CollectionGroup[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (updatedSlug?: string) => void;
+  onDeleteGroup?: (groupId: string) => void;
   defaultType?: 'event' | 'series';
 }
 
 export function CollectionForm({
   mode,
   collection,
+  groups = [],
   open,
   onOpenChange,
   onSuccess,
+  onDeleteGroup,
   defaultType = 'event',
 }: CollectionFormProps) {
   const queryClient = useQueryClient();
   const [isCoverImageUploading, setIsCoverImageUploading] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
+  const [groupSearchQuery, setGroupSearchQuery] = useState('');
+  const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
@@ -91,6 +112,7 @@ export function CollectionForm({
           title: collection.title,
           slug: collection.slug,
           type: collection.type as (typeof COLLECTION_TYPES)[number],
+          collection_group_id: collection.collection_group_id || '',
           date: collection.date ? new Date(collection.date) : undefined,
           location: collection.location || '',
           description: collection.description || '',
@@ -103,6 +125,7 @@ export function CollectionForm({
           title: '',
           slug: '',
           type: defaultType,
+          collection_group_id: '',
           date: undefined,
           location: '',
           description: '',
@@ -125,6 +148,12 @@ export function CollectionForm({
     name: 'date',
   });
 
+  // Watch collection_group_id to display selected group
+  const selectedGroupId = useWatch({
+    control: form.control,
+    name: 'collection_group_id',
+  });
+
   const mutation = useMutation({
     mutationFn: async (values: CollectionFormValues) => {
       const payload = {
@@ -135,6 +164,7 @@ export function CollectionForm({
         cover_image: values.cover_image || null,
         cover_image_id: values.cover_image_id || null,
         drive_link: values.drive_link || null,
+        collection_group_id: values.collection_group_id || null,
       };
 
       if (mode === 'add') {
@@ -195,6 +225,30 @@ export function CollectionForm({
     },
   });
 
+  const createGroupMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const response = await fetch('/api/v1/collection-groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create group');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionGroupsQueryKeys.all });
+      toast.success('Group created successfully');
+      setAddGroupDialogOpen(false);
+      setNewGroupName('');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to create group', { description: error.message });
+    },
+  });
+
   // Reset form when dialog opens or collection changes
   useEffect(() => {
     if (open) {
@@ -203,6 +257,7 @@ export function CollectionForm({
             title: collection.title,
             slug: collection.slug,
             type: collection.type as (typeof COLLECTION_TYPES)[number],
+            collection_group_id: collection.collection_group_id || '',
             date: collection.date ? new Date(collection.date) : undefined,
             location: collection.location || '',
             description: collection.description || '',
@@ -215,6 +270,7 @@ export function CollectionForm({
             title: '',
             slug: '',
             type: defaultType,
+            collection_group_id: '',
             date: undefined,
             location: '',
             description: '',
@@ -242,6 +298,17 @@ export function CollectionForm({
 
   const onSubmit = (values: CollectionFormValues) => {
     mutation.mutate(values);
+  };
+
+  const handleAddGroup = () => {
+    setGroupPopoverOpen(false);
+    setAddGroupDialogOpen(true);
+  };
+
+  const handleCreateGroup = () => {
+    if (newGroupName.trim()) {
+      createGroupMutation.mutate(newGroupName);
+    }
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -291,7 +358,7 @@ export function CollectionForm({
               control={form.control}
               name='slug'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='flex-1'>
                   <FormLabel>
                     Slug
                     <Tooltip>
@@ -312,28 +379,155 @@ export function CollectionForm({
               )}
             />
 
-            {/* Type */}
-            <FormField
-              control={form.control}
-              name='type'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select type' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='event'>Event</SelectItem>
-                      <SelectItem value='series'>Series</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Type & Group */}
+            <div className='flex flex-col sm:flex-row w-full gap-4'>
+              <FormField
+                control={form.control}
+                name='type'
+                render={({ field }) => (
+                  <FormItem className='flex-1'>
+                    <FormLabel>Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder='Select type' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='event'>Event</SelectItem>
+                        <SelectItem value='series'>Series</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='collection_group_id'
+                render={({ field }) => (
+                  <FormItem className='flex-1'>
+                    <FormLabel>
+                      Group (optional){' '}
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className='size-4 text-muted-foreground' />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Group collections together for better organization.
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
+                    <Popover open={groupPopoverOpen} onOpenChange={setGroupPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            role='combobox'
+                            className={cn(
+                              'w-full justify-between',
+                              !selectedGroupId && 'text-muted-foreground'
+                            )}
+                          >
+                            {selectedGroupId
+                              ? groups.find((g) => g.id === selectedGroupId)?.name
+                              : 'No grouping'}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className='p-0'
+                        align='start'
+                        style={{ width: 'var(--radix-popover-trigger-width)' }}
+                      >
+                        <Command>
+                          <CommandInput
+                            placeholder='Search grouping...'
+                            value={groupSearchQuery}
+                            onValueChange={setGroupSearchQuery}
+                          />
+                          <CommandList>
+                            <CommandEmpty>No grouping found.</CommandEmpty>
+
+                            {/* Add Grouping Action */}
+                            <CommandGroup>
+                              <CommandItem onSelect={handleAddGroup}>
+                                <Plus className='mr-2 h-4 w-4' />
+                                Add Grouping
+                              </CommandItem>
+                            </CommandGroup>
+
+                            <CommandSeparator />
+
+                            {/* No Grouping Option */}
+                            <CommandGroup>
+                              <CommandItem
+                                value='no-grouping'
+                                onSelect={() => {
+                                  field.onChange('');
+                                  setGroupPopoverOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4',
+                                    !selectedGroupId ? 'opacity-100' : 'opacity-0'
+                                  )}
+                                />
+                                No Grouping
+                              </CommandItem>
+                            </CommandGroup>
+
+                            <CommandSeparator />
+
+                            {/* Grouping List */}
+                            <CommandGroup heading='Groups'>
+                              {groups.map((group) => (
+                                <CommandItem
+                                  key={group.id}
+                                  value={group.name}
+                                  onSelect={() => {
+                                    field.onChange(group.id);
+                                    setGroupPopoverOpen(false);
+                                  }}
+                                  className='flex items-center justify-between'
+                                >
+                                  <div className='flex items-center flex-1'>
+                                    <Check
+                                      className={cn(
+                                        'mr-2 h-4 w-4',
+                                        selectedGroupId === group.id
+                                          ? 'opacity-100'
+                                          : 'opacity-0'
+                                      )}
+                                    />
+                                    <span>{group.name}</span>
+                                  </div>
+                                  <Button
+                                    type='button'
+                                    variant='destructive'
+                                    size='icon'
+                                    className='h-6 w-6 ml-2'
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDeleteGroup?.(group.id);
+                                    }}
+                                  >
+                                    <Trash2 className='size-3' />
+                                  </Button>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Date */}
             <FormField
@@ -544,6 +738,57 @@ export function CollectionForm({
           </form>
         </Form>
       </DialogContent>
+
+      {/* Add Group Dialog */}
+      <Dialog open={addGroupDialogOpen} onOpenChange={setAddGroupDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Group</DialogTitle>
+            <DialogDescription>
+              Create a new group to organize your collections. For example, you could
+              create a group for a club, or a collection series you took in Japan.
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <Input
+              placeholder='Enter group name'
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && newGroupName.trim()) {
+                  handleCreateGroup();
+                }
+              }}
+            />
+            <Text variant='caption' className='mt-1 text-destructive'>
+              {createGroupMutation.error?.message}
+            </Text>
+          </div>
+          <DialogFooter>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setAddGroupDialogOpen(false)}
+              disabled={createGroupMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type='button'
+              onClick={handleCreateGroup}
+              disabled={!newGroupName.trim() || createGroupMutation.isPending}
+            >
+              {createGroupMutation.isPending ? (
+                <>
+                  <Spinner /> Adding...
+                </>
+              ) : (
+                'Add'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

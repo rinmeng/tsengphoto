@@ -17,8 +17,9 @@ import { SearchAndFilterBar } from '@/components/SearchAndFilterBar';
 import { Text } from '@/components/Text';
 import { Separator } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
+import { collectionGroupsQueryKeys } from '@/lib/queries/collection-groups';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
-import type { CollectionWithImages } from '@/lib/types';
+import type { CollectionGroup, CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -62,7 +63,16 @@ export default function CollectionsPage() {
       return result.data || [];
     },
   });
-
+  const { data: groups = [] } = useQuery({
+    queryKey: collectionGroupsQueryKeys.all,
+    queryFn: async () => {
+      const response = await fetch('/api/v1/collection-groups');
+      if (!response.ok) throw new Error('Failed to fetch groups');
+      const result = await response.json();
+      return result.data as CollectionGroup[];
+    },
+    enabled: addDialogOpen || editDialogOpen,
+  });
   const deleteMutation = useMutation({
     mutationFn: async (collectionId: string) => {
       const response = await fetch('/api/v1/collections', {
@@ -137,6 +147,30 @@ export default function CollectionsPage() {
       });
     },
   });
+
+  const deleteGroupMutation = useMutation({
+    mutationFn: async (groupId: string) => {
+      const response = await fetch(`/api/v1/collection-groups/${groupId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete group');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionGroupsQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
+      toast.success('Group deleted successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to delete group', { description: error.message });
+    },
+  });
+
+  const handleDeleteGroup = (groupId: string) => {
+    deleteGroupMutation.mutate(groupId);
+  };
 
   const handleEdit = (collection: CollectionWithImages) => {
     setSelectedCollection(collection);
@@ -214,7 +248,13 @@ export default function CollectionsPage() {
           isFiltered={isFiltered}
         />
 
-        <CollectionForm mode='add' open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+        <CollectionForm
+          mode='add'
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          groups={groups}
+          onDeleteGroup={handleDeleteGroup}
+        />
 
         {selectedCollection && (
           <CollectionForm
@@ -222,6 +262,8 @@ export default function CollectionsPage() {
             collection={selectedCollection}
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
+            groups={groups}
+            onDeleteGroup={handleDeleteGroup}
           />
         )}
 
