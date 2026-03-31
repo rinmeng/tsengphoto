@@ -415,7 +415,7 @@ export function CollectionForm({
                           <Info className='size-4 text-muted-foreground' />
                         </TooltipTrigger>
                         <TooltipContent>
-                          Group collections together for better organization.
+                          Group collections together for better organization
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
