@@ -432,7 +432,7 @@ export function CollectionForm({
                           >
                             {selectedGroupId
                               ? groups.find((g) => g.id === selectedGroupId)?.name
-                              : 'No grouping'}
+                              : 'No group'}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -443,24 +443,24 @@ export function CollectionForm({
                       >
                         <Command>
                           <CommandInput
-                            placeholder='Search grouping...'
+                            placeholder='Search group...'
                             value={groupSearchQuery}
                             onValueChange={setGroupSearchQuery}
                           />
                           <CommandList>
-                            <CommandEmpty>No grouping found.</CommandEmpty>
+                            <CommandEmpty>No group found.</CommandEmpty>
 
-                            {/* Add Grouping Action */}
+                            {/* Add Group Action */}
                             <CommandGroup>
                               <CommandItem onSelect={handleAddGroup}>
                                 <Plus className='mr-2 h-4 w-4' />
-                                Add Grouping
+                                Add Group
                               </CommandItem>
                             </CommandGroup>
 
                             <CommandSeparator />
 
-                            {/* No Grouping Option */}
+                            {/* No Group Option */}
                             <CommandGroup>
                               <CommandItem
                                 value='no-grouping'
@@ -475,7 +475,7 @@ export function CollectionForm({
                                     !selectedGroupId ? 'opacity-100' : 'opacity-0'
                                   )}
                                 />
-                                No Grouping
+                                No Group
                               </CommandItem>
                             </CommandGroup>
 
