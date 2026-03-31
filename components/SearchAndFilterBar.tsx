@@ -146,7 +146,6 @@ export function SearchAndFilterBar<T>({
               <SelectGroup>
                 <SelectLabel>Filter by</SelectLabel>
                 <SelectItem value='name'>Name</SelectItem>
-                <SelectItem value='grouping'>Grouping</SelectItem>
                 <SelectItem value='date'>Date</SelectItem>
                 <SelectItem value='type'>Type</SelectItem>
               </SelectGroup>
