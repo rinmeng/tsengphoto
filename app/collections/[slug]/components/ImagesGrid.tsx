@@ -441,16 +441,17 @@ export function ImagesGrid({
             return (
               <div
                 key={image.id}
-                className={`group relative overflow-hidden rounded bg-muted ${
+                className={`group relative overflow-hidden rounded ${
                   isMobile ? '' : 'cursor-pointer'
                 } fade-in-from-top
                 ${getDelayClass(globalIndex + (isDrive ? 5 : 2))}`}
                 onClick={isMobile ? undefined : () => onImageClick(globalIndex)}
               >
-                <div className='relative aspect-16/10 overflow-hidden bg-muted'>
+                <div className='relative overflow-hidden'>
                   {hasFailed && isDrive ? (
                     <div
-                      className='flex h-full flex-col items-center justify-center gap-2'
+                      className='flex h-64 flex-col items-center justify-center gap-2
+                        bg-muted rounded'
                     >
                       <ImageOff className='w-8 h-8 text-muted-foreground' />
                       <Text variant='muted-sm'>Failed to load</Text>
@@ -463,8 +464,9 @@ export function ImagesGrid({
                           : image.image_url
                       }
                       alt={`${collectionTitle} - ${isDrive ? 'Google Drive Photo' : 'Photo'} ${index + 1}`}
-                      fill
-                      className='object-contain object-center hover:scale-105 bg-black
+                      width={800}
+                      height={600}
+                      className='w-full h-auto rounded hover:scale-105
                         transition-transform duration-300'
                       sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
                       loading={isDrive ? 'lazy' : 'eager'}
@@ -472,7 +474,9 @@ export function ImagesGrid({
                       onError={() => handleImageError(image.id)}
                     />
                   ) : (
-                    <div className='flex h-full items-center justify-center'>
+                    <div
+                      className='flex h-64 items-center justify-center bg-muted rounded'
+                    >
                       <Text variant='muted'>No image</Text>
                     </div>
                   )}
