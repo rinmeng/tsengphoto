@@ -24,10 +24,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Calendar,
+  Folder,
   ImageIcon,
   Loader2,
   MapPin,
   Share2,
+  Type,
   Upload,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -329,10 +331,12 @@ export default function CollectionPage() {
             </div>
           )}
           <Badge variant='outline' className='capitalize'>
+            <Type className='size-12' />
             <Text variant='bd-xs'>{collection.type}</Text>
           </Badge>
           {collection.collection_group_name && (
             <Badge variant='outline' className='capitalize'>
+              <Folder className='size-12' />
               <Text variant='bd-xs'>{collection.collection_group_name}</Text>
             </Badge>
           )}

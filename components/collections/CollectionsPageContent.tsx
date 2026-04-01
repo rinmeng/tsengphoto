@@ -420,14 +420,14 @@ export function CollectionsPageContent({
           </div>
         )}
 
-        {/* Only show CollectionGrid when filtering/searching */}
-        {hasActiveFilters && (
+        {/* Show CollectionGrid when filtering/searching OR when not using groups mode */}
+        {(hasActiveFilters || !showGroupsAndUnique) && (
           <CollectionGrid
-            collections={filteredCollections}
+            collections={hasActiveFilters ? filteredCollections : collections}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onPublish={handlePublish}
-            isFiltered={true}
+            isFiltered={hasActiveFilters}
           />
         )}
 
