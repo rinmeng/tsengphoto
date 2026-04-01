@@ -299,6 +299,11 @@ export function CollectionsPageContent({
     return Array.from(types).sort();
   }, [collections]);
 
+  const hasActiveFilters = isFiltered || !!typeFilter || !!groupFilter;
+  const showDefaultView = showGroupsAndUnique && !hasActiveFilters;
+  const ungroupedCollections = groupedCollections['Ungrouped'];
+  const hasUngroupedCollections = ungroupedCollections && ungroupedCollections.length > 0;
+
   if (isLoading) {
     return <CollectionsLoading />;
   }
@@ -332,7 +337,6 @@ export function CollectionsPageContent({
             </Button>
           </div>
         )}
-
         {/* Search Bar */}
         <div className={`mb-6 fade-in-from-bottom ${getDelayClass(3)}`}>
           <SearchAndFilterBar
@@ -355,24 +359,21 @@ export function CollectionsPageContent({
             onClearFilters={handleClearFilters}
           />
         </div>
-
         {/* Collection Groups - Show when not filtered and groups exist */}
-        {showGroupsAndUnique &&
-          !isFiltered &&
-          !typeFilter &&
-          !groupFilter &&
-          groupNames.length > 0 && (
-            <>
-              <div className='mb-4'>
-                <Text variant='hd-lg' className='mb-4'>
-                  Collection Groups
-                </Text>
-              </div>
-              <div
-                className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
-                  mb-12'
-              >
-                {groupNames.map((groupName, index) => (
+        {showDefaultView && groupNames.length > 0 && (
+          <>
+            <div className='mb-4'>
+              <Text variant='hd-lg' className='mb-4'>
+                Collection Groups
+              </Text>
+            </div>
+            <div
+              className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
+                mb-12'
+            >
+              {groupNames
+                .sort((a, b) => a.localeCompare(b))
+                .map((groupName, index) => (
                   <CollectionGroupCard
                     key={groupName}
                     groupName={groupName}
@@ -381,43 +382,37 @@ export function CollectionsPageContent({
                     onClick={() => handleGroupFilterChange(groupName)}
                   />
                 ))}
-              </div>
-            </>
-          )}
-
+            </div>
+          </>
+        )}
         {/* Unique Collection - Show ungrouped collections when not filtered */}
-        {showGroupsAndUnique &&
-          !isFiltered &&
-          !typeFilter &&
-          !groupFilter &&
-          groupedCollections['Ungrouped'] &&
-          groupedCollections['Ungrouped'].length > 0 && (
-            <>
-              <div className='mb-4'>
-                <Text variant='hd-lg' className='mb-4'>
-                  Unique Collections
-                </Text>
-              </div>
-              <div
-                className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
-                  mb-12'
-              >
-                {groupedCollections['Ungrouped'].map((collection, index) => (
-                  <CollectionCard
-                    key={collection.id}
-                    collection={collection}
-                    className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onPublish={handlePublish}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+        {showDefaultView && hasUngroupedCollections && (
+          <>
+            <div className='mb-4'>
+              <Text variant='hd-lg' className='mb-4'>
+                Unique Collections
+              </Text>
+            </div>
+            <div
+              className='container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6
+                mb-12'
+            >
+              {ungroupedCollections.map((collection, index) => (
+                <CollectionCard
+                  key={collection.id}
+                  collection={collection}
+                  className={`h-full fade-in-from-bottom ${getDelayClass(index)}`}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onPublish={handlePublish}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* All Collections */}
-        {showGroupsAndUnique && !isFiltered && !typeFilter && !groupFilter && (
+        {/* Show "All Collections" header only when filtering/searching */}
+        {hasActiveFilters && (
           <div className='mb-4'>
             <Text variant='hd-lg' className='mb-4'>
               All Collections
@@ -425,13 +420,16 @@ export function CollectionsPageContent({
           </div>
         )}
 
-        <CollectionGrid
-          collections={filteredCollections}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onPublish={handlePublish}
-          isFiltered={isFiltered || !!typeFilter || !!groupFilter}
-        />
+        {/* Only show CollectionGrid when filtering/searching */}
+        {hasActiveFilters && (
+          <CollectionGrid
+            collections={filteredCollections}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onPublish={handlePublish}
+            isFiltered={true}
+          />
+        )}
 
         <CollectionForm
           mode='add'
@@ -441,7 +439,6 @@ export function CollectionsPageContent({
           onDeleteGroup={handleDeleteGroup}
           defaultType={filterType || 'event'}
         />
-
         {selectedCollection && (
           <CollectionForm
             mode='edit'
@@ -452,7 +449,6 @@ export function CollectionsPageContent({
             onDeleteGroup={handleDeleteGroup}
           />
         )}
-
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
