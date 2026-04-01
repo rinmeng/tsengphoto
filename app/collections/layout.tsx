@@ -13,37 +13,39 @@ export async function generateMetadata({
 
   let title = 'Collections';
   let description =
-    'Browse our collection of event photography, video projects, and photo series. Professional photography services in Vancouver and Kelowna.';
+    'Browse my collection of event photography, video projects, and photo series. Professional photography services in Vancouver and Kelowna.';
   let ogImage = '/landing/carousel/carousel_1.jpg';
   const url = 'https://tsengphoto.vercel.app/collections';
 
   if (group) {
     const groupName = decodeURIComponent(group.replace(/\+/g, ' '));
     title = `${groupName} Collections`;
-    description = `Browse the ${groupName} collection of photography. Professional event and portrait photography.`;
+    description = `Browse the ${groupName} collection.`;
 
     // Fetch first collection from this group for cover image
     const supabase = await createClient();
-    const { data } = await supabase
-      .from('collections')
-      .select(
-        `
-        cover_image,
-        collection_group_name:collection_groups(name)
-      `
-      )
-      .eq('is_published', true)
-      .not('cover_image', 'is', null)
-      .order('created_at', { ascending: false });
 
-    // Filter by group name and get the first match
-    const matchingCollection = data?.find(
-      (c: { collection_group_name: { name: string }[]; cover_image: string }) =>
-        c.collection_group_name?.[0]?.name === groupName
-    );
+    // First, get the collection group ID
+    const { data: groupData } = await supabase
+      .from('collection_groups')
+      .select('id')
+      .eq('name', groupName)
+      .single();
 
-    if (matchingCollection?.cover_image) {
-      ogImage = matchingCollection.cover_image;
+    if (groupData?.id) {
+      // Now fetch collections from this group
+      const { data: collections } = await supabase
+        .from('collections')
+        .select('cover_image')
+        .eq('collection_group_id', groupData.id)
+        .eq('is_published', true)
+        .not('cover_image', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (collections?.[0]?.cover_image) {
+        ogImage = collections[0].cover_image;
+      }
     }
   } else if (type) {
     const typeName = decodeURIComponent(type.replace(/\+/g, ' '));
