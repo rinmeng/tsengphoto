@@ -20,6 +20,7 @@ import { getDelayClass } from '@/utils/animations';
 import JSZip from 'jszip';
 import { Download, ImageOff, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import Masonry from 'react-masonry-css';
 
 interface ImagesGridProps {
   images: CollectionImage[];
@@ -433,7 +434,11 @@ export function ImagesGrid({
         )}
 
         {/* Images Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        <Masonry
+          breakpointCols={{ default: 3, 1024: 2, 768: 1 }}
+          className='masonry-grid'
+          columnClassName='masonry-grid_column'
+        >
           {images.map((image, index) => {
             const globalIndex = isDrive ? startIndex + index : index;
             const hasFailed = failedImages.has(image.id);
@@ -513,7 +518,7 @@ export function ImagesGrid({
               </div>
             );
           })}
-        </div>
+        </Masonry>
       </div>
     </>
   );

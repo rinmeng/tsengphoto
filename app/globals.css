@@ -62,6 +62,16 @@
   }
 }
 
+.masonry-grid {
+  display: flex;
+  gap: 1rem;
+}
+.masonry-grid_column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 :root {
   --background: oklch(0.9582 0.0152 90.2357);
   --foreground: oklch(0.376 0.0225 64.3434);
