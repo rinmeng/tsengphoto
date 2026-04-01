@@ -21,7 +21,7 @@ interface PhotoCarouselProps {
   className?: string;
   containerClassName?: string;
   itemsToShow?: 1 | 2 | 3;
-  btnVariant?: 'default' | 'outline' | 'ghost';
+  btnVariant?: 'default' | 'outline' | 'ghost' | 'secondary';
   btnLocation?: 'default' | 'mb' | 'below-carousel';
   fullWidth?: boolean;
   dotsLocation?: 'absolute' | 'below-carousel';

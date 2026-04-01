@@ -64,6 +64,7 @@ export function ImageViewer({
             autoplayDelay={0}
             itemsToShow={1}
             btnLocation='mb'
+            btnVariant='secondary'
             showDots={false}
             fullWidth={true}
             objectFit='contain'
