@@ -1,13 +1,6 @@
 'use client';
 
-import { notFound, useParams } from 'next/navigation';
-import { Text } from '@/components/Text';
-import { Calendar, MapPin, ArrowLeft, Plus, Trash2, Share2 } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/animate-ui/components/button';
-import { VideoCard } from '@/components/video-collections/VideoCard';
-import { VideoViewer } from '@/components/video-collections/VideoViewer';
-import { VideoUploadDialog } from '@/components/video-collections/VideoUploadDialog';
+import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,18 +11,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
+import { Button } from '@/components/animate-ui/components/button';
+import { EmptyState } from '@/components/EmptyState';
+import { Text } from '@/components/Text';
+import { Spinner } from '@/components/ui';
+import { VideoCard } from '@/components/video-collections/VideoCard';
+import { VideoUploadDialog } from '@/components/video-collections/VideoUploadDialog';
+import { VideoViewer } from '@/components/video-collections/VideoViewer';
 import { useAuth } from '@/hooks/use-auth';
+import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
+import type { Video } from '@/lib/types';
+import { getDelayClass } from '@/utils/animations';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Plus,
+  Share2,
+  Trash2,
+  Video as VideoIcon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { notFound, useParams } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import VideoCollectionDetailLoading from './loading';
-import { useState } from 'react';
-import type { Video } from '@/lib/types';
-import { EmptyState } from '@/components/EmptyState';
-import { Video as VideoIcon } from 'lucide-react';
-import { getDelayClass } from '@/utils/animations';
-import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
-import { Spinner } from '@/components/ui';
 
 export default function VideoCollectionPage() {
   const params = useParams();
