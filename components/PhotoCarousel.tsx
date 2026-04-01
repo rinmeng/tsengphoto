@@ -1,18 +1,18 @@
 'use client';
-import Autoplay from 'embla-carousel-autoplay';
-import { cn } from '@/lib/utils';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import {
+  Card,
+  CardContent,
   Carousel,
+  CarouselApi,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  CarouselDots,
-  Card,
-  CardContent,
-  CarouselApi,
 } from '@/components/ui';
-import { OptimizedImage } from '@/components/OptimizedImage';
+import { cn } from '@/lib/utils';
+import Autoplay from 'embla-carousel-autoplay';
 import { useEffect, useState } from 'react';
 
 interface PhotoCarouselProps {
