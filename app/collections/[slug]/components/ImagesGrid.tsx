@@ -34,6 +34,7 @@ interface ImagesGridProps {
   onBulkDelete?: (images: CollectionImage[]) => void;
   isBulkDeleting?: boolean;
   deletionProgress?: { current: number; total: number };
+  maxColumns?: number;
 }
 
 export function ImagesGrid({
@@ -48,6 +49,7 @@ export function ImagesGrid({
   onBulkDelete,
   isBulkDeleting = false,
   deletionProgress = { current: 0, total: 0 },
+  maxColumns = 5,
 }: ImagesGridProps) {
   const { isAuthenticated } = useAuth();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -435,7 +437,13 @@ export function ImagesGrid({
 
         {/* Images Grid */}
         <Masonry
-          breakpointCols={{ default: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 }}
+          breakpointCols={{
+            default: maxColumns,
+            1280: Math.min(maxColumns, 4),
+            1024: Math.min(maxColumns, 3),
+            768: 2,
+            640: 1,
+          }}
           className='masonry-grid'
           columnClassName='masonry-grid_column'
         >

@@ -371,6 +371,7 @@ export default function CollectionPage() {
             onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
             isBulkDeleting={bulkDeleteMutation.isPending}
             deletionProgress={deletionProgress}
+            maxColumns={collection.type === 'series' ? 3 : 5}
           />
         )}
 
@@ -383,6 +384,7 @@ export default function CollectionPage() {
               source='drive'
               startIndex={sortedImages.length}
               driveFullQualityUrls={driveFullQualityUrls}
+              maxColumns={collection.type === 'series' ? 3 : 5}
             />
           </div>
         )}
