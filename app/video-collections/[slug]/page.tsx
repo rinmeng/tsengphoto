@@ -63,6 +63,7 @@ export default function VideoCollectionPage() {
       return result.data;
     },
     enabled: !authLoading,
+    retry: false, // Don't retry 404s - video collection doesn't exist
   });
 
   const handleVideoClick = (video: Video) => {

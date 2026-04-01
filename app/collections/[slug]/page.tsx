@@ -68,6 +68,7 @@ export default function CollectionPage() {
       return result.data;
     },
     enabled: !authLoading,
+    retry: false, // Don't retry 404s - collection doesn't exist
   });
 
   // Fetch Google Drive images if collection has a drive_link
