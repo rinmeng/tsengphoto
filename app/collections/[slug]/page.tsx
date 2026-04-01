@@ -35,9 +35,8 @@ import {
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { DriveImages } from './components/DriveImages';
+import { ImagesGrid } from './components/ImagesGrid';
 import { ImageViewer } from './components/ImageViewer';
-import { UserUploadedImages } from './components/UserUploadedImages';
 import CollectionLoading from './loading';
 
 export default function CollectionPage() {
@@ -362,10 +361,11 @@ export default function CollectionPage() {
         )}
         {/* User Uploaded Images */}
         {sortedImages.length > 0 && (
-          <UserUploadedImages
+          <ImagesGrid
             images={sortedImages}
             collectionTitle={collection.title}
             onImageClick={handleImageClick}
+            source='uploaded'
             onDeleteImage={handleDeleteClick}
             isDeletingImage={deleteImageMutation.isPending}
             onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
@@ -376,11 +376,11 @@ export default function CollectionPage() {
 
         {!isDriveImagesLoading && formattedDriveImages.length > 0 && (
           <div className={sortedImages.length > 0 ? 'mt-12' : ''}>
-            <DriveImages
+            <ImagesGrid
               images={formattedDriveImages}
-              driveLink={collection.drive_link}
               collectionTitle={collection.title}
               onImageClick={handleImageClick}
+              source='drive'
               startIndex={sortedImages.length}
               driveFullQualityUrls={driveFullQualityUrls}
             />
