@@ -435,7 +435,7 @@ export function ImagesGrid({
 
         {/* Images Grid */}
         <Masonry
-          breakpointCols={{ default: 3, 1024: 2, 768: 1 }}
+          breakpointCols={{ default: 5, 1280: 4, 1024: 3, 768: 2, 640: 1 }}
           className='masonry-grid'
           columnClassName='masonry-grid_column'
         >
