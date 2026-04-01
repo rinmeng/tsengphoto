@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
+import type { Collection } from '@/lib/types';
 import { createClient } from '@/utils/supabase/server';
+import type { Metadata } from 'next';
 
 interface CollectionLayoutProps {
   children: React.ReactNode;
@@ -25,7 +26,7 @@ export async function generateMetadata({
     query = query.eq('is_published', true);
   }
 
-  const { data: collection } = await query.single();
+  const { data: collection } = await query.single<Collection>();
 
   if (!collection) {
     return {
@@ -34,8 +35,10 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${collection.title} | Tseng Photography`;
-  const description = collection.description || `View ${collection.title} collection`;
+  const title = `${collection.title} ${collection.collection_group_name ? `from ${collection.collection_group_name}` : ''} | Tseng Photography`;
+  const description =
+    collection.description ||
+    `View ${collection.title} collection ${collection.collection_group_name ? `from ${collection.collection_group_name} ` : ''}by Tseng Photography.`;
   const url = `https://tsengphoto.vercel.app/collections/${slug}`;
 
   return {
@@ -45,6 +48,7 @@ export async function generateMetadata({
     keywords: [
       collection.title,
       collection.type,
+      collection.collection_group_name ?? '',
       'photography collection',
       'event photography',
       'Vancouver photographer',
