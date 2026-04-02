@@ -1,11 +1,11 @@
 'use client';
+import { Button } from '@/components/animate-ui/components/button';
 import { Hero } from '@/components/Hero';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Text } from '@/components/Text';
 import { Separator } from '@/components/ui';
 import { SendHorizonal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/animate-ui/components/button';
 
 import { OptimizedImage } from '@/components/OptimizedImage';
 
@@ -153,8 +153,7 @@ export default function Home() {
           className='mt-8'
           containerClassName='aspect-video'
           itemsToShow={2}
-          dotsLocation='below-carousel'
-          btnLocation='below-carousel'
+          navigation='below'
           images={eventPhotography}
           objectPosition='center 20%'
         />
@@ -182,8 +181,7 @@ export default function Home() {
           className='mt-8'
           containerClassName='aspect-square'
           itemsToShow={3}
-          dotsLocation='below-carousel'
-          btnLocation='below-carousel'
+          navigation='below'
           images={portraitPhotography}
           objectPosition='center 40%'
         />
