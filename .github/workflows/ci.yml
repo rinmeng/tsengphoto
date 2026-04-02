@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  lint-build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,3 +18,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
+  ci-complete:
+    name: CI Complete
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: always()
+    steps:
+    - run: |
+        if [ "${{ needs.lint.result }}" != "success" ]; then
+          exit 1
+        fi
