@@ -2,25 +2,31 @@
 
 import { LogIn, LogOut, Menu } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Dialog,
-  DialogTrigger,
-  DialogDescription,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
 } from '@/components/animate-ui/components/';
 import { Spinner } from '@/components/ui';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,19 +36,13 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { ModeToggle } from './ModeToggle';
-import { Logo } from './Logo';
 import { signOut, useAuth } from '@/hooks/use-auth';
+import { useLoading } from '@/hooks/use-loading';
+import { useToast } from '@/hooks/use-toast';
 import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
-import { useLoading } from '@/hooks/use-loading';
+import { Logo } from './Logo';
+import { ModeToggle } from './ModeToggle';
 
 function LoginButton({ onClose }: { onClose?: () => void }) {
   return (
@@ -143,6 +143,12 @@ export function Navbar() {
 
   const isActive = (href: string) => pathname === href;
 
+  const preventPortfolioClick = (e: React.MouseEvent | React.PointerEvent) => {
+    // Disable clicking entirely - make it hover-only
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <nav className='fixed z-50 w-full border-b bg-background'>
       <div className='flex pl-10 pr-10 lg:pr-38 items-center justify-between py-4'>
@@ -166,7 +172,13 @@ export function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
+                <NavigationMenuTrigger
+                  onClick={preventPortfolioClick}
+                  onPointerDown={preventPortfolioClick}
+                  onMouseDown={preventPortfolioClick}
+                >
+                  Portfolio
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className='grid w-150 gap-2 p-2 md:grid-cols-2'>
                     {portfolioLinks.map((link) => (
