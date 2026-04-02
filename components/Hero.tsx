@@ -1,6 +1,6 @@
 'use client';
-import { PhotoCarousel } from './PhotoCarousel';
 import { cn } from '@/lib';
+import { PhotoCarousel } from './PhotoCarousel';
 
 const images = [
   '/landing/carousel/carousel_1.jpg',
@@ -21,6 +21,7 @@ export function Hero({ className }: { className?: string }) {
       btnVariant='ghost'
       btnLocation='mb'
       fullWidth={true}
+      showLoading={false}
     />
   );
 }

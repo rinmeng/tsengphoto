@@ -28,6 +28,7 @@ interface PhotoCarouselProps {
   showDots?: boolean;
   objectFit?: 'cover' | 'contain';
   objectPosition?: string;
+  showLoading?: boolean;
   onIndexChange?: (index: number) => void;
 }
 
@@ -44,6 +45,7 @@ export function PhotoCarousel({
   showDots = true,
   objectFit = 'cover',
   objectPosition = 'center',
+  showLoading = true,
   onIndexChange,
 }: PhotoCarouselProps) {
   const itemBasisClass =
@@ -111,7 +113,7 @@ export function PhotoCarousel({
                     fill
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
                     style={{ objectPosition }}
-                    showLoading={true}
+                    showLoading={showLoading}
                   />
                 </div>
               ) : (
