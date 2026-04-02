@@ -36,15 +36,15 @@ export async function generateMetadata({
       // Now fetch collections from this group
       const { data: collections } = await supabase
         .from('collections')
-        .select('cover_image')
+        .select('cover_image_url')
         .eq('collection_group_id', groupData.id)
         .eq('is_published', true)
-        .not('cover_image', 'is', null)
+        .not('cover_image_url', 'is', null)
         .order('created_at', { ascending: false })
         .limit(1);
 
-      if (collections?.[0]?.cover_image) {
-        ogImage = collections[0].cover_image;
+      if (collections?.[0]?.cover_image_url) {
+        ogImage = collections[0].cover_image_url;
       }
     }
   } else if (type) {

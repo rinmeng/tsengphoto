@@ -1,21 +1,15 @@
 'use client';
 
-import { useForm, useWatch } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/animate-ui/components/button';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
+import { Button } from '@/components/animate-ui/components/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/animate-ui/components/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CoverImageUploader } from '@/components/CoverImageUploader';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -24,13 +18,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Spinner } from '@/components/ui/spinner';
-import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Info, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { Spinner } from '@/components/ui/spinner';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib';
-import { CoverImageUploader } from '@/components/CoverImageUploader';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { CalendarIcon, Info, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { videoCollectionsQueryKeys } from '@/lib/queries/video-collections';
 import type { VideoCollection } from '@/lib/types';
@@ -45,7 +45,7 @@ const videoCollectionSchema = z.object({
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
-  cover_image: z.url('Must be a valid URL.').optional().or(z.literal('')),
+  cover_image_url: z.url('Must be a valid URL.').optional().or(z.literal('')),
   cover_image_id: z.string().uuid().optional().or(z.literal('')),
   is_published: z.boolean(),
 });
@@ -80,7 +80,7 @@ export function VideoCollectionForm({
           date: videoCollection.date ? new Date(videoCollection.date) : undefined,
           location: videoCollection.location || '',
           description: videoCollection.description || '',
-          cover_image: videoCollection.cover_image || '',
+          cover_image_url: videoCollection.cover_image_url || '',
           cover_image_id: videoCollection.cover_image_id || '',
           is_published: videoCollection.is_published,
         }
@@ -90,7 +90,7 @@ export function VideoCollectionForm({
           date: undefined,
           location: '',
           description: '',
-          cover_image: '',
+          cover_image_url: '',
           cover_image_id: '',
           is_published: false,
         },
@@ -114,7 +114,7 @@ export function VideoCollectionForm({
         date: values.date ? values.date.toISOString() : null,
         location: values.location || null,
         description: values.description || null,
-        cover_image: values.cover_image || null,
+        cover_image_url: values.cover_image_url || null,
         cover_image_id: values.cover_image_id || null,
       };
 
@@ -189,7 +189,7 @@ export function VideoCollectionForm({
             date: videoCollection.date ? new Date(videoCollection.date) : undefined,
             location: videoCollection.location || '',
             description: videoCollection.description || '',
-            cover_image: videoCollection.cover_image || '',
+            cover_image_url: videoCollection.cover_image_url || '',
             cover_image_id: videoCollection.cover_image_id || '',
             is_published: videoCollection.is_published,
           }
@@ -199,7 +199,7 @@ export function VideoCollectionForm({
             date: undefined,
             location: '',
             description: '',
-            cover_image: '',
+            cover_image_url: '',
             cover_image_id: '',
             is_published: false,
           };
@@ -375,7 +375,7 @@ export function VideoCollectionForm({
 
             <FormField
               control={form.control}
-              name='cover_image'
+              name='cover_image_url'
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -383,13 +383,13 @@ export function VideoCollectionForm({
                       value={field.value}
                       uploadId={coverImageId}
                       onChange={(data) => {
-                        form.setValue('cover_image', data.url);
+                        form.setValue('cover_image_url', data.url);
                         if (data.uploadId) {
                           form.setValue('cover_image_id', data.uploadId);
                         }
                       }}
                       onRemove={() => {
-                        form.setValue('cover_image', '');
+                        form.setValue('cover_image_url', '');
                         form.setValue('cover_image_id', '');
                       }}
                       onUploadingChange={setIsCoverImageUploading}

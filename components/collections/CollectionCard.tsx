@@ -72,9 +72,9 @@ export function CollectionCard({
       >
         {/* Cover Image */}
         <div className='relative aspect-4/3 overflow-hidden bg-muted'>
-          {collection.cover_image ? (
+          {collection.cover_image_url ? (
             <OptimizedImage
-              src={collection.cover_image}
+              src={collection.cover_image_url}
               alt={collection.title}
               fill
               loading='lazy'

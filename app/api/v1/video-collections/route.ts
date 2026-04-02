@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { Logger } from '@/lib/logger';
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * GET /api/v1/video-collections
@@ -109,7 +109,7 @@ export async function PATCH(request: NextRequest) {
     // Fetch current video collection to check if cover image changed
     const { data: currentCollection } = await supabase
       .from('video_collections')
-      .select('cover_image, cover_image_id')
+      .select('cover_image_url, cover_image_id')
       .eq('id', id)
       .single();
 
@@ -141,7 +141,7 @@ export async function PATCH(request: NextRequest) {
     if (
       oldCoverImageId &&
       oldCoverImageId !== newCoverImageId &&
-      currentCollection?.cover_image
+      currentCollection?.cover_image_url
     ) {
       try {
         const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
@@ -151,7 +151,7 @@ export async function PATCH(request: NextRequest) {
           },
           body: JSON.stringify({
             uploadId: oldCoverImageId,
-            fileUrl: currentCollection.cover_image,
+            fileUrl: currentCollection.cover_image_url,
           }),
         });
 

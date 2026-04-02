@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { Logger } from '@/lib/logger';
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * GET /api/v1/video-collections/[slug]
@@ -84,7 +84,7 @@ export async function DELETE(
     // Fetch the video collection to get cover image URL before deletion
     const { data: videoCollection } = await supabase
       .from('video_collections')
-      .select('id, cover_image, cover_image_id')
+      .select('id, cover_image_url, cover_image_id')
       .eq('slug', slug)
       .single();
 
@@ -101,7 +101,7 @@ export async function DELETE(
     }
 
     // Delete cover image from UploadThing if it exists
-    if (videoCollection.cover_image && videoCollection.cover_image_id) {
+    if (videoCollection.cover_image_url && videoCollection.cover_image_id) {
       try {
         const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
           method: 'DELETE',
@@ -110,7 +110,7 @@ export async function DELETE(
           },
           body: JSON.stringify({
             uploadId: videoCollection.cover_image_id,
-            fileUrl: videoCollection.cover_image,
+            fileUrl: videoCollection.cover_image_url,
           }),
         });
 

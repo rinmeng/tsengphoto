@@ -75,9 +75,9 @@ export function VideoCollectionCard({
       >
         {/* Cover Image */}
         <div className='relative aspect-4/3 overflow-hidden bg-muted'>
-          {videoCollection.cover_image ? (
+          {videoCollection.cover_image_url ? (
             <OptimizedImage
-              src={videoCollection.cover_image}
+              src={videoCollection.cover_image_url}
               alt={videoCollection.title}
               fill
               loading='lazy'

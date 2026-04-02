@@ -23,7 +23,7 @@ export function CollectionGroupCard({
 }: CollectionGroupCardProps) {
   // Get the first collection's cover image for the group card
   const firstCollection = collections[0];
-  const coverImage = firstCollection?.cover_image;
+  const coverImage = firstCollection?.cover_image_url;
 
   const handleClick = () => {
     scrollToTop();

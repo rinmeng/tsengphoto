@@ -24,7 +24,7 @@ export interface Collection {
   date: string | null;
   location: string | null;
   description: string | null;
-  cover_image: string | null;
+  cover_image_url: string | null;
   cover_image_id: string | null; // FK to uploads.id
   drive_link: string | null; // Optional Google Drive folder URL
   collection_group_id: string | null; // FK to collection_groups.id
@@ -54,7 +54,7 @@ export interface VideoCollection {
   date: string | null;
   location: string | null;
   description: string | null;
-  cover_image: string | null;
+  cover_image_url: string | null;
   cover_image_id: string | null; // FK to uploads.id
   is_published: boolean;
   created_at: string;

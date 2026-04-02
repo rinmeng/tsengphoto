@@ -68,7 +68,7 @@ const collectionSchema = z.object({
   date: z.date().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
-  cover_image: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
+  cover_image_url: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   cover_image_id: z.string().uuid().optional().or(z.literal('')),
   drive_link: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
   is_published: z.boolean(),
@@ -116,7 +116,7 @@ export function CollectionForm({
           date: collection.date ? new Date(collection.date) : undefined,
           location: collection.location || '',
           description: collection.description || '',
-          cover_image: collection.cover_image || '',
+          cover_image_url: collection.cover_image_url || '',
           cover_image_id: collection.cover_image_id || '',
           drive_link: collection.drive_link || '',
           is_published: collection.is_published,
@@ -129,7 +129,7 @@ export function CollectionForm({
           date: undefined,
           location: '',
           description: '',
-          cover_image: '',
+          cover_image_url: '',
           cover_image_id: '',
           drive_link: '',
           is_published: false,
@@ -161,7 +161,7 @@ export function CollectionForm({
         date: values.date ? values.date.toISOString() : null,
         location: values.location || null,
         description: values.description || null,
-        cover_image: values.cover_image || null,
+        cover_image_url: values.cover_image_url || null,
         cover_image_id: values.cover_image_id || null,
         drive_link: values.drive_link || null,
         collection_group_id: values.collection_group_id || null,
@@ -261,7 +261,7 @@ export function CollectionForm({
             date: collection.date ? new Date(collection.date) : undefined,
             location: collection.location || '',
             description: collection.description || '',
-            cover_image: collection.cover_image || '',
+            cover_image_url: collection.cover_image_url || '',
             cover_image_id: collection.cover_image_id || '',
             drive_link: collection.drive_link || '',
             is_published: collection.is_published,
@@ -274,7 +274,7 @@ export function CollectionForm({
             date: undefined,
             location: '',
             description: '',
-            cover_image: '',
+            cover_image_url: '',
             cover_image_id: '',
             drive_link: '',
             is_published: false,
@@ -648,7 +648,7 @@ export function CollectionForm({
             {/* Cover Image */}
             <FormField
               control={form.control}
-              name='cover_image'
+              name='cover_image_url'
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -656,13 +656,13 @@ export function CollectionForm({
                       value={field.value}
                       uploadId={coverImageId}
                       onChange={(data) => {
-                        form.setValue('cover_image', data.url);
+                        form.setValue('cover_image_url', data.url);
                         if (data.uploadId) {
                           form.setValue('cover_image_id', data.uploadId);
                         }
                       }}
                       onRemove={() => {
-                        form.setValue('cover_image', '');
+                        form.setValue('cover_image_url', '');
                         form.setValue('cover_image_id', '');
                       }}
                       onUploadingChange={setIsCoverImageUploading}
