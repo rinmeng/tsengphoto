@@ -115,7 +115,7 @@ export async function PATCH(request: NextRequest) {
     // Fetch current collection to check if cover image changed
     const { data: currentCollection } = await supabase
       .from('collections')
-      .select('cover_image, cover_image_id')
+      .select('cover_image_url, cover_image_id')
       .eq('id', id)
       .single();
 
@@ -148,7 +148,7 @@ export async function PATCH(request: NextRequest) {
     if (
       oldCoverImageId &&
       oldCoverImageId !== newCoverImageId &&
-      currentCollection?.cover_image
+      currentCollection?.cover_image_url
     ) {
       try {
         const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
@@ -158,7 +158,7 @@ export async function PATCH(request: NextRequest) {
           },
           body: JSON.stringify({
             uploadId: oldCoverImageId,
-            fileUrl: currentCollection.cover_image,
+            fileUrl: currentCollection.cover_image_url,
           }),
         });
 
@@ -199,10 +199,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
     }
 
-    // First, fetch the collection to get cover_image info
+    // First, fetch the collection to get cover_image_url info
     const { data: collection } = await supabase
       .from('collections')
-      .select('cover_image, cover_image_id')
+      .select('cover_image_url, cover_image_id')
       .eq('id', id)
       .single();
 
@@ -215,7 +215,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // If the collection had a cover image, delete it from uploads table and UploadThing
-    if (collection?.cover_image_id && collection?.cover_image) {
+    if (collection?.cover_image_id && collection?.cover_image_url) {
       try {
         const response = await fetch(`${request.nextUrl.origin}/api/v1/uploads`, {
           method: 'DELETE',
@@ -224,7 +224,7 @@ export async function DELETE(request: NextRequest) {
           },
           body: JSON.stringify({
             uploadId: collection.cover_image_id,
-            fileUrl: collection.cover_image,
+            fileUrl: collection.cover_image_url,
           }),
         });
 

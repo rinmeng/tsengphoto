@@ -10,12 +10,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const supabase = await createClient();
   const { data: collection } = await supabase
     .from('collections')
-    .select('cover_image')
+    .select('cover_image_url')
     .eq('slug', slug)
     .single();
 
   const coverImageUrl =
-    collection?.cover_image ||
+    collection?.cover_image_url ||
     'https://tsengphoto.vercel.app/landing/carousel/carousel_1.jpg';
 
   // Fetch and serve the image at its native dimensions
