@@ -1,21 +1,38 @@
-MIT License
+rinmeng License
 
-Copyright (c) 2025 rin
+Copyright (c) 2025 rinmeng. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+of this software and associated documentation files (the "Software"), to use,
+run, modify, host, and distribute the Software, including verbatim copies,
+subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. GENERAL USE
+   The Software is free to use, run, learn from, adapt, and host — including
+   hosting a verbatim copy — for any purpose, provided the conditions in this
+   license are met.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. ATTRIBUTION
+   This license notice must be included in all copies or substantial portions
+   of the Software.
+
+3. MATTHEW TSENG — HOSTING RESTRICTION
+   Any person or entity hosting, deploying, or operating the Software
+   — in whole or in part, in original or modified form — for the primary
+   benefit of, on behalf of, or at the direction of Matthew Tseng is
+   prohibited without explicit prior written permission from the copyright
+   holder (rinmeng).
+
+4. OWNERSHIP TRANSFER
+   The copyright holder retains full ownership of this codebase at all times.
+   Transfer of ownership or exclusive rights to any party, including Matthew
+   Tseng, is not granted by this license. Any such transfer requires a
+   separate written agreement between the relevant party and rinmeng,
+   including mutually agreed-upon compensation.
+
+5. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY
+   ARISING FROM THE USE OF THE SOFTWARE.
