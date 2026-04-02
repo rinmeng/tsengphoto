@@ -1,10 +1,10 @@
 // app/api/contact/route.ts
 
-import { Resend } from 'resend';
-import { buildEmailHtml, buildConfirmationHtml } from '@/lib/email';
+import { buildConfirmationHtml, buildEmailHtml } from '@/lib/email';
 import { Logger } from '@/lib/logger';
+import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || '');
 const TO_EMAIL = process.env.NEXT_PUBLIC_RESEND_EMAIL_TO || 'mail@rinm.dev';
 const FROM_EMAIL = process.env.NEXT_PUBLIC_RESEND_EMAIL_FROM || 'mail@rinm.dev';
 
