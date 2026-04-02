@@ -22,9 +22,9 @@ interface PhotoCarouselProps {
   containerClassName?: string;
   itemsToShow?: 1 | 2 | 3;
   btnVariant?: 'default' | 'outline' | 'ghost' | 'secondary';
-  btnLocation?: 'default' | 'mb' | 'below-carousel';
+  navigation?: 'overlay' | 'bottom-center' | 'side-center' | 'below' | 'none';
+  showButtons?: boolean;
   fullWidth?: boolean;
-  dotsLocation?: 'absolute' | 'below-carousel';
   showDots?: boolean;
   objectFit?: 'cover' | 'contain';
   objectPosition?: string;
@@ -39,9 +39,9 @@ export function PhotoCarousel({
   containerClassName,
   itemsToShow = 3,
   btnVariant = 'ghost',
-  btnLocation = 'default',
+  navigation = 'overlay',
+  showButtons = true,
   fullWidth = false,
-  dotsLocation = 'absolute',
   showDots = true,
   objectFit = 'cover',
   objectPosition = 'center',
@@ -82,10 +82,8 @@ export function PhotoCarousel({
       <Carousel
         setApi={setApi}
         btnVariant={btnVariant}
-        btnLocation={btnLocation}
         showDots={showDots}
-        dotsLocation={dotsLocation}
-        className='w-full'
+        className={cn('w-full', navigation === 'below' && 'pb-16')}
         opts={carouselOpts}
         plugins={plugins}
       >
@@ -139,40 +137,58 @@ export function PhotoCarousel({
             </CarouselItem>
           ))}
         </CarouselContent>
-        {btnLocation !== 'below-carousel' && btnLocation !== 'mb' && (
+        {/* Navigation: Overlay (default) */}
+        {navigation === 'overlay' && (
           <>
-            <CarouselPrevious className='hidden sm:flex' />
-            <CarouselNext className='hidden sm:flex' />
+            {showButtons && (
+              <>
+                <CarouselPrevious className='hidden sm:flex' />
+                <CarouselNext className='hidden sm:flex' />
+              </>
+            )}
+            {showDots && <CarouselDots />}
           </>
         )}
-        {dotsLocation !== 'below-carousel' && btnLocation !== 'mb' && showDots && (
-          <CarouselDots />
-        )}
-        {/* Middle-bottom grouped navigation */}
-        {btnLocation === 'mb' && (
+        {/* Navigation: Bottom Center */}
+        {navigation === 'bottom-center' && (
           <div
             className='absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center
-              gap-3'
+              mb-2 gap-3'
           >
-            <CarouselPrevious className='hidden sm:flex' />
-            {dotsLocation !== 'below-carousel' && showDots && (
-              <CarouselDots className='static! translate-x-0!' />
-            )}
-            <CarouselNext className='hidden sm:flex' />
+            {showButtons && <CarouselPrevious className='hidden sm:flex' />}
+            {showDots && <CarouselDots className='static translate-x-0' />}
+            {showButtons && <CarouselNext className='hidden sm:flex' />}
           </div>
         )}
-        {/* Below-carousel grouped navigation */}
-        {(btnLocation === 'below-carousel' || dotsLocation === 'below-carousel') && (
-          <div className='flex items-center justify-center gap-4 mt-4'>
-            {btnLocation === 'below-carousel' && (
-              <CarouselPrevious className='hidden sm:flex' />
+        {/* Navigation: Side Center */}
+        {navigation === 'side-center' && (
+          <>
+            {showButtons && (
+              <>
+                <CarouselPrevious className='hidden sm:flex left-4' />
+                <CarouselNext className='hidden sm:flex right-4' />
+              </>
             )}
-            {dotsLocation === 'below-carousel' && showDots && <CarouselDots />}
-            {btnLocation === 'below-carousel' && (
-              <CarouselNext className='hidden sm:flex' />
+            {showDots && (
+              <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-10'>
+                <CarouselDots className='static translate-x-0' />
+              </div>
+            )}
+          </>
+        )}
+        {/* Navigation: Below */}
+        {navigation === 'below' && (
+          <div className='flex items-center justify-center gap-4 mt-2'>
+            {showButtons && (
+              <CarouselPrevious className='static translate-x-0 translate-y-0' />
+            )}
+            {showDots && <CarouselDots className='static translate-x-0' />}
+            {showButtons && (
+              <CarouselNext className='static translate-x-0 translate-y-0' />
             )}
           </div>
         )}
+        {/* Navigation: None - render nothing */}
       </Carousel>
     </section>
   );

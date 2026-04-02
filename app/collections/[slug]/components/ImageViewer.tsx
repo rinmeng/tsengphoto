@@ -63,7 +63,7 @@ export function ImageViewer({
             images={images}
             autoplayDelay={0}
             itemsToShow={1}
-            btnLocation='mb'
+            navigation='side-center'
             btnVariant='secondary'
             showDots={false}
             fullWidth={true}
