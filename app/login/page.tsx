@@ -1,10 +1,7 @@
 'use client';
 
-import { Logo } from '@/components/Logo';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/animate-ui/components/button';
+import { Logo } from '@/components/Logo';
 import {
   Card,
   CardContent,
@@ -20,14 +17,17 @@ import {
   Input,
   Spinner,
 } from '@/components/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
+import { Text } from '@/components/Text';
 import { signInWithEmail } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { Text } from '@/components/Text';
-import { LogIn } from 'lucide-react';
 import { getDelayClass } from '@/utils/animations';
+import { useMutation } from '@tanstack/react-query';
+import { LogIn } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -85,10 +85,7 @@ export default function LoginPage() {
           fade-in-from-left-full'
       >
         <div className='text-center space-y-6 max-w-md'>
-          <Logo
-            iconSize={40}
-            className={`text-4xl fade-in-from-left ${getDelayClass(2)}`}
-          />
+          <Logo className={`text-4xl fade-in-from-left ${getDelayClass(2)}`} />
           <Text
             variant='muted'
             className={`fade-in-from-left w-full text-center ${getDelayClass(3)}`}

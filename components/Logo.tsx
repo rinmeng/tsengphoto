@@ -4,12 +4,11 @@ import Link from 'next/link';
 
 interface LogoProps {
   className?: string;
-  iconSize?: number;
   showText?: boolean;
   onClick?: () => void;
 }
 
-export function Logo({ className, iconSize = 40, showText = true, onClick }: LogoProps) {
+export function Logo({ className, showText = true, onClick }: LogoProps) {
   return (
     <div className='flex items-center justify-center'>
       <Button variant='link' className='p-0 m-0'>
