@@ -101,7 +101,7 @@ export function CoverImageUploader({
           }));
 
           const result = await startUpload([file]);
-          if (result && result[0]?.url) {
+          if (result && result[0]?.ufsUrl) {
             setFileState((prev) =>
               prev ? { ...prev, status: 'success', progress: 100 } : null
             );
