@@ -14,4 +14,4 @@ Built with [Next.js 15](https://nextjs.org), [Supabase](https://supabase.com), [
 
 ## License
 
-Licensed under the MIT license.
+Licensed under the custom license.
