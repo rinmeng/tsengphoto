@@ -19,7 +19,8 @@ export function Hero({ className }: { className?: string }) {
       containerClassName='h-screen'
       itemsToShow={1}
       btnVariant='ghost'
-      btnLocation='mb'
+      navigation='bottom-center'
+      showButtons={false}
       fullWidth={true}
       showLoading={false}
     />
