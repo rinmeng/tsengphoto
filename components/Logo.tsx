@@ -1,7 +1,6 @@
-import { OptimizedImage } from '@/components/OptimizedImage';
-import Link from 'next/link';
 import { Button } from '@/components/animate-ui/components/button';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface LogoProps {
   className?: string;
@@ -19,13 +18,6 @@ export function Logo({ className, iconSize = 40, showText = true, onClick }: Log
           className={cn('flex items-center gap-2', className)}
           onClick={onClick}
         >
-          <OptimizedImage
-            src='/favicon.ico'
-            alt='Logo'
-            width={iconSize}
-            height={iconSize}
-            style={{ width: iconSize, height: iconSize }}
-          />
           {showText && <span className={className}>Tseng Photography</span>}
         </Link>
       </Button>
