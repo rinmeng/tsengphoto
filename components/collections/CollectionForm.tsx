@@ -476,6 +476,7 @@ export function CollectionForm({
                         className='p-0'
                         align='start'
                         style={{ width: 'var(--radix-popover-trigger-width)' }}
+                        onWheel={(e) => e.stopPropagation()}
                       >
                         <Command>
                           <CommandInput
