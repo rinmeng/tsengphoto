@@ -61,7 +61,7 @@ export function OptimizedImage({ showLoading = false, ...props }: OptimizedImage
     <div className='relative w-full h-full'>
       {isLoading && (
         <div
-          className={`absolute inset-0 z-10 bg-black/50 flex items-center justify-center
+          className={`absolute inset-0 z-10 bg-black/50
           ${isMobile ? '' : 'backdrop-blur-md'} flex flex-col items-center justify-center
           fade-in-from-bottom ${getDelayClass(1)}`}
         >
