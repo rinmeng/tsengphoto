@@ -3,7 +3,7 @@
 import { LogIn, LogOut, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import {
   Button,
@@ -135,13 +135,26 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const pathname = usePathname();
+  const portfolioHoverStartRef = useRef<number | null>(null);
 
   const isActive = (href: string) => pathname === href;
 
+  const handlePortfolioMouseEnter = () => {
+    portfolioHoverStartRef.current = Date.now();
+  };
+
+  const handlePortfolioMouseLeave = () => {
+    portfolioHoverStartRef.current = null;
+  };
+
   const preventPortfolioClick = (e: React.MouseEvent | React.PointerEvent) => {
-    // Disable clicking entirely - make it hover-only
-    e.preventDefault();
-    e.stopPropagation();
+    // Touch devices have no hover state — allow click immediately
+    if ('pointerType' in e && (e as React.PointerEvent).pointerType === 'touch') return;
+    // Block click for 1 second after hover starts (dropdown opens on hover anyway)
+    if (portfolioHoverStartRef.current !== null && Date.now() - portfolioHoverStartRef.current < 1000) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   return (
@@ -171,6 +184,8 @@ export function Navbar() {
                   onClick={preventPortfolioClick}
                   onPointerDown={preventPortfolioClick}
                   onMouseDown={preventPortfolioClick}
+                  onMouseEnter={handlePortfolioMouseEnter}
+                  onMouseLeave={handlePortfolioMouseLeave}
                 >
                   Portfolio
                 </NavigationMenuTrigger>
