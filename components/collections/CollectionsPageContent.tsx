@@ -36,7 +36,7 @@ interface CollectionsPageContentProps {
   filterType?: 'series' | 'event' | null;
   addButtonText: string;
   countLabel: string;
-  deleteItemName: string;
+  itemTypeName: string;
   showGroupsAndUnique?: boolean;
 }
 
@@ -46,7 +46,7 @@ export function CollectionsPageContent({
   filterType = null,
   addButtonText,
   countLabel,
-  deleteItemName,
+  itemTypeName,
   showGroupsAndUnique = false,
 }: CollectionsPageContentProps) {
   const { isAuthenticated } = useAuth();
@@ -153,6 +153,7 @@ export function CollectionsPageContent({
 
   const deleteMutation = useMutation({
     mutationFn: async (collectionId: string) => {
+      const collection = collections.find((c) => c.id === collectionId);
       const response = await fetch('/api/v1/collections', {
         method: 'DELETE',
         headers: {
@@ -163,19 +164,21 @@ export function CollectionsPageContent({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || `Failed to delete ${deleteItemName}`);
+        throw new Error(error.error || `Failed to delete ${itemTypeName}`);
       }
+
+      return collection?.title || itemTypeName;
     },
-    onSuccess: () => {
+    onSuccess: (collectionName) => {
       queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
-      toast.success(`${deleteItemName} deleted`, {
-        description: `${deleteItemName} has been deleted successfully.`,
+      toast.success(`${collectionName} deleted`, {
+        description: `${collectionName} has been deleted successfully.`,
       });
       setDeleteDialogOpen(false);
       setCollectionToDelete(null);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete ${deleteItemName}`, {
+      toast.error(`Failed to delete ${itemTypeName}`, {
         description: error.message,
       });
     },
@@ -185,7 +188,7 @@ export function CollectionsPageContent({
     mutationFn: async (collectionId: string) => {
       const collection = collections.find((c) => c.id === collectionId);
       if (!collection) {
-        throw new Error(`${deleteItemName} not found`);
+        throw new Error(`${itemTypeName} not found`);
       }
 
       const response = await fetch('/api/v1/collections', {
@@ -201,26 +204,29 @@ export function CollectionsPageContent({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || `Failed to update ${deleteItemName}`);
+        throw new Error(error.error || `Failed to update ${itemTypeName}`);
       }
 
-      return !collection.is_published;
+      return {
+        newPublishedState: !collection.is_published,
+        collectionName: collection.title,
+      };
     },
-    onSuccess: (newPublishedState) => {
+    onSuccess: ({ newPublishedState, collectionName }) => {
       queryClient.invalidateQueries({ queryKey: collectionsQueryKeys.all });
       toast.success(
         newPublishedState
-          ? `${deleteItemName} published`
-          : `${deleteItemName} unpublished`,
+          ? `${collectionName} published`
+          : `${collectionName} unpublished`,
         {
           description: newPublishedState
-            ? `${deleteItemName} is now visible to everyone.`
-            : `${deleteItemName} is now hidden from public view.`,
+            ? `${collectionName} is now visible to everyone.`
+            : `${collectionName} is now hidden from public view.`,
         }
       );
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update ${deleteItemName}`, {
+      toast.error(`Failed to update ${itemTypeName}`, {
         description: error.message,
       });
     },
@@ -456,7 +462,7 @@ export function CollectionsPageContent({
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete this{' '}
-                {deleteItemName} and all its images.
+                {itemTypeName} and all its images.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

@@ -71,7 +71,7 @@ export function SearchAndFilterBar<T>({
   const prevQueryRef = useRef<string | undefined>(undefined);
   const prevTypeFilterRef = useRef<string | null | undefined>(undefined);
   const prevGroupFilterRef = useRef<string | null | undefined>(undefined);
-  const prevItemsLengthRef = useRef<number | undefined>(undefined);
+  const prevItemsRef = useRef<T[] | undefined>(undefined);
 
   const fuse = useMemo(() => {
     return new Fuse(items, {
@@ -129,14 +129,14 @@ export function SearchAndFilterBar<T>({
       prevQueryRef.current === debouncedQuery &&
       prevTypeFilterRef.current === typeFilter &&
       prevGroupFilterRef.current === groupFilter &&
-      prevItemsLengthRef.current === items.length
+      prevItemsRef.current === items
     ) {
       return;
     }
     prevQueryRef.current = debouncedQuery;
     prevTypeFilterRef.current = typeFilter;
     prevGroupFilterRef.current = groupFilter;
-    prevItemsLengthRef.current = items.length;
+    prevItemsRef.current = items;
 
     let results: T[] = [];
     const isSearching = debouncedQuery.trim().length > 0;

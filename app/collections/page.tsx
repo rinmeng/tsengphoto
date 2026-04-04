@@ -88,7 +88,7 @@ export default function CollectionsPage() {
       description='Explore our portfolio of events, series, and video projects. Each collection tells a unique story through professional photography.'
       addButtonText='Add New Collection'
       countLabel='collections'
-      deleteItemName='collection'
+      itemTypeName='collection'
       showGroupsAndUnique={true}
     />
   );
