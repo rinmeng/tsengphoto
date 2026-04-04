@@ -35,6 +35,7 @@ interface ImagesGridProps {
   isBulkDeleting?: boolean;
   deletionProgress?: { current: number; total: number };
   maxColumns?: number;
+  disableDownload?: boolean;
 }
 
 export function ImagesGrid({
@@ -50,6 +51,7 @@ export function ImagesGrid({
   isBulkDeleting = false,
   deletionProgress = { current: 0, total: 0 },
   maxColumns = 5,
+  disableDownload = false,
 }: ImagesGridProps) {
   const { isAuthenticated } = useAuth();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -65,6 +67,9 @@ export function ImagesGrid({
 
   const isDrive = source === 'drive';
   const isUploaded = source === 'uploaded';
+
+  // Show selection UI only if user can download OR delete
+  const canSelectImages = !disableDownload || (isAuthenticated && isUploaded);
 
   const handleImageError = (imageId: string) => {
     setFailedImages((prev) => new Set(prev).add(imageId));
@@ -375,7 +380,7 @@ export function ImagesGrid({
         )}
 
         {/* Bulk Actions Bar */}
-        {images.length > 0 && (
+        {images.length > 0 && canSelectImages && (
           <div
             className={`flex items-center justify-between w-full gap-2 fade-in-from-top
             ${getDelayClass(isDrive ? 4 : 1)}`}
@@ -412,7 +417,7 @@ export function ImagesGrid({
                 </Button>
               )}
               {/* Download button */}
-              {selectedIds.size > 0 && (
+              {!disableDownload && selectedIds.size > 0 && (
                 <Button
                   variant='default'
                   size='sm'
@@ -457,7 +462,7 @@ export function ImagesGrid({
                 className={`group relative overflow-hidden rounded ${
                   isMobile ? '' : 'cursor-pointer'
                 } fade-in-from-top
-                ${getDelayClass(globalIndex + (isDrive ? 5 : 2))}`}
+                ${getDelayClass(globalIndex)}`}
                 onClick={isMobile ? undefined : () => onImageClick(globalIndex)}
               >
                 <div className='relative overflow-hidden'>
@@ -482,8 +487,8 @@ export function ImagesGrid({
                       className='w-full h-auto rounded hover:scale-105
                         transition-transform duration-300'
                       sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
-                      loading={isDrive ? 'lazy' : 'eager'}
-                      showLoading={true}
+                      loading='lazy'
+                      showLoading='spinner-only'
                       onError={() => handleImageError(image.id)}
                     />
                   ) : (
@@ -494,20 +499,22 @@ export function ImagesGrid({
                     </div>
                   )}
 
-                  {/* Checkbox - Always visible */}
-                  <div className='absolute top-2 left-2 z-10'>
-                    <Checkbox
-                      checked={selectedIds.has(image.id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectOne(image.id, checked as boolean)
-                      }
-                      disabled={isBulkDeleting || isDownloading}
-                      variant='overlay'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <CheckboxIndicator />
-                    </Checkbox>
-                  </div>
+                  {/* Checkbox - Visible only if user can download or delete */}
+                  {canSelectImages && (
+                    <div className='absolute top-2 left-2 z-10'>
+                      <Checkbox
+                        checked={selectedIds.has(image.id)}
+                        onCheckedChange={(checked) =>
+                          handleSelectOne(image.id, checked as boolean)
+                        }
+                        disabled={isBulkDeleting || isDownloading}
+                        variant='overlay'
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <CheckboxIndicator />
+                      </Checkbox>
+                    </div>
+                  )}
 
                   {/* Individual Delete button - Only for authenticated users on uploaded images */}
                   {isAuthenticated && isUploaded && (
