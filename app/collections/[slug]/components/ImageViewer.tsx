@@ -48,14 +48,14 @@ export function ImageViewer({
             z-50 translate-x-[-50%] translate-y-[-50%]'
         >
           <div className='absolute top-2 right-2 z-10'>
-            <div className='flex flex-row gap-4 items-center'>
+            <div className='flex flex-row gap-2 items-center'>
               {showDownloadButton && (
-                <Button variant='ghost' size='icon' onClick={handleDownload}>
+                <Button variant='outline' size='icon' onClick={handleDownload}>
                   <Download className='size-5' />
                 </Button>
               )}
               <DialogClose asChild>
-                <Button variant='ghost' size='icon'>
+                <Button variant='outline' size='icon'>
                   <X className='size-5' />
                 </Button>
               </DialogClose>
