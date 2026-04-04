@@ -1,6 +1,7 @@
 'use client';
 import { Text } from '@/components/Text';
 import { useImageOptimization } from '@/contexts/ImageOptimizationContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { getDelayClass } from '@/utils/animations';
 import { Loader2 } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
@@ -21,6 +22,7 @@ export function OptimizedImage({ showLoading = false, ...props }: OptimizedImage
   const { isOptimizationDisabled, disableOptimization } = useImageOptimization();
   const [localUnoptimized, setLocalUnoptimized] = useState(false);
   const [isLoading, setIsLoading] = useState(showLoading);
+  const isMobile = useIsMobile();
 
   const handleError: ImageProps['onError'] = (error) => {
     // Disable optimization globally so all subsequent images skip optimization
@@ -59,8 +61,9 @@ export function OptimizedImage({ showLoading = false, ...props }: OptimizedImage
     <div className='relative w-full h-full'>
       {isLoading && (
         <div
-          className={`absolute inset-0 z-10 bg-black/50 backdrop-blur-md flex flex-col
-          items-center justify-center fade-in-from-bottom ${getDelayClass(1)}`}
+          className={`absolute inset-0 z-10 bg-black/50 flex items-center justify-center
+          ${isMobile ? '' : 'backdrop-blur-md'} flex flex-col items-center justify-center
+          fade-in-from-bottom ${getDelayClass(1)}`}
         >
           <Loader2
             className={`size-8 animate-spin text-primary mb-3 fade-in-from-bottom

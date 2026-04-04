@@ -269,6 +269,18 @@ export default function CollectionPage() {
     }
   };
 
+  // Determine back URL based on collection type
+  const getBackUrl = () => {
+    switch (collection.type) {
+      case 'series':
+        return '/series';
+      case 'event':
+        return '/events';
+      default:
+        return '/collections';
+    }
+  };
+
   return (
     <section
       className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
@@ -277,7 +289,7 @@ export default function CollectionPage() {
       {/* Back Button & Upload */}
       <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
         <div className='flex items-center gap-4 flex-wrap'>
-          <Link href='/collections'>
+          <Link href={getBackUrl()}>
             <Button variant='default'>
               <ArrowLeft />
               Back
@@ -372,6 +384,7 @@ export default function CollectionPage() {
             isBulkDeleting={bulkDeleteMutation.isPending}
             deletionProgress={deletionProgress}
             maxColumns={collection.type === 'series' ? 3 : 5}
+            disableDownload={collection.type === 'series'}
           />
         )}
 
@@ -385,6 +398,7 @@ export default function CollectionPage() {
               startIndex={sortedImages.length}
               driveFullQualityUrls={driveFullQualityUrls}
               maxColumns={collection.type === 'series' ? 3 : 5}
+              disableDownload={collection.type === 'series'}
             />
           </div>
         )}
@@ -394,7 +408,7 @@ export default function CollectionPage() {
       <ImageViewer
         images={rotatedImageUrls}
         isOpen={isViewerOpen}
-        showDownloadButton={true}
+        showDownloadButton={collection.type !== 'series'}
         onOpenChange={setIsViewerOpen}
       />
 
