@@ -21,9 +21,11 @@ import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { CollectionImage, CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import JSZip from 'jszip';
 import {
   ArrowLeft,
   Calendar,
+  Download,
   Folder,
   ImageIcon,
   Loader2,
@@ -50,6 +52,9 @@ export default function CollectionPage() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
 
   const {
     data: collection,
@@ -269,6 +274,135 @@ export default function CollectionPage() {
     }
   };
 
+  const downloadImage = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      throw new Error(`Failed to download ${filename}`);
+    }
+  };
+
+  const handleBulkDownload = async () => {
+    if (selectedIds.size === 0) return;
+
+    setIsDownloading(true);
+
+    // Combine uploaded and drive images
+    const selectedUploaded = sortedImages.filter((img) => selectedIds.has(img.id));
+    const selectedDrive = formattedDriveImages.filter((img) => selectedIds.has(img.id));
+    const totalCount = selectedUploaded.length + selectedDrive.length;
+
+    setDownloadProgress({ current: 0, total: totalCount });
+
+    try {
+      if (totalCount === 1) {
+        // Single image download
+        if (selectedUploaded.length === 1) {
+          const image = selectedUploaded[0];
+          if (image.image_url) {
+            const filename = `${collection.title.replace(/\s+/g, '_')}_1.jpg`;
+            await downloadImage(image.image_url, filename);
+            toast.success('Downloaded 1 image');
+          }
+        } else if (selectedDrive.length === 1) {
+          const driveImg = selectedDrive[0];
+          const driveIndex = formattedDriveImages.findIndex(
+            (img) => img.id === driveImg.id
+          );
+          const fullQualityUrl = driveFullQualityUrls[driveIndex];
+          if (fullQualityUrl) {
+            const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${driveIndex + 1}.jpg`;
+            await downloadImage(fullQualityUrl, filename);
+            toast.success('Downloaded 1 image');
+          }
+        }
+      } else {
+        // Multiple images - create zip
+        const zip = new JSZip();
+        let successCount = 0;
+        let failedCount = 0;
+        let currentProgress = 0;
+
+        // Download uploaded images
+        for (let i = 0; i < selectedUploaded.length; i++) {
+          const image = selectedUploaded[i];
+          setDownloadProgress({ current: ++currentProgress, total: totalCount });
+
+          if (image.image_url) {
+            try {
+              const response = await fetch(image.image_url);
+              const blob = await response.blob();
+              const filename = `${collection.title.replace(/\s+/g, '_')}_${i + 1}.jpg`;
+              zip.file(filename, blob);
+              successCount++;
+            } catch {
+              failedCount++;
+            }
+          }
+        }
+
+        // Download drive images
+        for (let i = 0; i < selectedDrive.length; i++) {
+          const driveImg = selectedDrive[i];
+          const driveIndex = formattedDriveImages.findIndex(
+            (img) => img.id === driveImg.id
+          );
+          const fullQualityUrl = driveFullQualityUrls[driveIndex];
+          setDownloadProgress({ current: ++currentProgress, total: totalCount });
+
+          if (fullQualityUrl) {
+            try {
+              const response = await fetch(fullQualityUrl);
+              const blob = await response.blob();
+              const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${driveIndex + 1}.jpg`;
+              zip.file(filename, blob);
+              successCount++;
+            } catch {
+              failedCount++;
+            }
+          }
+        }
+
+        if (successCount > 0) {
+          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          const zipUrl = URL.createObjectURL(zipBlob);
+          const a = document.createElement('a');
+          a.href = zipUrl;
+          a.download = `${collection.title.replace(/\s+/g, '_')}_images.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(zipUrl);
+
+          toast.success(
+            `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
+          );
+        }
+
+        if (failedCount > 0) {
+          toast.error(
+            `Failed to download ${failedCount} image${failedCount !== 1 ? 's' : ''}`
+          );
+        }
+      }
+    } catch {
+      toast.error('Failed to download images');
+    } finally {
+      setIsDownloading(false);
+      setDownloadProgress({ current: 0, total: 0 });
+      setSelectedIds(new Set());
+    }
+  };
+
   return (
     <section
       className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
@@ -285,6 +419,24 @@ export default function CollectionPage() {
             <Share2 className='size-5' />
             Share
           </Button>
+          {collection.type !== 'series' && selectedIds.size > 0 && (
+            <Button
+              variant='secondary'
+              onClick={handleBulkDownload}
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                <>
+                  <Loader2 className='animate-spin' /> Downloading{' '}
+                  {downloadProgress.current} of {downloadProgress.total}...
+                </>
+              ) : (
+                <>
+                  <Download /> Download ({selectedIds.size})
+                </>
+              )}
+            </Button>
+          )}
           {isAuthenticated && (
             <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
               <Upload />
@@ -371,6 +523,8 @@ export default function CollectionPage() {
             deletionProgress={deletionProgress}
             maxColumns={collection.type === 'series' ? 3 : 4}
             disableDownload={collection.type === 'series'}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
           />
         )}
 
@@ -382,9 +536,10 @@ export default function CollectionPage() {
               onImageClick={handleImageClick}
               source='drive'
               startIndex={sortedImages.length}
-              driveFullQualityUrls={driveFullQualityUrls}
               maxColumns={collection.type === 'series' ? 3 : 4}
               disableDownload={collection.type === 'series'}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
             />
           </div>
         )}
