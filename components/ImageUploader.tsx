@@ -1,23 +1,23 @@
 'use client';
 
+import { Button } from '@/components/animate-ui/components/button';
+import { Text } from '@/components/Text';
+import { Progress, ScrollArea } from '@/components/ui';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { useUploadThing } from '@/utils/uploadthing/uploadthing';
+import { useMutation } from '@tanstack/react-query';
+import imageCompression from 'browser-image-compression';
+import {
+  CheckCircle2,
+  Image as ImageIcon,
+  Loader2,
+  Upload,
+  X,
+  XCircle,
+} from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone, type FileRejection } from 'react-dropzone';
-import { useUploadThing } from '@/utils/uploadthing/uploadthing';
-import { Button } from '@/components/animate-ui/components/button';
-import { Progress, ScrollArea } from '@/components/ui';
-import { Text } from '@/components/Text';
-import {
-  Upload,
-  Image as ImageIcon,
-  X,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
-import imageCompression from 'browser-image-compression';
-import { useMutation } from '@tanstack/react-query';
 
 interface ImageUploaderProps {
   onUploadComplete?: (uploadedUrls?: string[]) => void;
@@ -219,6 +219,22 @@ export function ImageUploader({
       try {
         const result = await startUpload([files[i].file]);
         if (result && result[0]?.ufsUrl) {
+          const serverData = result[0].serverData as
+            | { uploadId?: string; dbError?: string; error?: string; success?: boolean }
+            | undefined;
+
+          // Check if the server-side callback failed
+          if (serverData?.dbError || serverData?.error) {
+            throw new Error(
+              serverData.dbError || serverData.error || 'Failed to save upload record'
+            );
+          }
+
+          // Check if we got an uploadId back (confirms DB record was created)
+          if (!serverData?.uploadId) {
+            throw new Error('Upload completed but failed to create database record');
+          }
+
           uploadedUrls.push(result[0].ufsUrl);
         }
         setFiles((prev) =>

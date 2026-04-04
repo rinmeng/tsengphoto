@@ -27,7 +27,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarIcon, Info, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -70,6 +70,9 @@ export function VideoCollectionForm({
   const queryClient = useQueryClient();
   const [isCoverImageUploading, setIsCoverImageUploading] = useState(false);
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  // Track original and pending cover images for cleanup (Layer 2)
+  const originalCoverImageIdRef = useRef<string | null>(null);
+  const pendingCoverImageIdRef = useRef<string | null>(null);
 
   const form = useForm<VideoCollectionFormValues>({
     resolver: zodResolver(videoCollectionSchema),
@@ -182,6 +185,9 @@ export function VideoCollectionForm({
 
   useEffect(() => {
     if (open) {
+      const isEditMode = mode === 'edit' && videoCollection;
+      const coverImageId = isEditMode ? videoCollection.cover_image_id || null : null;
+
       const defaultValues = videoCollection
         ? {
             title: videoCollection.title,
@@ -204,8 +210,12 @@ export function VideoCollectionForm({
             is_published: false,
           };
       form.reset(defaultValues);
+
+      // Store original cover image ID for cleanup tracking (Layer 2)
+      originalCoverImageIdRef.current = coverImageId;
+      pendingCoverImageIdRef.current = coverImageId;
     }
-  }, [open, videoCollection, form]);
+  }, [open, videoCollection, form, mode]);
 
   const handleTitleChange = (value: string) => {
     if (mode === 'add') {
@@ -223,11 +233,37 @@ export function VideoCollectionForm({
     mutation.mutate(values);
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
+  const handleOpenChange = async (newOpen: boolean) => {
     if (!newOpen && isCoverImageUploading) {
       toast.error('Please wait for the cover image to finish uploading');
       return;
     }
+
+    // Layer 2: Cleanup pending uploads if user cancels without saving
+    if (
+      !newOpen &&
+      pendingCoverImageIdRef.current &&
+      pendingCoverImageIdRef.current !== originalCoverImageIdRef.current
+    ) {
+      const pendingUrl = form.getValues('cover_image_url');
+      if (pendingUrl) {
+        try {
+          await fetch('/api/v1/uploads', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uploadId: pendingCoverImageIdRef.current,
+              fileUrl: pendingUrl,
+            }),
+          });
+        } catch (error) {
+          // Silently fail - don't interrupt dialog close
+        }
+      }
+    }
+
     onOpenChange(newOpen);
   };
 
@@ -386,13 +422,18 @@ export function VideoCollectionForm({
                         form.setValue('cover_image_url', data.url);
                         if (data.uploadId) {
                           form.setValue('cover_image_id', data.uploadId);
+                          pendingCoverImageIdRef.current = data.uploadId; // Track for cleanup
                         }
                       }}
                       onRemove={() => {
                         form.setValue('cover_image_url', '');
                         form.setValue('cover_image_id', '');
+                        pendingCoverImageIdRef.current = null; // Clear pending tracking
                       }}
                       onUploadingChange={setIsCoverImageUploading}
+                      mode={mode}
+                      collectionId={videoCollection?.id}
+                      entityType='video-collection'
                     />
                   </FormControl>
                   <FormMessage />

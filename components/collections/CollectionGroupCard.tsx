@@ -21,9 +21,9 @@ export function CollectionGroupCard({
   className,
   onClick,
 }: CollectionGroupCardProps) {
-  // Get the first collection's cover image for the group card
-  const firstCollection = collections[0];
-  const coverImage = firstCollection?.cover_image_url;
+  // Get the first available cover image from any collection in the group
+  const collectionWithCover = collections.find((c) => c.cover_image_url);
+  const coverImage = collectionWithCover?.cover_image_url;
 
   const handleClick = () => {
     scrollToTop();

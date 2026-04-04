@@ -44,7 +44,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CalendarIcon, Check, Info, Plus, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -104,6 +104,9 @@ export function CollectionForm({
   const [groupSearchQuery, setGroupSearchQuery] = useState('');
   const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
+  // Track original and pending cover images for cleanup (Layer 2)
+  const originalCoverImageIdRef = useRef<string | null>(null);
+  const pendingCoverImageIdRef = useRef<string | null>(null);
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
@@ -252,6 +255,9 @@ export function CollectionForm({
   // Reset form when dialog opens or collection changes
   useEffect(() => {
     if (open) {
+      const isEditMode = mode === 'edit' && collection;
+      const coverImageId = isEditMode ? collection.cover_image_id || null : null;
+
       const defaultValues = collection
         ? {
             title: collection.title,
@@ -280,8 +286,12 @@ export function CollectionForm({
             is_published: false,
           };
       form.reset(defaultValues);
+
+      // Store original cover image ID for cleanup tracking (Layer 2)
+      originalCoverImageIdRef.current = coverImageId;
+      pendingCoverImageIdRef.current = coverImageId;
     }
-  }, [open, collection, defaultType, form]);
+  }, [open, collection, defaultType, form, mode]);
 
   // Auto-generate slug from title
   const handleTitleChange = (value: string) => {
@@ -311,12 +321,38 @@ export function CollectionForm({
     }
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
+  const handleOpenChange = async (newOpen: boolean) => {
     // Prevent closing dialog while cover image is uploading
     if (!newOpen && isCoverImageUploading) {
       toast.error('Please wait for the cover image to finish uploading');
       return;
     }
+
+    // Layer 2: Cleanup pending uploads if user cancels without saving
+    if (
+      !newOpen &&
+      pendingCoverImageIdRef.current &&
+      pendingCoverImageIdRef.current !== originalCoverImageIdRef.current
+    ) {
+      const pendingUrl = form.getValues('cover_image_url');
+      if (pendingUrl) {
+        try {
+          await fetch('/api/v1/uploads', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uploadId: pendingCoverImageIdRef.current,
+              fileUrl: pendingUrl,
+            }),
+          });
+        } catch {
+          // Silently fail - don't interrupt dialog close
+        }
+      }
+    }
+
     onOpenChange(newOpen);
   };
 
@@ -440,6 +476,7 @@ export function CollectionForm({
                         className='p-0'
                         align='start'
                         style={{ width: 'var(--radix-popover-trigger-width)' }}
+                        onWheel={(e) => e.stopPropagation()}
                       >
                         <Command>
                           <CommandInput
@@ -659,13 +696,17 @@ export function CollectionForm({
                         form.setValue('cover_image_url', data.url);
                         if (data.uploadId) {
                           form.setValue('cover_image_id', data.uploadId);
+                          pendingCoverImageIdRef.current = data.uploadId; // Track for cleanup
                         }
                       }}
                       onRemove={() => {
                         form.setValue('cover_image_url', '');
                         form.setValue('cover_image_id', '');
+                        pendingCoverImageIdRef.current = null; // Clear pending tracking
                       }}
                       onUploadingChange={setIsCoverImageUploading}
+                      mode={mode}
+                      collectionId={collection?.id}
                     />
                   </FormControl>
                   <FormMessage />

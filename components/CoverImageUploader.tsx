@@ -27,6 +27,9 @@ interface CoverImageUploaderProps {
   onRemove?: () => void; // Callback when image is removed
   onUploadingChange?: (isUploading: boolean) => void; // Callback when upload state changes
   className?: string;
+  mode?: 'add' | 'edit'; // Mode determines deletion behavior
+  collectionId?: string; // Required in edit mode for immediate DB update
+  entityType?: 'collection' | 'video-collection'; // Type of entity for correct API endpoint
 }
 
 type FileStatus = 'compressing' | 'pending' | 'uploading' | 'success' | 'error';
@@ -46,6 +49,9 @@ export function CoverImageUploader({
   onRemove,
   onUploadingChange,
   className,
+  mode = 'add',
+  collectionId,
+  entityType = 'collection',
 }: CoverImageUploaderProps) {
   const [fileState, setFileState] = useState<FileWithStatus | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -102,15 +108,29 @@ export function CoverImageUploader({
 
           const result = await startUpload([file]);
           if (result && result[0]?.ufsUrl) {
+            const serverData = result[0].serverData as
+              | { uploadId?: string; dbError?: string; error?: string; success?: boolean }
+              | undefined;
+
+            // Check if the server-side callback failed
+            if (serverData?.dbError || serverData?.error) {
+              throw new Error(
+                serverData.dbError || serverData.error || 'Failed to save upload record'
+              );
+            }
+
+            // Check if we got an uploadId back (confirms DB record was created)
+            if (!serverData?.uploadId) {
+              throw new Error('Upload completed but failed to create database record');
+            }
+
             setFileState((prev) =>
               prev ? { ...prev, status: 'success', progress: 100 } : null
             );
 
-            // Extract uploadId from serverData
-            const uploadId = result[0].serverData?.uploadId;
             onChange?.({
               url: result[0].ufsUrl,
-              uploadId: uploadId,
+              uploadId: serverData.uploadId,
             });
             toast.success('Cover image uploaded successfully');
 
@@ -169,7 +189,33 @@ export function CoverImageUploader({
   // TanStack Query mutation for deleting cover image
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (uploadId && value) {
+      // In edit mode, use the cover-image endpoint for immediate DB update
+      if (mode === 'edit' && collectionId) {
+        const endpoint =
+          entityType === 'video-collection'
+            ? '/api/v1/video-collections/cover-image'
+            : '/api/v1/collections/cover-image';
+        const bodyKey =
+          entityType === 'video-collection' ? 'videoCollectionId' : 'collectionId';
+
+        const response = await fetch(endpoint, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            [bodyKey]: collectionId,
+            uploadId,
+            fileUrl: value,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to remove cover image');
+        }
+      }
+      // In add mode, just delete the upload without updating collection
+      else if (uploadId && value) {
         const response = await fetch('/api/v1/uploads', {
           method: 'DELETE',
           headers: {
@@ -187,12 +233,12 @@ export function CoverImageUploader({
       }
     },
     onSuccess: () => {
-      toast.success('Cover image deleted successfully');
+      toast.success('Cover image removed successfully');
       setFileState(null);
       onRemove?.();
     },
     onError: () => {
-      toast.error('Something went wrong while deleting the image');
+      toast.error('Something went wrong while removing the image');
     },
   });
 

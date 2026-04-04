@@ -33,7 +33,7 @@ export default function EventsPage() {
       filterType='event'
       addButtonText='Add New Event'
       countLabel='events'
-      deleteItemName='event'
+      itemTypeName='event'
       showGroupsAndUnique={false}
     />
   );

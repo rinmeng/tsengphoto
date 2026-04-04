@@ -33,7 +33,7 @@ export default function SeriesPage() {
       filterType='series'
       addButtonText='Add New Series'
       countLabel='series'
-      deleteItemName='series'
+      itemTypeName='series'
       showGroupsAndUnique={false}
     />
   );
