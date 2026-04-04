@@ -11,6 +11,14 @@ import {
   AlertDialogTitle,
 } from '@/components/animate-ui/components/alert-dialog';
 import { Button } from '@/components/animate-ui/components/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/animate-ui/components/dialog';
+import { Progress } from '@/components/animate-ui/components/radix/progress';
 import { CollectionUploadDialog } from '@/components/collections/CollectionUploadDialog';
 import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
@@ -55,6 +63,10 @@ export default function CollectionPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [isZipping, setIsZipping] = useState(false);
+  const [zippingProgress, setZippingProgress] = useState(0);
+  const [downloadComplete, setDownloadComplete] = useState(false);
 
   const {
     data: collection,
@@ -295,6 +307,8 @@ export default function CollectionPage() {
     if (selectedIds.size === 0) return;
 
     setIsDownloading(true);
+    setDownloadComplete(false);
+    setDownloadDialogOpen(true);
 
     // Combine uploaded and drive images
     const selectedUploaded = sortedImages.filter((img) => selectedIds.has(img.id));
@@ -373,7 +387,12 @@ export default function CollectionPage() {
         }
 
         if (successCount > 0) {
-          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          setIsZipping(true);
+          setZippingProgress(0);
+
+          const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
+            setZippingProgress(metadata.percent);
+          });
           const zipUrl = URL.createObjectURL(zipBlob);
           const a = document.createElement('a');
           a.href = zipUrl;
@@ -398,202 +417,292 @@ export default function CollectionPage() {
       toast.error('Failed to download images');
     } finally {
       setIsDownloading(false);
-      setDownloadProgress({ current: 0, total: 0 });
-      setSelectedIds(new Set());
+      setIsZipping(false);
+      setZippingProgress(0);
+      if (totalCount > 1) {
+        setDownloadComplete(true);
+      } else {
+        setDownloadProgress({ current: 0, total: 0 });
+        setSelectedIds(new Set());
+      }
     }
   };
 
+  const handleCloseDownloadDialog = () => {
+    setDownloadDialogOpen(false);
+    setTimeout(() => {
+      setDownloadComplete(false);
+      setDownloadProgress({ current: 0, total: 0 });
+      setSelectedIds(new Set());
+    }, 200);
+  };
+
+  const progressPercentage =
+    downloadProgress.total > 0
+      ? Math.round((downloadProgress.current / downloadProgress.total) * 100)
+      : 0;
+
   return (
-    <section
-      className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
-        flex-col min-h-screen'
-    >
-      {/* Back Button & Upload */}
-      <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
-        <div className='flex items-center gap-4 flex-wrap'>
-          <Button variant='default' onClick={() => router.back()}>
-            <ArrowLeft />
-            Back
-          </Button>
-          <Button variant='secondary' onClick={handleShareClick}>
-            <Share2 className='size-5' />
-            Share
-          </Button>
-          {collection.type !== 'series' && selectedIds.size > 0 && (
-            <Button
-              variant='secondary'
-              onClick={handleBulkDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <Loader2 className='animate-spin' /> Downloading{' '}
-                  {downloadProgress.current} of {downloadProgress.total}...
-                </>
-              ) : (
-                <>
-                  <Download /> Download ({selectedIds.size})
-                </>
-              )}
-            </Button>
-          )}
-          {isAuthenticated && (
-            <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
-              <Upload />
-              Upload Images
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Collection Header */}
-      <div className='mb-4 space-y-6 fade-in-from-top'>
-        <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(2)}`}>
-          {collection.title}
-        </Text>
-
-        {collection.description && (
-          <Text
-            variant='bd-lg'
-            className={`text-muted-foreground max-w-3xl fade-in-from-top
-            ${getDelayClass(3)}`}
-          >
-            {collection.description}
-          </Text>
-        )}
-
-        {/* Meta Information */}
-        <div
-          className={`flex flex-wrap gap-4 text-muted-foreground fade-in-from-top
-            ${getDelayClass(4)}`}
-        >
-          {formattedDate && (
-            <div className='flex items-center gap-2'>
-              <Calendar className='size-5' />
-              <Text variant='bd-md'>{formattedDate}</Text>
-            </div>
-          )}
-          {collection.location && (
-            <div className='flex items-center gap-2'>
-              <MapPin className='size-5' />
-              <Text variant='bd-md'>{collection.location}</Text>
-            </div>
-          )}
-          <Badge variant='outline' className='capitalize'>
-            <Type className='size-12' />
-            <Text variant='bd-xs'>{collection.type}</Text>
-          </Badge>
-          {collection.collection_group_name && (
-            <Badge variant='outline' className='capitalize'>
-              <Folder className='size-12' />
-              <Text variant='bd-xs'>{collection.collection_group_name}</Text>
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {/* Image Gallery */}
-      <div className='flex flex-col space-y-6 min-h-[70vh]'>
-        {isEmpty && (
-          <div className='flex h-full items-center justify-center'>
-            <EmptyState
-              className='min-h-[70vh]'
-              bordered={true}
-              icon={ImageIcon}
-              title='No images in this collection yet.'
-              description={
-                isAuthenticated
-                  ? 'Start by uploading some photos or linking a Google Drive folder to this collection via editing the collection on the previous page.'
-                  : 'Please check back later!'
-              }
-            />
+    <>
+      <Dialog
+        open={downloadDialogOpen && downloadProgress.total > 1}
+        onOpenChange={() => {}}
+      >
+        <DialogContent showCloseButton={false} className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle className={`fade-in-from-bottom ${getDelayClass(1)}`}>
+              {downloadComplete ? 'Download Complete' : 'Downloading Images'}
+            </DialogTitle>
+            <DialogDescription className={`fade-in-from-bottom ${getDelayClass(2)}`}>
+              {downloadComplete
+                ? 'Your images have been downloaded successfully.'
+                : isZipping
+                  ? 'Please wait while we package your images into a zip file.'
+                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close this page."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className='space-y-4'>
+            {!downloadComplete && (
+              <div className='space-y-2'>
+                {isZipping ? (
+                  <>
+                    <div
+                      className={`flex justify-between text-sm fade-in-from-bottom
+                        ${getDelayClass(3)}`}
+                    >
+                      <Text variant='bd-sm'>Zipping files</Text>
+                      <Text variant='bd-sm'>
+                        {Math.round(zippingProgress) >= 100
+                          ? 'Completed'
+                          : `${Math.round(zippingProgress)}%`}
+                      </Text>
+                    </div>
+                    <Progress
+                      value={zippingProgress}
+                      className={`w-full fade-in-from-bottom ${getDelayClass(4)}`}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div
+                      className={`flex justify-between text-sm fade-in-from-bottom
+                        ${getDelayClass(3)}`}
+                    >
+                      <Text variant='bd-sm'>
+                        {downloadProgress.current} of {downloadProgress.total} images
+                      </Text>
+                      <Text variant='bd-sm'>{progressPercentage}%</Text>
+                    </div>
+                    <Progress
+                      value={progressPercentage}
+                      className={`w-full fade-in-from-bottom ${getDelayClass(4)}`}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+            {downloadComplete && (
+              <div
+                className={`flex justify-end pt-2 fade-in-from-bottom ${getDelayClass(3)}`}
+              >
+                <Button onClick={handleCloseDownloadDialog}>Close</Button>
+              </div>
+            )}
           </div>
-        )}
-        {/* User Uploaded Images */}
-        {sortedImages.length > 0 && (
-          <ImagesGrid
-            images={sortedImages}
-            collectionTitle={collection.title}
-            onImageClick={handleImageClick}
-            source='uploaded'
-            onDeleteImage={handleDeleteClick}
-            isDeletingImage={deleteImageMutation.isPending}
-            onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
-            isBulkDeleting={bulkDeleteMutation.isPending}
-            deletionProgress={deletionProgress}
-            maxColumns={collection.type === 'series' ? 3 : 4}
-            disableDownload={collection.type === 'series'}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-          />
-        )}
+        </DialogContent>
+      </Dialog>
 
-        {!isDriveImagesLoading && formattedDriveImages.length > 0 && (
-          <div className={sortedImages.length > 0 ? 'mt-12' : ''}>
+      <section
+        className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
+          flex-col min-h-screen'
+      >
+        {/* Back Button & Upload */}
+        <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
+          <div className='flex items-center gap-4 flex-wrap'>
+            <Button variant='default' onClick={() => router.back()}>
+              <ArrowLeft />
+              Back
+            </Button>
+            <Button variant='secondary' onClick={handleShareClick}>
+              <Share2 className='size-5' />
+              Share
+            </Button>
+            {collection.type !== 'series' && selectedIds.size > 0 && (
+              <Button
+                variant='secondary'
+                onClick={handleBulkDownload}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 className='animate-spin' /> Downloading{' '}
+                    {downloadProgress.current} of {downloadProgress.total}...
+                  </>
+                ) : (
+                  <>
+                    <Download /> Download ({selectedIds.size})
+                  </>
+                )}
+              </Button>
+            )}
+            {isAuthenticated && (
+              <Button variant='secondary' onClick={() => setUploadDialogOpen(true)}>
+                <Upload />
+                Upload Images
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Collection Header */}
+        <div className='mb-4 space-y-6 fade-in-from-top'>
+          <Text variant='hd-xxl' className={`fade-in-from-top ${getDelayClass(2)}`}>
+            {collection.title}
+          </Text>
+
+          {collection.description && (
+            <Text
+              variant='bd-lg'
+              className={`text-muted-foreground max-w-3xl fade-in-from-top
+              ${getDelayClass(3)}`}
+            >
+              {collection.description}
+            </Text>
+          )}
+
+          {/* Meta Information */}
+          <div
+            className={`flex flex-wrap gap-4 text-muted-foreground fade-in-from-top
+              ${getDelayClass(4)}`}
+          >
+            {formattedDate && (
+              <div className='flex items-center gap-2'>
+                <Calendar className='size-5' />
+                <Text variant='bd-md'>{formattedDate}</Text>
+              </div>
+            )}
+            {collection.location && (
+              <div className='flex items-center gap-2'>
+                <MapPin className='size-5' />
+                <Text variant='bd-md'>{collection.location}</Text>
+              </div>
+            )}
+            <Badge variant='outline' className='capitalize'>
+              <Type className='size-12' />
+              <Text variant='bd-xs'>{collection.type}</Text>
+            </Badge>
+            {collection.collection_group_name && (
+              <Badge variant='outline' className='capitalize'>
+                <Folder className='size-12' />
+                <Text variant='bd-xs'>{collection.collection_group_name}</Text>
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Image Gallery */}
+        <div className='flex flex-col space-y-6 min-h-[70vh]'>
+          {isEmpty && (
+            <div className='flex h-full items-center justify-center'>
+              <EmptyState
+                className='min-h-[70vh]'
+                bordered={true}
+                icon={ImageIcon}
+                title='No images in this collection yet.'
+                description={
+                  isAuthenticated
+                    ? 'Start by uploading some photos or linking a Google Drive folder to this collection via editing the collection on the previous page.'
+                    : 'Please check back later!'
+                }
+              />
+            </div>
+          )}
+          {/* User Uploaded Images */}
+          {sortedImages.length > 0 && (
             <ImagesGrid
-              images={formattedDriveImages}
+              images={sortedImages}
               collectionTitle={collection.title}
               onImageClick={handleImageClick}
-              source='drive'
-              startIndex={sortedImages.length}
+              source='uploaded'
+              onDeleteImage={handleDeleteClick}
+              isDeletingImage={deleteImageMutation.isPending}
+              onBulkDelete={(images) => bulkDeleteMutation.mutate(images)}
+              isBulkDeleting={bulkDeleteMutation.isPending}
+              deletionProgress={deletionProgress}
               maxColumns={collection.type === 'series' ? 3 : 4}
               disableDownload={collection.type === 'series'}
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
             />
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Image Viewer */}
-      <ImageViewer
-        images={rotatedImageUrls}
-        isOpen={isViewerOpen}
-        showDownloadButton={collection.type !== 'series'}
-        onOpenChange={setIsViewerOpen}
-      />
+          {!isDriveImagesLoading && formattedDriveImages.length > 0 && (
+            <div className={sortedImages.length > 0 ? 'mt-12' : ''}>
+              <ImagesGrid
+                images={formattedDriveImages}
+                collectionTitle={collection.title}
+                onImageClick={handleImageClick}
+                source='drive'
+                startIndex={sortedImages.length}
+                maxColumns={collection.type === 'series' ? 3 : 4}
+                disableDownload={collection.type === 'series'}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
+            </div>
+          )}
+        </div>
 
-      <AlertDialog
-        open={!!imageToDelete}
-        onOpenChange={(open) => !open && setImageToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove image from collection?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently remove the image from
-              this collection.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteImageMutation.isPending}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={deleteImageMutation.isPending}
-              className='bg-destructive text-white hover:bg-destructive/90'
-            >
-              {deleteImageMutation.isPending ? (
-                <>
-                  <Loader2 className='animate-spin' />
-                  Removing...
-                </>
-              ) : (
-                'Remove'
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {isAuthenticated && (
-        <CollectionUploadDialog
-          open={uploadDialogOpen}
-          onOpenChange={setUploadDialogOpen}
-          collectionSlug={slug}
+        {/* Image Viewer */}
+        <ImageViewer
+          images={rotatedImageUrls}
+          isOpen={isViewerOpen}
+          showDownloadButton={collection.type !== 'series'}
+          onOpenChange={setIsViewerOpen}
         />
-      )}
-    </section>
+
+        <AlertDialog
+          open={!!imageToDelete}
+          onOpenChange={(open) => !open && setImageToDelete(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove image from collection?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently remove the image from
+                this collection.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleteImageMutation.isPending}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                disabled={deleteImageMutation.isPending}
+                className='bg-destructive text-white hover:bg-destructive/90'
+              >
+                {deleteImageMutation.isPending ? (
+                  <>
+                    <Loader2 className='animate-spin' />
+                    Removing...
+                  </>
+                ) : (
+                  'Remove'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {isAuthenticated && (
+          <CollectionUploadDialog
+            open={uploadDialogOpen}
+            onOpenChange={setUploadDialogOpen}
+            collectionSlug={slug}
+          />
+        )}
+      </section>
+    </>
   );
 }
