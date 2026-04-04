@@ -32,8 +32,7 @@ import {
   Type,
   Upload,
 } from 'lucide-react';
-import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { ImagesGrid } from './components/ImagesGrid';
 import { ImageViewer } from './components/ImageViewer';
@@ -41,6 +40,7 @@ import CollectionLoading from './loading';
 
 export default function CollectionPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params['slug'] as string;
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -269,18 +269,6 @@ export default function CollectionPage() {
     }
   };
 
-  // Determine back URL based on collection type
-  const getBackUrl = () => {
-    switch (collection.type) {
-      case 'series':
-        return '/series';
-      case 'event':
-        return '/events';
-      default:
-        return '/collections';
-    }
-  };
-
   return (
     <section
       className='container border-x-2 border-dashed mx-auto pb-4 px-4 nb-padding flex
@@ -289,12 +277,10 @@ export default function CollectionPage() {
       {/* Back Button & Upload */}
       <div className={`sticky top-20 mb-6 z-40 fade-in-from-top ${getDelayClass(0)}`}>
         <div className='flex items-center gap-4 flex-wrap'>
-          <Link href={getBackUrl()}>
-            <Button variant='default'>
-              <ArrowLeft />
-              Back
-            </Button>
-          </Link>
+          <Button variant='default' onClick={() => router.back()}>
+            <ArrowLeft />
+            Back
+          </Button>
           <Button variant='secondary' onClick={handleShareClick}>
             <Share2 className='size-5' />
             Share
