@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import { Separator } from './ui';
 import { getDelayClass } from '@/utils/animations';
+import Link from 'next/link';
+import { Separator } from './ui';
 
 export function Footer() {
   return (
@@ -47,7 +47,7 @@ export function Footer() {
                 alt='rmlogo'
                 width={64}
                 height={32}
-                className='h-auto w-16 dark:invert'
+                className='h-auto w-16 invert dark:invert-0'
               />
             </Link>
           </div>
