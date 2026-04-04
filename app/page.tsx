@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation';
 import { OptimizedImage } from '@/components/OptimizedImage';
 
 const learnMore = [
-  '/landing/sections/learn_more_1.jpg',
-  '/landing/sections/learn_more_2.jpg',
+  '/landing/sections/learn-more-1.jpg',
+  '/landing/sections/learn-more-2.jpg',
 ];
 
 const eventPhotography = [
@@ -32,8 +32,6 @@ const eventPhotography = [
   '/landing/sections/event_photography/event_photography_15.jpg',
   '/landing/sections/event_photography/event_photography_16.jpg',
   '/landing/sections/event_photography/event_photography_17.jpg',
-  '/landing/sections/event_photography/event_photography_18.jpg',
-  '/landing/sections/event_photography/event_photography_19.jpg',
 ];
 
 const portraitPhotography = [
@@ -46,7 +44,6 @@ const portraitPhotography = [
   '/landing/sections/portrait_photography/portrait_photography_7.jpg',
   '/landing/sections/portrait_photography/portrait_photography_8.jpg',
   '/landing/sections/portrait_photography/portrait_photography_9.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_10.jpg',
 ];
 
 export default function Home() {
