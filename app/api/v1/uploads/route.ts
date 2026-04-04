@@ -1,8 +1,8 @@
+import { Logger } from '@/lib/logger';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
-import { UTApi } from 'uploadthing/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { Logger } from '@/lib/logger';
+import { UTApi } from 'uploadthing/server';
 
 const utapi = new UTApi();
 

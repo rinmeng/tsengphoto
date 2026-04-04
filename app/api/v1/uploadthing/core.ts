@@ -1,8 +1,8 @@
+import { Logger } from '@/lib/logger';
+import { createAdminClient } from '@/utils/supabase/admin';
+import { createClient } from '@/utils/supabase/server';
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
-import { createClient } from '@/utils/supabase/server';
-import { createAdminClient } from '@/utils/supabase/admin';
-import { Logger } from '@/lib/logger';
 
 const f = createUploadthing();
 
@@ -36,6 +36,12 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       try {
+        Logger.info('onUploadComplete started', {
+          userId: metadata.userId,
+          fileName: file.name,
+          fileUrl: file.ufsUrl,
+        });
+
         const supabase = createAdminClient();
 
         const { data: upload, error } = await supabase
@@ -51,13 +57,18 @@ export const ourFileRouter = {
           .single();
 
         if (error) {
-          Logger.error('Database error:', error);
+          Logger.error('Database error in onUploadComplete:', error);
           return {
             uploadedBy: metadata.userId,
             url: file.ufsUrl,
             dbError: error.message,
           };
         }
+
+        Logger.info('onUploadComplete success', {
+          uploadId: upload.id,
+          fileName: file.name,
+        });
 
         return {
           uploadedBy: metadata.userId,
@@ -66,7 +77,7 @@ export const ourFileRouter = {
           success: true,
         };
       } catch (error) {
-        Logger.error('Callback error:', error);
+        Logger.error('Callback error in onUploadComplete:', error);
         return {
           uploadedBy: metadata.userId,
           url: file.ufsUrl,

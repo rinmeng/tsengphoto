@@ -43,11 +43,18 @@ export function OptimizedImage({ showLoading = false, ...props }: OptimizedImage
     props.onLoad?.(result);
   };
 
+  // Force Image to remount when switching to unoptimized mode
+  // This ensures the image refetches with the new unoptimized URL
+  const shouldUseUnoptimized =
+    props.unoptimized || isOptimizationDisabled || localUnoptimized;
+  const imageKey = `${props.src}-${shouldUseUnoptimized ? 'unopt' : 'opt'}`;
+
   const imageElement = (
     <Image
       {...props}
+      key={imageKey}
       alt={props.alt || ''}
-      unoptimized={props.unoptimized || isOptimizationDisabled || localUnoptimized}
+      unoptimized={shouldUseUnoptimized}
       onError={handleError}
       onLoad={handleLoad}
     />
