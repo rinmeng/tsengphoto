@@ -125,14 +125,9 @@ const portfolioLinks = [
     description: 'Explore themed photo series and ongoing projects.',
   },
   {
-    href: '/events',
-    label: 'Events',
-    description: 'View galleries from clubs, concerts, and special occasions.',
-  },
-  {
     href: '/video-collections',
     label: 'Videos',
-    description: 'Watch curated collections of videos.',
+    description: 'Watch videos filmed and edited by me.',
   },
 ];
 
