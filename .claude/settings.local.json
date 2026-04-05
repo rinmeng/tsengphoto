@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(psql:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx supabase:*)",
+      "Bash(curl -v --max-time 15 \"https://f4a18kmea9.ufs.sh/f/oGclcXE5cPhnKstJMS7qJI7xDlyeUWo5ZFtb6L1zNCh9vmif\")",
+      "Bash(curl --http1.1 --max-time 15 -o /dev/null -w \"%{http_code}\" \"https://f4a18kmea9.ufs.sh/f/oGclcXE5cPhnm7EtTOgSGckwpKeTXD4CUR36dsPi5xIBo0qt\")",
+      "Bash(curl --http1.1 --max-time 15 -o /dev/null -w \"%{http_code}\" \"https://f4a18kmea9.ufs.sh/f/oGclcXE5cPhn7o0YudR2ioeqf45GwmL3vAMzNjUY8079Bku1\")",
+      "Bash(find:*)"
     ]
   }
 }

@@ -42,19 +42,40 @@ export async function DELETE(req: NextRequest) {
   try {
     const { uploadId, fileUrl } = await req.json();
 
-    if (!uploadId || !fileUrl) {
-      return NextResponse.json(
-        { error: 'Upload ID and file URL are required' },
-        { status: 400 }
-      );
+    if (!uploadId) {
+      return NextResponse.json({ error: 'Upload ID is required' }, { status: 400 });
     }
 
-    // Extract the file key from the UploadThing URL
-    // URL format: https://{UPLOADTHING_APP_ID}.ufs.sh/f/{fileKey}
-    const fileKey = fileUrl.split('/f/')[1];
+    // First fetch the upload record to get the file_key
+    const supabase = createAdminClient();
+    const { data: upload, error: fetchError } = await supabase
+      .from('uploads')
+      .select('file_key, file_url')
+      .eq('id', uploadId)
+      .single();
+
+    if (fetchError || !upload) {
+      Logger.error('Error fetching upload:', fetchError);
+      return NextResponse.json({ error: 'Upload not found' }, { status: 404 });
+    }
+
+    // Get file key from database or fallback to URL parsing
+    let fileKey = upload.file_key;
+    if (!fileKey) {
+      // Fallback: Extract from URL for old records without file_key
+      const url = fileUrl || upload.file_url;
+      fileKey = url?.split('/f/')[1];
+      Logger.warn('file_key not found in database, extracted from URL:', {
+        uploadId,
+        fileKey,
+      });
+    }
 
     if (!fileKey) {
-      return NextResponse.json({ error: 'Invalid file URL format' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Could not determine file key' },
+        { status: 400 }
+      );
     }
 
     // Delete from UploadThing first
@@ -68,8 +89,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Then delete from Supabase database using admin client
-    const supabase = createAdminClient();
+    // Then delete from Supabase database
     const { error: dbError } = await supabase.from('uploads').delete().eq('id', uploadId);
 
     if (dbError) {

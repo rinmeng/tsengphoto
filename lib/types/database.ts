@@ -5,6 +5,7 @@ export interface Upload {
   file_name: string;
   file_size: number;
   file_type: string | null;
+  file_key: string | null; // UploadThing file key for deletion
   entity_type: string | null; // e.g., 'collection'
   entity_id: string | null; // links to collections.id
   created_at: string;

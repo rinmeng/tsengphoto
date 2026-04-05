@@ -19,8 +19,13 @@ import {
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone, type FileRejection } from 'react-dropzone';
 
+interface UploadedFile {
+  url: string;
+  uploadId: string;
+}
+
 interface ImageUploaderProps {
-  onUploadComplete?: (uploadedUrls?: string[]) => void;
+  onUploadComplete?: (uploadedFiles?: UploadedFile[]) => void;
   onUploadError?: (error: Error) => void;
   className?: string;
 }
@@ -205,7 +210,7 @@ export function ImageUploader({
     setIsUploading(true);
 
     let hasErrors = false;
-    const uploadedUrls: string[] = [];
+    const uploadedFiles: UploadedFile[] = [];
 
     // Upload files sequentially
     for (let i = 0; i < files.length; i++) {
@@ -235,7 +240,10 @@ export function ImageUploader({
             throw new Error('Upload completed but failed to create database record');
           }
 
-          uploadedUrls.push(result[0].ufsUrl);
+          uploadedFiles.push({
+            url: result[0].ufsUrl,
+            uploadId: serverData.uploadId,
+          });
         }
         setFiles((prev) =>
           prev.map((f, idx) =>
@@ -258,7 +266,7 @@ export function ImageUploader({
 
     // Only clear and call success if no errors
     if (!hasErrors) {
-      onUploadComplete?.(uploadedUrls);
+      onUploadComplete?.(uploadedFiles);
       // Brief delay to show success state, then clear
       setTimeout(() => {
         setFiles([]);
