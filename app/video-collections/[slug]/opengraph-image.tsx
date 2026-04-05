@@ -17,7 +17,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const coverImageUrl =
     videoCollection?.cover_image_url ||
-    'https://tsengphoto.vercel.app/landing/carousel/carousel_1.jpg';
+    'https://tsengphoto.vercel.app/landing/carousel/carousel_1.webp';
 
   // Fetch the original image and serve it directly at its native resolution
   const imageResponse = await fetch(coverImageUrl);

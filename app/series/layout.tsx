@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/carousel_2.jpg',
+        url: '/landing/carousel/carousel_2.webp',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography Series',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: 'Photography Series & Projects | Tseng Photography',
     description:
       'Explore our exclusive photography series and ongoing projects showcasing artistic vision and storytelling.',
-    images: ['/landing/carousel/carousel_2.jpg'],
+    images: ['/landing/carousel/carousel_2.webp'],
   },
   alternates: {
     canonical: '/series',

@@ -1,18 +1,18 @@
-import type { Metadata } from 'next';
-import { Analytics } from '@vercel/analytics/next';
 import { Navbar } from '@/components/Navbar';
+import { QueryProvider } from '@/components/query-provider';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ImageOptimizationProvider } from '@/contexts/ImageOptimizationContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { LoadingProvider } from '@/hooks/use-loading';
-import { QueryProvider } from '@/components/query-provider';
-import { ImageOptimizationProvider } from '@/contexts/ImageOptimizationContext';
-import { Toaster } from '@/components/ui/sonner';
-import { Libre_Baskerville, IBM_Plex_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import type { Metadata } from 'next';
+import { IBM_Plex_Mono, Libre_Baskerville } from 'next/font/google';
 
-import './globals.css';
 import { Footer } from '@/components/Footer';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import './globals.css';
 
 const fontSans = Libre_Baskerville({
   subsets: ['latin'],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: 'Tseng Photography',
     images: [
       {
-        url: '/landing/carousel/carousel_1.jpg',
+        url: '/landing/carousel/carousel_1.webp',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography - Professional Event Photography',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Event Photography in Vancouver and Kelowna | Tseng Photography',
     description:
       'Professional event photography services in Vancouver and Kelowna. Capturing your special moments with creativity and precision.',
-    images: ['/landing/carousel/carousel_1.jpg'],
+    images: ['/landing/carousel/carousel_1.webp'],
   },
   robots: {
     index: true,
