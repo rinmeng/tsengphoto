@@ -1,6 +1,5 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +10,7 @@ import {
 import { ImageUploader } from '@/components/ImageUploader';
 import { useToast } from '@/hooks/use-toast';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface CollectionUploadDialogProps {
   open: boolean;
@@ -28,11 +28,14 @@ export function CollectionUploadDialog({
 
   // Mutation to link uploaded image to collection
   const linkImageMutation = useMutation({
-    mutationFn: async (imageUrl: string) => {
+    mutationFn: async (uploadData: { imageUrl: string; uploadId: string }) => {
       const response = await fetch(`/api/v1/collections/${collectionSlug}/images`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl }),
+        body: JSON.stringify({
+          imageUrl: uploadData.imageUrl,
+          uploadId: uploadData.uploadId,
+        }),
       });
 
       if (!response.ok) {
@@ -51,13 +54,13 @@ export function CollectionUploadDialog({
     },
   });
 
-  const handleUploadComplete = (uploadedUrls?: string[]) => {
+  const handleUploadComplete = (uploadedFiles?: { url: string; uploadId: string }[]) => {
     toast.success('Upload completed successfully!');
 
-    // Link all uploaded URLs to the collection
-    if (uploadedUrls && uploadedUrls.length > 0) {
-      uploadedUrls.forEach((url) => {
-        linkImageMutation.mutate(url);
+    // Link all uploaded files to the collection
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      uploadedFiles.forEach((file) => {
+        linkImageMutation.mutate({ imageUrl: file.url, uploadId: file.uploadId });
       });
     }
   };

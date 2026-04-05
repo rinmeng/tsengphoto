@@ -40,6 +40,7 @@ export const ourFileRouter = {
           userId: metadata.userId,
           fileName: file.name,
           fileUrl: file.ufsUrl,
+          fileKey: file.key,
         });
 
         const supabase = createAdminClient();
@@ -52,6 +53,7 @@ export const ourFileRouter = {
             file_name: file.name,
             file_size: file.size,
             file_type: file.type,
+            file_key: file.key,
           })
           .select()
           .single();
