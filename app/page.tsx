@@ -24,7 +24,6 @@ const eventPhotography = [
   '/landing/sections/event_photography/event_photography_7.webp',
   '/landing/sections/event_photography/event_photography_8.webp',
   '/landing/sections/event_photography/event_photography_9.webp',
-  '/landing/sections/event_photography/event_photography_10.webp',
   '/landing/sections/event_photography/event_photography_11.webp',
   '/landing/sections/event_photography/event_photography_12.webp',
   '/landing/sections/event_photography/event_photography_13.webp',
