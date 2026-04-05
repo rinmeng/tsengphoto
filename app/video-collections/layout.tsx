@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/carousel_1.jpg',
+        url: '/landing/carousel/carousel_1.webp',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography Video Collections',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: 'Video Collections | Tseng Photography',
     description:
       'Explore our curated collections of videography projects. Professional video production and editing services in Vancouver and Kelowna.',
-    images: ['/landing/carousel/carousel_1.jpg'],
+    images: ['/landing/carousel/carousel_1.webp'],
   },
   alternates: {
     canonical: '/video-collections',

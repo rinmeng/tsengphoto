@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     images: [
       {
-        url: '/landing/carousel/carousel_5.jpg',
+        url: '/landing/carousel/carousel_5.webp',
         width: 1200,
         height: 630,
         alt: 'Tseng Photography About',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: 'About | Tseng Photography',
     description:
       'Learn more about Tseng Photography, our mission, and the team behind the lens. Discover our story and what drives our passion for capturing unforgettable moments in Vancouver and Kelowna.',
-    images: ['/landing/carousel/carousel_5.jpg'],
+    images: ['/landing/carousel/carousel_5.webp'],
   },
   alternates: {
     canonical: '/about',

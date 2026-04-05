@@ -3,11 +3,11 @@ import { cn } from '@/lib';
 import { PhotoCarousel } from './PhotoCarousel';
 
 const images = [
-  '/landing/carousel/carousel_1.jpg',
-  '/landing/carousel/carousel_2.jpg',
-  '/landing/carousel/carousel_3.jpg',
-  '/landing/carousel/carousel_4.jpg',
-  '/landing/carousel/carousel_5.jpg',
+  '/landing/carousel/carousel_1.webp',
+  '/landing/carousel/carousel_2.webp',
+  '/landing/carousel/carousel_3.webp',
+  '/landing/carousel/carousel_4.webp',
+  '/landing/carousel/carousel_5.webp',
 ];
 
 export function Hero({ className }: { className?: string }) {

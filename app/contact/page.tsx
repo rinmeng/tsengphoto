@@ -1,18 +1,17 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarIcon, Loader2, SendHorizonal } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CalendarIcon, Loader2, SendHorizonal } from 'lucide-react';
 
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { Text } from '@/components/Text';
-import { Button } from '@/components/animate-ui/components/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Checkbox, CheckboxIndicator } from '@/components/animate-ui/components';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/animate-ui/components/button';
+import { Separator } from '@/components/ui';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -21,19 +20,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { sendContactForm } from '@/services/contact.service';
-import { OptimizedImage } from '@/components/OptimizedImage';
-import { format } from 'date-fns';
-import { Separator } from '@/components/ui';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/hooks/use-auth';
+import { contactSchema, sendContactForm, SERVICES } from '@/services/contact.service';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation } from '@tanstack/react-query';
-import { SERVICES } from '@/services/contact.service';
-import { contactSchema } from '@/services/contact.service';
-import { useAuth } from '@/hooks/use-auth';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const PHOTO_URL =
-  'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
+  'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.webp';
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 

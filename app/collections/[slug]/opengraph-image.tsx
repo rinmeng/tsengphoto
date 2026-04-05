@@ -16,7 +16,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const coverImageUrl =
     collection?.cover_image_url ||
-    'https://tsengphoto.vercel.app/landing/carousel/carousel_1.jpg';
+    'https://tsengphoto.vercel.app/landing/carousel/carousel_1.webp';
 
   // Fetch and serve the image at its native dimensions
   // Social media platforms will use the image's actual width/height

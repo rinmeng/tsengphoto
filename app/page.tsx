@@ -10,40 +10,40 @@ import { useRouter } from 'next/navigation';
 import { OptimizedImage } from '@/components/OptimizedImage';
 
 const learnMore = [
-  '/landing/sections/learn-more-1.jpg',
-  '/landing/sections/learn-more-2.jpg',
+  '/landing/sections/learn-more-1.webp',
+  '/landing/sections/learn-more-2.webp',
 ];
 
 const eventPhotography = [
-  '/landing/sections/event_photography/event_photography_1.jpg',
-  '/landing/sections/event_photography/event_photography_2.jpg',
-  '/landing/sections/event_photography/event_photography_3.jpg',
-  '/landing/sections/event_photography/event_photography_4.jpg',
-  '/landing/sections/event_photography/event_photography_5.jpg',
-  '/landing/sections/event_photography/event_photography_6.jpg',
-  '/landing/sections/event_photography/event_photography_7.jpg',
-  '/landing/sections/event_photography/event_photography_8.jpg',
-  '/landing/sections/event_photography/event_photography_9.jpg',
-  '/landing/sections/event_photography/event_photography_10.jpg',
-  '/landing/sections/event_photography/event_photography_11.jpg',
-  '/landing/sections/event_photography/event_photography_12.jpg',
-  '/landing/sections/event_photography/event_photography_13.jpg',
-  '/landing/sections/event_photography/event_photography_14.jpg',
-  '/landing/sections/event_photography/event_photography_15.jpg',
-  '/landing/sections/event_photography/event_photography_16.jpg',
-  '/landing/sections/event_photography/event_photography_17.jpg',
+  '/landing/sections/event_photography/event_photography_1.webp',
+  '/landing/sections/event_photography/event_photography_2.webp',
+  '/landing/sections/event_photography/event_photography_3.webp',
+  '/landing/sections/event_photography/event_photography_4.webp',
+  '/landing/sections/event_photography/event_photography_5.webp',
+  '/landing/sections/event_photography/event_photography_6.webp',
+  '/landing/sections/event_photography/event_photography_7.webp',
+  '/landing/sections/event_photography/event_photography_8.webp',
+  '/landing/sections/event_photography/event_photography_9.webp',
+  '/landing/sections/event_photography/event_photography_10.webp',
+  '/landing/sections/event_photography/event_photography_11.webp',
+  '/landing/sections/event_photography/event_photography_12.webp',
+  '/landing/sections/event_photography/event_photography_13.webp',
+  '/landing/sections/event_photography/event_photography_14.webp',
+  '/landing/sections/event_photography/event_photography_15.webp',
+  '/landing/sections/event_photography/event_photography_16.webp',
+  '/landing/sections/event_photography/event_photography_17.webp',
 ];
 
 const portraitPhotography = [
-  '/landing/sections/portrait_photography/portrait_photography_1.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_2.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_3.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_4.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_5.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_6.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_7.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_8.jpg',
-  '/landing/sections/portrait_photography/portrait_photography_9.jpg',
+  '/landing/sections/portrait_photography/portrait_photography_1.webp',
+  '/landing/sections/portrait_photography/portrait_photography_2.webp',
+  '/landing/sections/portrait_photography/portrait_photography_3.webp',
+  '/landing/sections/portrait_photography/portrait_photography_4.webp',
+  '/landing/sections/portrait_photography/portrait_photography_5.webp',
+  '/landing/sections/portrait_photography/portrait_photography_6.webp',
+  '/landing/sections/portrait_photography/portrait_photography_7.webp',
+  '/landing/sections/portrait_photography/portrait_photography_8.webp',
+  '/landing/sections/portrait_photography/portrait_photography_9.webp',
 ];
 
 export default function Home() {

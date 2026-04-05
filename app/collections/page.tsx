@@ -15,7 +15,7 @@ export async function generateMetadata({
   let title = 'Collections';
   let description =
     'Explore our portfolio of events, series, and video projects. Each collection tells a unique story through professional photography.';
-  let ogImage = '/landing/carousel/carousel_1.jpg';
+  let ogImage = '/landing/carousel/carousel_1.webp';
 
   if (group) {
     const groupName = decodeURIComponent(group.replace(/\+/g, ' '));
