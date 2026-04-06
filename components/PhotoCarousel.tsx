@@ -109,6 +109,8 @@ export function PhotoCarousel({
                     src={src}
                     alt={`Image ${index + 1}`}
                     fill
+                    preload={index === 0}
+                    sizes='100vw'
                     className={objectFit === 'cover' ? 'object-cover' : 'object-contain'}
                     style={{ objectPosition }}
                     showLoading={showLoading}

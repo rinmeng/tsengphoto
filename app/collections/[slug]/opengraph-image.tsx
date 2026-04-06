@@ -29,7 +29,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   return new Response(imageResponse.body, {
     headers: {
       'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': 'public, s-maxage=31536000, stale-while-revalidate',
     },
   });
 }

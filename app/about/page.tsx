@@ -1,4 +1,3 @@
-'use client';
 import { Text } from '@/components/Text';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { Separator } from '@/components/ui';
@@ -25,6 +24,8 @@ export default function AboutPage() {
               src='/about/about.jpg'
               alt='Young man with glasses sitting on the edge of a blue sports car with gullwing doors open, another person standing beside him holding a camera.'
               fill
+              preload
+              sizes='(max-width: 896px) 100vw, 896px'
               className='object-cover'
             />
           </div>

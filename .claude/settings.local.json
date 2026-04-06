@@ -12,7 +12,10 @@
       "Bash(cwebp -version)",
       "Bash(python3 -c \"from PIL import Image; print\\('PIL ok'\\)\")",
       "Bash(pip install:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)"
     ]
   }
 }

@@ -29,7 +29,6 @@ import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { CollectionImage, CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import JSZip from 'jszip';
 import {
   ArrowLeft,
   Calendar,
@@ -341,48 +340,56 @@ export default function CollectionPage() {
         }
       } else {
         // Multiple images - create zip
+        const { default: JSZip } = await import('jszip');
         const zip = new JSZip();
         let successCount = 0;
         let failedCount = 0;
         let currentProgress = 0;
+        const BATCH_SIZE = 5;
+        const collectionSlug = collection.title.replace(/\s+/g, '_');
 
-        // Download uploaded images
-        for (let i = 0; i < selectedUploaded.length; i++) {
-          const image = selectedUploaded[i];
-          setDownloadProgress({ current: ++currentProgress, total: totalCount });
+        type DownloadTask = { url: string; filename: string };
 
-          if (image.image_url) {
-            try {
-              const response = await fetch(image.image_url);
-              const blob = await response.blob();
-              const filename = `${collection.title.replace(/\s+/g, '_')}_${i + 1}.jpg`;
-              zip.file(filename, blob);
-              successCount++;
-            } catch {
-              failedCount++;
-            }
-          }
-        }
+        const uploadedTasks: DownloadTask[] = selectedUploaded
+          .map((image, i) =>
+            image.image_url
+              ? { url: image.image_url, filename: `${collectionSlug}_${i + 1}.jpg` }
+              : null
+          )
+          .filter((t): t is DownloadTask => t !== null);
 
-        // Download drive images
-        for (let i = 0; i < selectedDrive.length; i++) {
-          const driveImg = selectedDrive[i];
-          const driveIndex = formattedDriveImages.findIndex(
-            (img) => img.id === driveImg.id
+        const driveTasks: DownloadTask[] = selectedDrive
+          .map((driveImg) => {
+            const driveIndex = formattedDriveImages.findIndex(
+              (img) => img.id === driveImg.id
+            );
+            const fullQualityUrl = driveFullQualityUrls[driveIndex];
+            return fullQualityUrl
+              ? { url: fullQualityUrl, filename: `${collectionSlug}_drive_${driveIndex + 1}.jpg` }
+              : null;
+          })
+          .filter((t): t is DownloadTask => t !== null);
+
+        const allTasks = [...uploadedTasks, ...driveTasks];
+
+        for (let i = 0; i < allTasks.length; i += BATCH_SIZE) {
+          const batch = allTasks.slice(i, i + BATCH_SIZE);
+          const results = await Promise.allSettled(
+            batch.map(({ url, filename }) =>
+              fetch(url)
+                .then((r) => r.blob())
+                .then((blob) => ({ filename, blob }))
+            )
           );
-          const fullQualityUrl = driveFullQualityUrls[driveIndex];
-          setDownloadProgress({ current: ++currentProgress, total: totalCount });
 
-          if (fullQualityUrl) {
-            try {
-              const response = await fetch(fullQualityUrl);
-              const blob = await response.blob();
-              const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${driveIndex + 1}.jpg`;
-              zip.file(filename, blob);
+          for (const result of results) {
+            if (result.status === 'fulfilled') {
+              zip.file(result.value.filename, result.value.blob);
               successCount++;
-            } catch {
+            } else {
               failedCount++;
             }
+            setDownloadProgress({ current: ++currentProgress, total: totalCount });
           }
         }
 

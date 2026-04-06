@@ -18,12 +18,14 @@ const fontSans = Libre_Baskerville({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-sans',
+  display: 'swap',
 });
 
 const fontMono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {

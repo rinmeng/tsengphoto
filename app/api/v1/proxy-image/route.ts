@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { Logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(imageBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Cache-Control': 'public, s-maxage=31536000, stale-while-revalidate',
       },
     });
   } catch (error) {
