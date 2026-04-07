@@ -57,7 +57,7 @@ interface CollectionPageClientProps {
 export default function CollectionPageClient({
   slug,
   initialCollection,
-  zipDownload = false,
+  zipDownload = true,
 }: CollectionPageClientProps) {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
