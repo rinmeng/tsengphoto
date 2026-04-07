@@ -24,7 +24,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
 import { Badge } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useMobileDevice } from '@/hooks/use-mobile-device';
 import { useToast } from '@/hooks/use-toast';
 import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { CollectionImage, CollectionWithImages } from '@/lib/types';
@@ -65,7 +65,7 @@ export default function CollectionPageClient({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { createZip } = useZipWorker();
-  const isMobile = useIsMobile();
+  const isMobileDevice = useMobileDevice();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -573,7 +573,7 @@ export default function CollectionPageClient({
               <Share2 className='size-5' />
               Share
             </Button>
-            {collection.type !== 'series' && selectedIds.size > 0 && !isMobile && (
+            {collection.type !== 'series' && selectedIds.size > 0 && !isMobileDevice && (
               <Button
                 variant='secondary'
                 onClick={handleBulkDownload}
