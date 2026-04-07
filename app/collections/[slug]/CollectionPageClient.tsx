@@ -42,7 +42,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { notFound, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ImagesGrid } from './components/ImagesGrid';
 import { ImageViewer } from './components/ImageViewer';
 import CollectionLoading from './loading';
@@ -53,6 +53,12 @@ interface CollectionPageClientProps {
   initialCollection?: CollectionWithImages;
   zipDownload?: boolean;
 }
+
+// Detect mobile devices (limited memory - can't handle large zips)
+const isMobileDevice = () => {
+  if (typeof window === 'undefined') return false;
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+};
 
 export default function CollectionPageClient({
   slug,
@@ -75,6 +81,12 @@ export default function CollectionPageClient({
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile on mount to prevent memory crashes
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
 
   const {
     data: collection,
@@ -322,6 +334,17 @@ export default function CollectionPageClient({
   const handleBulkDownload = async () => {
     if (selectedIds.size === 0) return;
 
+    // On mobile, disable zipping to prevent memory crashes
+    const shouldZip = zipDownload && !isMobile;
+
+    if (isMobile && selectedIds.size > 10) {
+      toast.error('Too many images selected', {
+        description:
+          'On mobile devices, please select 10 or fewer images at a time to avoid crashes.',
+      });
+      return;
+    }
+
     setIsDownloading(true);
     setDownloadComplete(false);
     setDownloadDialogOpen(true);
@@ -357,7 +380,7 @@ export default function CollectionPageClient({
         }
       } else {
         // Multiple images
-        const filesToZip: Record<string, Uint8Array> = zipDownload ? {} : {};
+        const filesToZip: Record<string, Uint8Array> = shouldZip ? {} : {};
         let successCount = 0;
         let failedCount = 0;
         let currentProgress = 0;
@@ -395,7 +418,7 @@ export default function CollectionPageClient({
                 if (task.image.image_url) {
                   try {
                     const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
-                    if (zipDownload) {
+                    if (shouldZip) {
                       const response = await fetch(task.image.image_url);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
@@ -412,7 +435,7 @@ export default function CollectionPageClient({
                 if (fullQualityUrl) {
                   try {
                     const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
-                    if (zipDownload) {
+                    if (shouldZip) {
                       const response = await fetch(fullQualityUrl);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
@@ -431,7 +454,7 @@ export default function CollectionPageClient({
         }
 
         if (successCount > 0) {
-          if (zipDownload && Object.keys(filesToZip).length > 0) {
+          if (shouldZip && Object.keys(filesToZip).length > 0) {
             setIsZipping(true);
 
             try {
@@ -511,8 +534,10 @@ export default function CollectionPageClient({
               {downloadComplete
                 ? 'Your images have been downloaded successfully.'
                 : isZipping
-                  ? 'Please wait while we package your images into a zip file.'
-                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close or navigate away from this page."}
+                  ? 'Please wait while we package your images into a zip file. Do not close or navigate away from this page.'
+                  : isMobile
+                    ? 'Downloading images individually. Each image will be saved separately.'
+                    : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close or navigate away from this page."}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
