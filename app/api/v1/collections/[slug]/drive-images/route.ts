@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Logger } from '@/lib/logger';
 import {
   fetchDriveFolderImages,
-  getDriveFullQualityUrl,
-  getDriveThumbnailUrl,
+  getDriveImageUrl,
 } from '@/utils/google-drive';
 import { createClient } from '@/utils/supabase/server';
 
@@ -38,10 +37,8 @@ export async function GET(
     const images = driveImages.map((img) => ({
       id: img.id,
       name: img.name,
-      thumbnailUrl: img.thumbnailLink
-        ? getDriveThumbnailUrl(img.thumbnailLink, 's1600')
-        : '',
-      fullQualityUrl: img.thumbnailLink ? getDriveFullQualityUrl(img.thumbnailLink) : '',
+      thumbnailUrl: `${getDriveImageUrl(img.id)}=s1600`,
+      fullQualityUrl: `${getDriveImageUrl(img.id)}=d`,
     }));
 
     return NextResponse.json({ data: images }, { status: 200 });
