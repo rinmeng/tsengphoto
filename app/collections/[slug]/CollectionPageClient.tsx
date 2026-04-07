@@ -42,7 +42,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { notFound, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ImagesGrid } from './components/ImagesGrid';
 import { ImageViewer } from './components/ImageViewer';
 import CollectionLoading from './loading';
@@ -53,12 +53,6 @@ interface CollectionPageClientProps {
   initialCollection?: CollectionWithImages;
   zipDownload?: boolean;
 }
-
-// Detect mobile devices (limited memory - can't handle large zips)
-const isMobileDevice = () => {
-  if (typeof window === 'undefined') return false;
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-};
 
 export default function CollectionPageClient({
   slug,
@@ -81,12 +75,6 @@ export default function CollectionPageClient({
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile on mount to prevent memory crashes
-  useEffect(() => {
-    setIsMobile(isMobileDevice());
-  }, []);
 
   const {
     data: collection,
@@ -334,17 +322,6 @@ export default function CollectionPageClient({
   const handleBulkDownload = async () => {
     if (selectedIds.size === 0) return;
 
-    // On mobile, disable zipping to prevent memory crashes
-    const shouldZip = zipDownload && !isMobile;
-
-    if (isMobile && selectedIds.size > 10) {
-      toast.error('Too many images selected', {
-        description:
-          'On mobile devices, please select 10 or fewer images at a time to avoid crashes.',
-      });
-      return;
-    }
-
     setIsDownloading(true);
     setDownloadComplete(false);
     setDownloadDialogOpen(true);
@@ -380,7 +357,7 @@ export default function CollectionPageClient({
         }
       } else {
         // Multiple images
-        const filesToZip: Record<string, Uint8Array> = shouldZip ? {} : {};
+        const filesToZip: Record<string, Uint8Array> = zipDownload ? {} : {};
         let successCount = 0;
         let failedCount = 0;
         let currentProgress = 0;
@@ -410,79 +387,51 @@ export default function CollectionPageClient({
           }),
         ];
 
-        // On mobile, download sequentially to avoid Safari blocking multiple downloads
-        // On desktop, batch for speed
-        if (shouldZip) {
-          // Desktop: batch download for zipping
-          for (let b = 0; b < tasks.length; b += BATCH_SIZE) {
-            const batch = tasks.slice(b, b + BATCH_SIZE);
-            await Promise.all(
-              batch.map(async (task) => {
-                if (task.kind === 'uploaded') {
-                  if (task.image.image_url) {
-                    try {
-                      const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
+        for (let b = 0; b < tasks.length; b += BATCH_SIZE) {
+          const batch = tasks.slice(b, b + BATCH_SIZE);
+          await Promise.all(
+            batch.map(async (task) => {
+              if (task.kind === 'uploaded') {
+                if (task.image.image_url) {
+                  try {
+                    const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
+                    if (zipDownload) {
                       const response = await fetch(task.image.image_url);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
-                      successCount++;
-                    } catch {
-                      failedCount++;
+                    } else {
+                      await downloadImage(task.image.image_url, filename);
                     }
+                    successCount++;
+                  } catch {
+                    failedCount++;
                   }
-                } else {
-                  const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
-                  if (fullQualityUrl) {
-                    try {
-                      const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
+                }
+              } else {
+                const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
+                if (fullQualityUrl) {
+                  try {
+                    const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
+                    if (zipDownload) {
                       const response = await fetch(fullQualityUrl);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
-                      successCount++;
-                    } catch {
-                      failedCount++;
+                    } else {
+                      await downloadImage(fullQualityUrl, filename);
                     }
+                    successCount++;
+                  } catch {
+                    failedCount++;
                   }
                 }
-                setDownloadProgress({ current: ++currentProgress, total: totalCount });
-              })
-            );
-          }
-        } else {
-          // Mobile: sequential downloads (Safari blocks parallel downloads)
-          for (const task of tasks) {
-            if (task.kind === 'uploaded') {
-              if (task.image.image_url) {
-                try {
-                  const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
-                  await downloadImage(task.image.image_url, filename);
-                  // Small delay to let browser process the download
-                  await new Promise((resolve) => setTimeout(resolve, 300));
-                  successCount++;
-                } catch {
-                  failedCount++;
-                }
               }
-            } else {
-              const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
-              if (fullQualityUrl) {
-                try {
-                  const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
-                  await downloadImage(fullQualityUrl, filename);
-                  // Small delay to let browser process the download
-                  await new Promise((resolve) => setTimeout(resolve, 300));
-                  successCount++;
-                } catch {
-                  failedCount++;
-                }
-              }
-            }
-            setDownloadProgress({ current: ++currentProgress, total: totalCount });
-          }
+              setDownloadProgress({ current: ++currentProgress, total: totalCount });
+            })
+          );
         }
 
         if (successCount > 0) {
-          if (shouldZip && Object.keys(filesToZip).length > 0) {
+          if (zipDownload && Object.keys(filesToZip).length > 0) {
             setIsZipping(true);
 
             try {
@@ -562,10 +511,8 @@ export default function CollectionPageClient({
               {downloadComplete
                 ? 'Your images have been downloaded successfully.'
                 : isZipping
-                  ? 'Please wait while we package your images into a zip file. Do not close or navigate away from this page.'
-                  : isMobile
-                    ? 'Downloading images individually. Each image will be saved separately.'
-                    : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close or navigate away from this page."}
+                  ? 'Please wait while we package your images into a zip file.'
+                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close or navigate away from this page."}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
