@@ -41,7 +41,12 @@ export async function GET(
       fullQualityUrl: `${getDriveImageUrl(img.id)}=d`,
     }));
 
-    return NextResponse.json({ data: images }, { status: 200 });
+    const response = NextResponse.json({ data: images }, { status: 200 });
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=86400, stale-while-revalidate=86400'
+    );
+    return response;
   } catch (error) {
     Logger.error('Error fetching Google Drive images:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
