@@ -52,8 +52,9 @@ export function ImagesGrid({
   const isDrive = source === 'drive';
   const isUploaded = source === 'uploaded';
 
-  // Show selection UI only if user can download OR delete
-  const canSelectImages = !disableDownload || (isAuthenticated && isUploaded);
+  // Show selection UI only if not on mobile and user can download OR delete
+  const canSelectImages =
+    !isMobile && (!disableDownload || (isAuthenticated && isUploaded));
 
   const handleImageError = (imageId: string) => {
     setFailedImages((prev) => new Set(prev).add(imageId));
@@ -102,7 +103,7 @@ export function ImagesGrid({
         </Text>
       )}
 
-      {/* Bulk Actions Bar */}
+      {/* Bulk Actions Bar - Hidden on mobile */}
       {images.length > 0 && canSelectImages && (
         <div
           className={`flex items-center justify-between w-full gap-2 fade-in-from-top
@@ -140,6 +141,19 @@ export function ImagesGrid({
               </Button>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Mobile Hint - Show only on mobile when downloads are available */}
+      {images.length > 0 && isMobile && !disableDownload && (
+        <div
+          className={`p-4 rounded-lg border border-dashed border-muted-foreground/30
+          bg-muted/30 fade-in-from-top ${getDelayClass(isDrive ? 4 : 1)}`}
+        >
+          <Text variant='bd-sm' className='text-muted-foreground'>
+            💡 <strong>Hint:</strong> Bulk downloading is only available on desktop. To
+            save images on mobile, long press any image and select &quot;Save Image&quot;.
+          </Text>
         </div>
       )}
 
