@@ -410,47 +410,75 @@ export default function CollectionPageClient({
           }),
         ];
 
-        for (let b = 0; b < tasks.length; b += BATCH_SIZE) {
-          const batch = tasks.slice(b, b + BATCH_SIZE);
-          await Promise.all(
-            batch.map(async (task) => {
-              if (task.kind === 'uploaded') {
-                if (task.image.image_url) {
-                  try {
-                    const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
-                    if (shouldZip) {
+        // On mobile, download sequentially to avoid Safari blocking multiple downloads
+        // On desktop, batch for speed
+        if (shouldZip) {
+          // Desktop: batch download for zipping
+          for (let b = 0; b < tasks.length; b += BATCH_SIZE) {
+            const batch = tasks.slice(b, b + BATCH_SIZE);
+            await Promise.all(
+              batch.map(async (task) => {
+                if (task.kind === 'uploaded') {
+                  if (task.image.image_url) {
+                    try {
+                      const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
                       const response = await fetch(task.image.image_url);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
-                    } else {
-                      await downloadImage(task.image.image_url, filename);
+                      successCount++;
+                    } catch {
+                      failedCount++;
                     }
-                    successCount++;
-                  } catch {
-                    failedCount++;
                   }
-                }
-              } else {
-                const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
-                if (fullQualityUrl) {
-                  try {
-                    const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
-                    if (shouldZip) {
+                } else {
+                  const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
+                  if (fullQualityUrl) {
+                    try {
+                      const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
                       const response = await fetch(fullQualityUrl);
                       const arrayBuffer = await response.arrayBuffer();
                       filesToZip[filename] = new Uint8Array(arrayBuffer);
-                    } else {
-                      await downloadImage(fullQualityUrl, filename);
+                      successCount++;
+                    } catch {
+                      failedCount++;
                     }
-                    successCount++;
-                  } catch {
-                    failedCount++;
                   }
                 }
+                setDownloadProgress({ current: ++currentProgress, total: totalCount });
+              })
+            );
+          }
+        } else {
+          // Mobile: sequential downloads (Safari blocks parallel downloads)
+          for (const task of tasks) {
+            if (task.kind === 'uploaded') {
+              if (task.image.image_url) {
+                try {
+                  const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
+                  await downloadImage(task.image.image_url, filename);
+                  // Small delay to let browser process the download
+                  await new Promise((resolve) => setTimeout(resolve, 300));
+                  successCount++;
+                } catch {
+                  failedCount++;
+                }
               }
-              setDownloadProgress({ current: ++currentProgress, total: totalCount });
-            })
-          );
+            } else {
+              const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
+              if (fullQualityUrl) {
+                try {
+                  const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
+                  await downloadImage(fullQualityUrl, filename);
+                  // Small delay to let browser process the download
+                  await new Promise((resolve) => setTimeout(resolve, 300));
+                  successCount++;
+                } catch {
+                  failedCount++;
+                }
+              }
+            }
+            setDownloadProgress({ current: ++currentProgress, total: totalCount });
+          }
         }
 
         if (successCount > 0) {
