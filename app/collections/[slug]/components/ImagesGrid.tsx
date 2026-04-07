@@ -6,6 +6,7 @@ import { Button } from '@/components/animate-ui/components/button';
 import { Spinner } from '@/components/ui';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useMobileDevice } from '@/hooks/use-mobile-device';
 import type { CollectionImage } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { ImageOff, Trash2 } from 'lucide-react';
@@ -47,14 +48,15 @@ export function ImagesGrid({
 }: ImagesGridProps) {
   const { isAuthenticated } = useAuth();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // For UI interactions
+  const isMobileDevice = useMobileDevice(); // For feature detection
 
   const isDrive = source === 'drive';
   const isUploaded = source === 'uploaded';
 
-  // Show selection UI only if not on mobile and user can download OR delete
+  // Show selection UI only if not on a mobile device and user can download OR delete
   const canSelectImages =
-    !isMobile && (!disableDownload || (isAuthenticated && isUploaded));
+    !isMobileDevice && (!disableDownload || (isAuthenticated && isUploaded));
 
   const handleImageError = (imageId: string) => {
     setFailedImages((prev) => new Set(prev).add(imageId));
@@ -144,8 +146,8 @@ export function ImagesGrid({
         </div>
       )}
 
-      {/* Mobile Hint - Show only on mobile when downloads are available */}
-      {images.length > 0 && isMobile && !disableDownload && (
+      {/* Mobile Device Hint - Show only on mobile devices when downloads are available */}
+      {images.length > 0 && isMobileDevice && !disableDownload && (
         <div
           className={`p-4 rounded-lg border border-dashed border-muted-foreground/30
           bg-muted/30 fade-in-from-top ${getDelayClass(isDrive ? 4 : 1)}`}
