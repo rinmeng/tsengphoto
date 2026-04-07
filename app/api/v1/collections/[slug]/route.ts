@@ -54,7 +54,18 @@ export async function GET(
         (collection.collection_group_name as { name: string } | null)?.name || null,
     };
 
-    return NextResponse.json({ data: transformedCollection }, { status: 200 });
+    const response = NextResponse.json({ data: transformedCollection }, { status: 200 });
+
+    if (user) {
+      response.headers.set('Cache-Control', 'private, no-store');
+    } else {
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=86400, stale-while-revalidate=86400'
+      );
+    }
+
+    return response;
   } catch (error) {
     Logger.error('Error in GET /api/v1/collections/[slug]:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
