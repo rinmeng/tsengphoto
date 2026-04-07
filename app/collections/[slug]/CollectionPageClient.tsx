@@ -51,9 +51,14 @@ import CollectionLoading from './loading';
 interface CollectionPageClientProps {
   slug: string;
   initialCollection?: CollectionWithImages;
+  zipDownload?: boolean;
 }
 
-export default function CollectionPageClient({ slug, initialCollection }: CollectionPageClientProps) {
+export default function CollectionPageClient({
+  slug,
+  initialCollection,
+  zipDownload = false,
+}: CollectionPageClientProps) {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -248,7 +253,8 @@ export default function CollectionPageClient({ slug, initialCollection }: Collec
   // Show loading skeleton while auth is loading or collection is loading
   // Also show loading if collection hasn't loaded yet (even if query is disabled)
   // If we have server-provided initial data, don't block on auth loading
-  const isLoading = (authLoading && !collection) || isLoadingCollection || (!collection && !isError);
+  const isLoading =
+    (authLoading && !collection) || isLoadingCollection || (!collection && !isError);
 
   if (isLoading) {
     return <CollectionLoading />;
@@ -350,71 +356,105 @@ export default function CollectionPageClient({ slug, initialCollection }: Collec
           }
         }
       } else {
-        // Multiple images - create zip
-        const zip = new JSZip();
+        // Multiple images
+        const zip = zipDownload ? new JSZip() : null;
         let successCount = 0;
         let failedCount = 0;
         let currentProgress = 0;
 
-        // Download uploaded images
-        for (let i = 0; i < selectedUploaded.length; i++) {
-          const image = selectedUploaded[i];
-          setDownloadProgress({ current: ++currentProgress, total: totalCount });
+        const BATCH_SIZE = 5;
 
-          if (image.image_url) {
-            try {
-              const response = await fetch(image.image_url);
-              const blob = await response.blob();
-              const filename = `${collection.title.replace(/\s+/g, '_')}_${i + 1}.jpg`;
-              zip.file(filename, blob);
-              successCount++;
-            } catch {
-              failedCount++;
-            }
-          }
-        }
+        type DownloadTask =
+          | { kind: 'uploaded'; image: (typeof selectedUploaded)[0]; idx: number }
+          | {
+              kind: 'drive';
+              driveImg: (typeof selectedDrive)[0];
+              driveIndex: number;
+              idx: number;
+            };
 
-        // Download drive images
-        for (let i = 0; i < selectedDrive.length; i++) {
-          const driveImg = selectedDrive[i];
-          const driveIndex = formattedDriveImages.findIndex(
-            (img) => img.id === driveImg.id
+        const tasks: DownloadTask[] = [
+          ...selectedUploaded.map((image, i) => ({
+            kind: 'uploaded' as const,
+            image,
+            idx: i,
+          })),
+          ...selectedDrive.map((driveImg, i) => {
+            const driveIndex = formattedDriveImages.findIndex(
+              (img) => img.id === driveImg.id
+            );
+            return { kind: 'drive' as const, driveImg, driveIndex, idx: i };
+          }),
+        ];
+
+        for (let b = 0; b < tasks.length; b += BATCH_SIZE) {
+          const batch = tasks.slice(b, b + BATCH_SIZE);
+          await Promise.all(
+            batch.map(async (task) => {
+              if (task.kind === 'uploaded') {
+                if (task.image.image_url) {
+                  try {
+                    const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
+                    if (zip) {
+                      const response = await fetch(task.image.image_url);
+                      const blob = await response.blob();
+                      zip.file(filename, blob);
+                    } else {
+                      await downloadImage(task.image.image_url, filename);
+                    }
+                    successCount++;
+                  } catch {
+                    failedCount++;
+                  }
+                }
+              } else {
+                const fullQualityUrl = driveFullQualityUrls[task.driveIndex];
+                if (fullQualityUrl) {
+                  try {
+                    const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
+                    if (zip) {
+                      const response = await fetch(fullQualityUrl);
+                      const blob = await response.blob();
+                      zip.file(filename, blob);
+                    } else {
+                      await downloadImage(fullQualityUrl, filename);
+                    }
+                    successCount++;
+                  } catch {
+                    failedCount++;
+                  }
+                }
+              }
+              setDownloadProgress({ current: ++currentProgress, total: totalCount });
+            })
           );
-          const fullQualityUrl = driveFullQualityUrls[driveIndex];
-          setDownloadProgress({ current: ++currentProgress, total: totalCount });
-
-          if (fullQualityUrl) {
-            try {
-              const response = await fetch(fullQualityUrl);
-              const blob = await response.blob();
-              const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${driveIndex + 1}.jpg`;
-              zip.file(filename, blob);
-              successCount++;
-            } catch {
-              failedCount++;
-            }
-          }
         }
 
         if (successCount > 0) {
-          setIsZipping(true);
-          setZippingProgress(0);
+          if (zip) {
+            setIsZipping(true);
+            setZippingProgress(0);
 
-          const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
-            setZippingProgress(metadata.percent);
-          });
-          const zipUrl = URL.createObjectURL(zipBlob);
-          const a = document.createElement('a');
-          a.href = zipUrl;
-          a.download = `${collection.title.replace(/\s+/g, '_')}_images.zip`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(zipUrl);
+            const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
+              setZippingProgress(metadata.percent);
+            });
+            const zipUrl = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = zipUrl;
+            a.download = `${collection.title.replace(/\s+/g, '_')}_images.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(zipUrl);
 
-          toast.success(
-            `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
-          );
+            toast.success(
+              `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
+            );
+          } else {
+            toast.success(
+              `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''}`
+            );
+          }
         }
 
         if (failedCount > 0) {
