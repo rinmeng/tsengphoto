@@ -29,7 +29,6 @@ import { collectionsQueryKeys } from '@/lib/queries/collections';
 import type { CollectionImage, CollectionWithImages } from '@/lib/types';
 import { getDelayClass } from '@/utils/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import JSZip from 'jszip';
 import {
   ArrowLeft,
   Calendar,
@@ -47,6 +46,7 @@ import { useMemo, useState } from 'react';
 import { ImagesGrid } from './components/ImagesGrid';
 import { ImageViewer } from './components/ImageViewer';
 import CollectionLoading from './loading';
+import { useZipWorker } from './useZipWorker';
 
 interface CollectionPageClientProps {
   slug: string;
@@ -63,6 +63,7 @@ export default function CollectionPageClient({
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { createZip } = useZipWorker();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [deletionProgress, setDeletionProgress] = useState({ current: 0, total: 0 });
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -73,7 +74,6 @@ export default function CollectionPageClient({
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
-  const [zippingProgress, setZippingProgress] = useState(0);
   const [downloadComplete, setDownloadComplete] = useState(false);
 
   const {
@@ -357,7 +357,7 @@ export default function CollectionPageClient({
         }
       } else {
         // Multiple images
-        const zip = zipDownload ? new JSZip() : null;
+        const filesToZip: Record<string, Uint8Array> = zipDownload ? {} : {};
         let successCount = 0;
         let failedCount = 0;
         let currentProgress = 0;
@@ -395,10 +395,10 @@ export default function CollectionPageClient({
                 if (task.image.image_url) {
                   try {
                     const filename = `${collection.title.replace(/\s+/g, '_')}_${task.idx + 1}.jpg`;
-                    if (zip) {
+                    if (zipDownload) {
                       const response = await fetch(task.image.image_url);
-                      const blob = await response.blob();
-                      zip.file(filename, blob);
+                      const arrayBuffer = await response.arrayBuffer();
+                      filesToZip[filename] = new Uint8Array(arrayBuffer);
                     } else {
                       await downloadImage(task.image.image_url, filename);
                     }
@@ -412,10 +412,10 @@ export default function CollectionPageClient({
                 if (fullQualityUrl) {
                   try {
                     const filename = `${collection.title.replace(/\s+/g, '_')}_drive_${task.driveIndex + 1}.jpg`;
-                    if (zip) {
+                    if (zipDownload) {
                       const response = await fetch(fullQualityUrl);
-                      const blob = await response.blob();
-                      zip.file(filename, blob);
+                      const arrayBuffer = await response.arrayBuffer();
+                      filesToZip[filename] = new Uint8Array(arrayBuffer);
                     } else {
                       await downloadImage(fullQualityUrl, filename);
                     }
@@ -431,25 +431,30 @@ export default function CollectionPageClient({
         }
 
         if (successCount > 0) {
-          if (zip) {
+          if (zipDownload && Object.keys(filesToZip).length > 0) {
             setIsZipping(true);
-            setZippingProgress(0);
 
-            const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
-              setZippingProgress(metadata.percent);
-            });
-            const zipUrl = URL.createObjectURL(zipBlob);
-            const a = document.createElement('a');
-            a.href = zipUrl;
-            a.download = `${collection.title.replace(/\s+/g, '_')}_images.zip`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(zipUrl);
+            try {
+              // Use Web Worker for non-blocking compression
+              const zipBlob = await createZip(filesToZip, collection.title);
 
-            toast.success(
-              `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
-            );
+              const zipUrl = URL.createObjectURL(zipBlob);
+              const a = document.createElement('a');
+              a.href = zipUrl;
+              a.download = `${collection.title.replace(/\s+/g, '_')}_images.zip`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(zipUrl);
+
+              toast.success(
+                `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''} as zip`
+              );
+            } catch (error) {
+              toast.error('Failed to create zip file', {
+                description: error instanceof Error ? error.message : 'Unknown error',
+              });
+            }
           } else {
             toast.success(
               `Downloaded ${successCount} image${successCount !== 1 ? 's' : ''}`
@@ -468,7 +473,6 @@ export default function CollectionPageClient({
     } finally {
       setIsDownloading(false);
       setIsZipping(false);
-      setZippingProgress(0);
       if (totalCount > 1) {
         setDownloadComplete(true);
       } else {
@@ -508,30 +512,20 @@ export default function CollectionPageClient({
                 ? 'Your images have been downloaded successfully.'
                 : isZipping
                   ? 'Please wait while we package your images into a zip file.'
-                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close this page."}
+                  : "Your download is in progress. Feel free to close this dialog or switch tabs — just don't close or navigate away from this page."}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4'>
             {!downloadComplete && (
               <div className='space-y-2'>
                 {isZipping ? (
-                  <>
-                    <div
-                      className={`flex justify-between text-sm fade-in-from-bottom
-                        ${getDelayClass(3)}`}
-                    >
-                      <Text variant='bd-sm'>Zipping files</Text>
-                      <Text variant='bd-sm'>
-                        {Math.round(zippingProgress) >= 100
-                          ? 'Completed'
-                          : `${Math.round(zippingProgress)}%`}
-                      </Text>
-                    </div>
-                    <Progress
-                      value={zippingProgress}
-                      className={`w-full fade-in-from-bottom ${getDelayClass(4)}`}
-                    />
-                  </>
+                  <div
+                    className={`flex items-center gap-2 text-sm fade-in-from-bottom
+                      ${getDelayClass(3)}`}
+                  >
+                    <Loader2 className='animate-spin size-4' />
+                    <Text variant='bd-sm'>Zipping files...</Text>
+                  </div>
                 ) : (
                   <>
                     <div
