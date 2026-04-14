@@ -15,7 +15,8 @@
       "Bash(python3:*)",
       "Bash(grep -E \"\\\\.\\(ts|tsx|js|json\\)$\")",
       "Bash(ffmpeg:*)",
-      "Bash(powershell.exe:*)"
+      "Bash(powershell.exe:*)",
+      "Bash(grep -rn \"sizes=\" /c/Users/rinmeng/tsengphoto/components/*.tsx)"
     ]
   }
 }
