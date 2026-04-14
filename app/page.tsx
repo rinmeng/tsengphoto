@@ -153,7 +153,7 @@ export default function Home() {
           images={eventPhotography}
           objectPosition='center 20%'
         />
-        <div className='container mx-auto flex justify-center mt-8'>
+        <div className='container mx-auto flex justify-center mt-4'>
           <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />
@@ -181,7 +181,7 @@ export default function Home() {
           images={portraitPhotography}
           objectPosition='center 40%'
         />
-        <div className='container mx-auto flex justify-center mt-8'>
+        <div className='container mx-auto flex justify-center mt-4'>
           <Button variant='default' size='xl' onClick={() => router.push('/contact')}>
             Reserve Now
             <SendHorizonal />

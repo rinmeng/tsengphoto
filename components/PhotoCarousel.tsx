@@ -83,7 +83,7 @@ export function PhotoCarousel({
         setApi={setApi}
         btnVariant={btnVariant}
         showDots={showDots}
-        className={cn('w-full', navigation === 'below' && 'pb-16')}
+        className={cn('w-full')}
         opts={carouselOpts}
         plugins={plugins}
       >
