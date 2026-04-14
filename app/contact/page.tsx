@@ -30,9 +30,6 @@ import { useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
-const PHOTO_URL =
-  'https://images.squarespace-cdn.com/content/v1/666391f3d3944106358f8cf5/8c2f490a-3a4c-4229-bb1a-41415a7db68d/DSC_3864.jpg';
-
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 function Required() {
@@ -115,7 +112,7 @@ export default function ContactPage() {
           overflow-hidden shrink-0'
       >
         <OptimizedImage
-          src={PHOTO_URL}
+          src='/contact/contact.webp'
           alt='Crowd celebrating at a welcome center event'
           className='w-full h-full object-cover'
           fill

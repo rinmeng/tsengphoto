@@ -13,7 +13,9 @@
       "Bash(python3 -c \"from PIL import Image; print\\('PIL ok'\\)\")",
       "Bash(pip install:*)",
       "Bash(python3:*)",
-      "Bash(grep -E \"\\\\.\\(ts|tsx|js|json\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|tsx|js|json\\)$\")",
+      "Bash(ffmpeg:*)",
+      "Bash(powershell.exe:*)"
     ]
   }
 }
