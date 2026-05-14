@@ -2,6 +2,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import { getDelayClass } from '@/utils/animations';
 import Link from 'next/link';
 import { Separator } from './ui';
+import { ChevronRight } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -32,30 +33,38 @@ export function Footer() {
             <span className='text-base md:text-lg'>matthewtseng35</span>
           </Link>
           <div
-            className={`flex items-center gap-2 text-sm text-muted-foreground
-              fade-in-from-bottom ${getDelayClass(3)}`}
+            className={`text-sm text-muted-foreground fade-in-from-bottom
+              ${getDelayClass(3)}`}
           >
-            <p>Made with ❤️ by</p>
-            <Link
-              href='https://rinm.dev'
-              target='_blank'
-              rel='noreferrer'
-              className='hover:opacity-70 transition-opacity'
-            >
-              <OptimizedImage
-                src='/rmlogo.png'
-                alt='rmlogo'
-                width={64}
-                height={32}
-                className='h-auto w-16 invert dark:invert-0'
-              />
-            </Link>
+            <div className='flex gap-2 items-center'>
+              <p>built by</p>
+              <Link href='https://web8th.com'>
+                <OptimizedImage
+                  className='not-dark:invert-100'
+                  src='/8th_svg.svg'
+                  alt='Logo'
+                  width={48}
+                  height={48}
+                />
+              </Link>
+
+              <ChevronRight className='text-muted-foreground' />
+              <Link href='https://rinm.dev'>
+                <OptimizedImage
+                  src='/rmlogo.png'
+                  alt='Logo'
+                  className='not-dark:invert-100'
+                  width={48}
+                  height={48}
+                />
+              </Link>
+            </div>
           </div>
           <div
             className={`text-sm text-muted-foreground fade-in-from-bottom
               ${getDelayClass(4)}`}
           >
-            © {new Date().getFullYear()} Tseng Photography. All rights reserved.
+            © {new Date().getFullYear()} Web8th. All rights reserved.
           </div>
         </div>
       </div>
