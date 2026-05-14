@@ -33,11 +33,11 @@ export function Footer() {
             <span className='text-base md:text-lg'>matthewtseng35</span>
           </Link>
           <div
-            className={`flex items-center gap-2 text-sm text-muted-foreground
-              fade-in-from-bottom ${getDelayClass(3)}`}
+            className={`text-sm text-muted-foreground fade-in-from-bottom
+              ${getDelayClass(3)}`}
           >
-            <p>built by</p>
             <div className='flex gap-2 items-center'>
+              <p>built by</p>
               <Link href='https://web8th.com'>
                 <OptimizedImage
                   className='not-dark:invert-100'
